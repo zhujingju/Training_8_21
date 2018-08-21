@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.Player.Core.PlayerClient;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -25,10 +26,14 @@ public class MyApplication extends Application {
     public static Context applicationContext;
     public static Application application;
     public final  static String NAME_TX="zjj_Name_TX";
+    private PlayerClient playerclient;
 
     @Override
     public void onCreate() {
 
+        playerclient = new PlayerClient();
+        WriteLogThread writeLogThread = new WriteLogThread(playerclient);
+        writeLogThread.start();
         super.onCreate();
         application=this;
         mContext = this;
@@ -36,6 +41,17 @@ public class MyApplication extends Application {
         initImageLoader(mContext);
     }
 
+    public synchronized PlayerClient getPlayerclient() {
+        return playerclient;
+    }
+
+    public synchronized void releaseClient() {
+        playerclient = null;
+    }
+
+    public synchronized void setPlayerclient(PlayerClient playerclient) {
+        this.playerclient = playerclient;
+    }
     /**
      * ImageLoader 图片组件初始化
      *

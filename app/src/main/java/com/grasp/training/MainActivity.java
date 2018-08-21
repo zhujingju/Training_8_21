@@ -34,6 +34,7 @@ import butterknife.OnClick;
 public class MainActivity extends BaseFragmentActivity {
 
     public static String MainSB = "MainActivity_UID";
+    public static String SID = "12345678";
     public static Activity activity;
     @BindView(R.id.main_sb)
     RelativeLayout mainSb;

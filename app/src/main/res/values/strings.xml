@@ -51,4 +51,38 @@
     <string name="bdsc">"   本地上传"</string>
     <string name="nocz">"未找到存储卡，无法存储照片！"</string>
 
+
+    <string name="connect_success">连接成功</string>
+    <string name="connect_fail">连接失败</string>
+    <string name="connecting">连接中……</string>
+    <string name="buffering">缓冲中……</string>
+    <string name="no_data">网络中无数据</string>
+    <string name="unknown_error">未知错误</string>
+    <string name="protocal_error">协议错误</string>
+    <string name="net_error">网络错误</string>
+    <string name="exception_error">异常情况</string>
+    <string name="unsupport_device">不支持设备</string>
+    <string name="max_channel">超过最大通道数</string>
+    <string name="camera_offline">采集点不在线 </string>
+    <string name="ready">准备就绪</string>
+    <string name="reconnect">重新连接</string>
+    <string name="error_code">错误代码</string>
+    <string name="read">就绪</string>
+    <string name="playing">播放中……</string>
+    <string name="pause">暂停</string>
+    <string name="stop">停止</string>
+    <string name="usererro">用户名错误</string>
+    <string name="passworderro">密码错误</string>
+    <string name="NPC_D_MPI_MON_ERROR_REJECT_ACCESS">权限不够</string>
+
+
+    <string name="ycyk">远程遥控</string>
+    <string name="dhsd">对话设定</string>
+    <string name="srmm4">网络连接错误</string>
+    <string name="srmm5">机器人ID</string>
+    <string name="srmm6">不能为空</string>
+    <string name="srmm7">绑定被拒</string>
+    <string name="srmm8">绑定成功</string>
+    <string name="srmm9">连接超时</string>
+
 </resources>

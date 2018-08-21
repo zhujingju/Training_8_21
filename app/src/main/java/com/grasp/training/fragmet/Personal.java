@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grasp.training.R;
+import com.grasp.training.activity.ControlActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
@@ -77,13 +78,16 @@ public class Personal extends Fragment {
     }
 
 
-    @OnClick({R.id.personal_tx, R.id.personal_layout})
+    @OnClick({R.id.personal_tx, R.id.personal_layout,R.id.sp})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.personal_tx:
                 getTp();
                 break;
             case R.id.personal_layout:
+                break;
+            case R.id.sp:
+                context.startActivity(new Intent(context, ControlActivity.class));
                 break;
         }
     }
