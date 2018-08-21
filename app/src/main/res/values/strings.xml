@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Training</string>
+
+    <string name="tab_1">室内环境</string>
+    <string name="tab_2">机器人状态</string>
+    <string name="tab_3">主人状态</string>
+    <string name="ie_sn">室内环境分值</string>
+    <string name="ie_sn_good">环境质量良好</string>
+    <string name="ie_sn_wd">温度</string>
+    <string name="ie_sn_sd">湿度</string>
+    <string name="ie_sn_pm">Pm2.5</string>
+    <string name="ie_sn_kt">空调</string>
+    <string name="ie_sn_js">加湿</string>
+    <string name="ie_sn_jh">净化</string>
+
+    <string name="menu1">远程遥控</string>
+    <string name="menu2">地图</string>
+    <string name="menu3">自定语音</string>
+    <string name="menu4">文件管理</string>
+    <string name="menu5">个人设置</string>
+
+    <string name="smart1">实训模式</string>
+    <string name="smart2">开始实训</string>
+    <string name="smart3">中央空调</string>
+    <string name="smart4">开启空调</string>
+    <string name="smart5">风速</string>
+    <string name="smart6">净化器</string>
+    <string name="smart7">开启净化器</string>
+    <string name="smart8">高速</string>
+    <string name="smart8_2">静音</string>
+    <string name="smart9">内循环</string>
+    <string name="smart9_2">外循环</string>
+    <string name="smart10">窗帘</string>
+    <string name="smart11">开启窗帘</string>
+    <string name="smart12">百叶窗</string>
+    <string name="smart13">开启百叶窗</string>
+    <string name="smart14">电灯</string>
+    <string name="smart15">开启电灯</string>
+    <string name="smart16">百分比</string>
+    <string name="smart2_no">关闭实训</string>
+    <string name="smart4_no">关闭空调</string>
+    <string name="smart7_no">关闭净化器</string>
+    <string name="smart11_no">关闭窗帘</string>
+    <string name="smart13_no">关闭百叶窗</string>
+    <string name="smart15_no">关闭电灯</string>
+
+    <string name="login_tx">第一次登入为注册</string>
+
+    <string name="xgtx"> 修改头像</string>
+    <string name="pzsc">"   拍张上传"</string>
+    <string name="bdsc">"   本地上传"</string>
+    <string name="nocz">"未找到存储卡，无法存储照片！"</string>
+
+</resources>

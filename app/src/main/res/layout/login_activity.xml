@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_y"
+    android:background="@drawable/app_bg">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_marginTop="@dimen/dip_80.0"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/logo"
+            android:layout_width="@dimen/dip_100.0"
+            android:layout_height="@dimen/dip_100.0" />
+        <LinearLayout
+
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_marginTop="@dimen/dip_100.0"
+                app:errorTextAppearance="@style/ErrorTextAppearance"
+                android:theme="@style/CustomAppTheme_textinputLayout"
+                android:id="@+id/til_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dip_7.5"
+                android:layout_marginRight="@dimen/dip_7.5"
+               >
+                <!--这里可以直接使用EditText-->
+                <android.support.design.widget.TextInputEditText
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dip_20.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                app:errorTextAppearance="@style/ErrorTextAppearance"
+                android:theme="@style/CustomAppTheme_textinputLayout"
+                android:id="@+id/til_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dip_7.5"
+                android:layout_marginRight="@dimen/dip_7.5"
+                android:layout_marginTop="@dimen/dip_10.0">
+
+                <android.support.design.widget.TextInputEditText
+                    android:singleLine="true"
+                    android:textSize="@dimen/dip_20.0"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_tx"
+                android:layout_gravity="right"
+                android:layout_marginRight="@dimen/dip_10.0"
+                android:textSize="@dimen/dip_10.0"
+                android:textColor="@color/hui"
+                android:layout_marginTop="@dimen/dip_10.0"
+                />
+
+            <Button
+                android:background="@drawable/kuang_b"
+                android:textColor="@color/white"
+                android:text="login"
+                android:textSize="@dimen/dip_15.0"
+                android:layout_marginTop="@dimen/dip_60.0"
+                android:layout_gravity="center"
+                android:id="@+id/login"
+                android:layout_width="@dimen/dip_100.0"
+                android:layout_height="@dimen/dip_50.0" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

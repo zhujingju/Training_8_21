@@ -1,0 +1,91 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.grasp.training"
+        minSdkVersion 23
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        flavorDimensions "release"
+    }
+
+    productFlavors {
+
+        tencent {
+            dimension "release"
+        }
+    }
+    //  release
+    signingConfigs {
+        config {
+            keyAlias 'key'
+            keyPassword '62633969'
+            storeFile file('../keystory/mykey.jks')
+            storePassword '62633969'
+        }
+    }
+    /*是禁用资源类型检测，这样在打包过程中就不会因为资源类型不匹配而提示错误了*/
+    lintOptions {
+        disable "ResourceType"
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    //指定打包后应用名称  
+    applicationVariants.all{variant->
+        variant.outputs.all{output->
+//            def outputFile=output.outputFile
+//            def fileName
+//            if(outputFile != null && outputFile.name.endsWith('.apk')){
+//                if (variant.buildType.name.equals('release')) {
+//                    fileName = "实训.apk"
+//                } else if (variant.buildType.name.equals('debug')) {
+//                    fileName = "实训_debug.apk"
+//                }
+////                output.outputFile=new File(outputFile.parent, fileName)
+//                output.outputFile = new File(outputFile.parent, outputFile.name.replace(".apk", "-" + fileName))
+//            }
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                def fileName = outputFile.name.replace(".apk", "-${defaultConfig.versionName}.apk")
+                outputFileName = fileName
+            }
+
+
+
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            //   minifyEnabled true //混淆打包
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            debuggable false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    compile project(path: ':easyMqttLibrary')
+
+    implementation  'com.android.support:design:27.1.1'
+    implementation files('libs/universal-image-loader-1.9.5.jar')
+}

@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:slideswitch="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/smart_home_im_sx"
+            android:layout_width="@dimen/dip_20.0"
+            android:layout_height="@dimen/dip_20.0"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/monitormode_refresh"
+            />
+
+        <ProgressBar
+
+            android:layout_marginTop="10dp"
+            android:indeterminateDrawable="@drawable/progressbar_p"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:id="@+id/smart_home_pro"
+            android:layout_width="@dimen/dip_20.0"
+            android:layout_height="@dimen/dip_20.0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="@dimen/dip_300.0"
+                android:layout_height="@dimen/dip_171.5"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/smart_tv_wd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="26.0"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_30.0" />
+
+                        <TextView
+                            android:id="@+id/smart_tv_wd2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/dip_2.5"
+                            android:text="℃"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_17.5" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dip_20.0"
+                        android:text="@string/ie_sn_wd"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dip_17.5" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="1px"
+                    android:layout_height="@dimen/dip_22.0"
+                    android:layout_marginBottom="@dimen/dip_15.0"
+                    android:background="@color/white" />
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/smart_tv_sd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="26.0"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_30.0" />
+
+                        <TextView
+                            android:id="@+id/smart_tv_sd2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/dip_2.5"
+                            android:text="%"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_17.5" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dip_20.0"
+                        android:text="@string/ie_sn_sd"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dip_17.5" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="1px"
+                    android:layout_height="@dimen/dip_22.0"
+                    android:layout_marginBottom="@dimen/dip_15.0"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/smart_tv_pm"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="26.0"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_30.0" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/dip_2.5"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/dip_17.5" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dip_20.0"
+                        android:text="@string/ie_sn_pm"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/dip_17.5" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <ImageView
+                        android:layout_width="@dimen/dip_340.0"
+                        android:layout_height="1px"
+                        android:layout_gravity="center"
+                        android:background="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/dip_30.0"
+                        android:layout_marginRight="@dimen/dip_30.0"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/smart_layout1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            >
+                            <RelativeLayout
+
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/icon_shiunmode_normal" />
+
+                                <TextView
+
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart1"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_17.5" />
+
+                                <TextView
+                                    android:id="@+id/smart_tv_sx"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart2"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_14.5" />
+
+                                <RelativeLayout
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true">
+
+                                    <com.grasp.training.view.SlideSwitch
+
+                                        android:id="@+id/swit_sx"
+                                        android:layout_width="@dimen/dip_37.0"
+                                        android:layout_height="@dimen/dip_20.0"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        slideswitch:isOpen="false"
+                                        slideswitch:shape="circle"
+                                        slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/c_80ffffff" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/smart_layout2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/icon_kongtiao_normal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart3"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_17.5" />
+
+                                <TextView
+                                    android:id="@+id/smart_tv_kt"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart4"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_14.5" />
+
+                                <RelativeLayout
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true">
+
+                                    <com.grasp.training.view.SlideSwitch
+
+                                        android:id="@+id/swit_kt"
+                                        android:layout_width="@dimen/dip_37.0"
+                                        android:layout_height="@dimen/dip_20.0"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        slideswitch:isOpen="false"
+                                        slideswitch:shape="circle"
+                                        slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/smart_layout_kt"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <TextView
+                                    android:id="@+id/smart_tv_ktwd2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/ie_sn_wd"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_15.0" />
+
+
+                                <RelativeLayout
+                                    android:layout_marginLeft="@dimen/dip_76.5"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="@dimen/dip_120.0"
+                                    android:layout_height="match_parent">
+                                    <ImageView
+                                        android:layout_marginRight="@dimen/dip_8.0"
+                                        android:layout_marginLeft="@dimen/dip_8.0"
+                                        android:layout_centerVertical="true"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="@dimen/dip_5.5"
+                                        android:background="@drawable/control_wendutiao"/>
+                                    <SeekBar
+                                        android:id="@+id/smart_seekbar"
+                                        android:layout_centerVertical="true"
+                                        android:progressDrawable="@drawable/progressdra"
+                                        android:thumb="@drawable/thumb"
+                                        android:background="@null"
+                                        android:layout_width="@dimen/dip_120.0"
+                                        android:layout_height="match_parent" />
+                                    <TextView
+                                        android:id="@+id/smart_tv_ktwd"
+                                        android:layout_centerHorizontal="true"
+                                        android:textSize="@dimen/dip_12.0"
+                                        android:textColor="@color/white"
+                                        android:text="0"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RelativeLayout>
+
+                                <TextView
+                                    android:id="@+id/smart_tv_fs"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart5"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_15.0" />
+                                <ImageView
+                                    android:id="@+id/smart_fs"
+                                    android:layout_marginRight="@dimen/dip_5.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/control_fengsua" />
+
+
+
+                            </RelativeLayout>
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/c_80ffffff" />
+                        </LinearLayout>
+
+
+
+
+                        <LinearLayout
+                            android:id="@+id/smart_layout3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/icon_jinghuaqi_normal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart6"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_17.5" />
+
+                                <TextView
+                                    android:id="@+id/smart_tv_jhq"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart7"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_14.5" />
+
+                                <RelativeLayout
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true">
+
+                                    <com.grasp.training.view.SlideSwitch
+
+                                        android:id="@+id/swit_jhq"
+                                        android:layout_width="@dimen/dip_37.0"
+                                        android:layout_height="@dimen/dip_20.0"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        slideswitch:isOpen="false"
+                                        slideswitch:shape="circle"
+                                        slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                            <LinearLayout
+                                android:id="@+id/smart_layout_jhq"
+                                android:gravity="center_vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:visibility="gone"
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:background="@drawable/icon_chuanglian_normal" />
+                                <LinearLayout
+                                    android:id="@+id/smart_gs1"
+                                    android:gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:id="@+id/smart_gs1_tv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/smart8"
+                                        android:textColor="@drawable/tv_bai1"
+                                        android:textSize="@dimen/dip_15.0" />
+                                    <ImageView
+                                        android:id="@+id/smart_gs1_im"
+                                        android:background="@drawable/im_smart1"
+                                        android:layout_width="@dimen/dip_32.0"
+                                        android:layout_height="@dimen/dip_32.0" />
+
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/smart_gs2"
+                                    android:gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/dip_14.0"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+
+                                        android:id="@+id/smart_gs2_tv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/smart8_2"
+                                        android:textColor="@drawable/tv_bai2"
+                                        android:textSize="@dimen/dip_15.0" />
+                                    <ImageView
+                                        android:id="@+id/smart_gs2_im"
+                                        android:background="@drawable/im_smart2_2"
+                                        android:layout_width="@dimen/dip_32.0"
+                                        android:layout_height="@dimen/dip_32.0" />
+
+
+                                </LinearLayout>
+
+
+                                <ImageView
+                                    android:id="@+id/smart_xh1"
+                                    android:layout_marginLeft="@dimen/dip_30.0"
+                                    android:background="@drawable/im_smart3"
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0" />
+                                <ImageView
+                                    android:id="@+id/smart_xh2"
+                                    android:layout_marginLeft="@dimen/dip_10.0"
+                                    android:background="@drawable/im_smart4_2"
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0" />
+
+
+                            </LinearLayout>
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/c_80ffffff" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/smart_layout4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            >
+                            <RelativeLayout
+
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/icon_chuanglian_normal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart10"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_17.5" />
+
+                                <TextView
+                                    android:id="@+id/smart_tv_cl"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart11"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_14.5" />
+
+                                <RelativeLayout
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true">
+
+                                    <com.grasp.training.view.SlideSwitch
+
+                                        android:id="@+id/swit_cl"
+                                        android:layout_width="@dimen/dip_37.0"
+                                        android:layout_height="@dimen/dip_20.0"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        slideswitch:isOpen="false"
+                                        slideswitch:shape="circle"
+                                        slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/c_80ffffff" />
+
+                        </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/smart_layout5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/dip_32.0"
+                                    android:layout_height="@dimen/dip_32.0"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/icon_baiyechuang_normal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart12"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_17.5" />
+
+                                <TextView
+                                    android:id="@+id/smart_tv_byc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="@dimen/dip_41.0"
+                                    android:text="@string/smart13"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_14.5" />
+
+                                <RelativeLayout
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true">
+
+                                    <com.grasp.training.view.SlideSwitch
+
+                                        android:id="@+id/swit_byc"
+                                        android:layout_width="@dimen/dip_37.0"
+                                        android:layout_height="@dimen/dip_20.0"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        slideswitch:isOpen="false"
+                                        slideswitch:shape="circle"
+                                        slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+
+
+                            <RelativeLayout
+                                android:id="@+id/smart_layout_byc"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dip_50.0"
+                                android:orientation="horizontal"
+                                >
+
+                                <TextView
+                                    android:id="@+id/smart_tv_bfb"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/dip_40.0"
+                                    android:text="@string/smart16"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/dip_15.0" />
+
+
+                                <RelativeLayout
+
+                                    android:layout_marginRight="@dimen/dip_10.0"
+                                    android:layout_marginLeft="@dimen/dip_90.0"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+                                    <ImageView
+                                        android:layout_marginRight="@dimen/dip_8.0"
+                                        android:layout_marginLeft="@dimen/dip_8.0"
+                                        android:layout_centerVertical="true"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="@dimen/dip_5.5"
+                                        android:background="@drawable/control_wendutiao"/>
+                                    <SeekBar
+                                        android:id="@+id/smart_byc_seekbar"
+                                        android:layout_centerVertical="true"
+                                        android:progressDrawable="@drawable/progressdra"
+                                        android:thumb="@drawable/thumb"
+                                        android:background="@null"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                    <TextView
+                                        android:id="@+id/smart_tv_seekbarByc"
+                                        android:layout_centerHorizontal="true"
+                                        android:textSize="@dimen/dip_12.0"
+                                        android:textColor="@color/white"
+                                        android:text="0"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RelativeLayout>
+
+
+
+                            </RelativeLayout>
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/c_80ffffff" />
+
+
+                        </LinearLayout>
+
+
+                        <RelativeLayout
+                            android:id="@+id/smart_layout6"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dip_50.0"
+                            android:orientation="horizontal"
+
+                            >
+
+                            <ImageView
+                                android:layout_width="@dimen/dip_32.0"
+                                android:layout_height="@dimen/dip_32.0"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/icon_diandeng_normal" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="@dimen/dip_40.0"
+                                android:text="@string/smart14"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/dip_17.5" />
+
+                            <TextView
+                                android:id="@+id/smart_tv_dd"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="@dimen/dip_41.0"
+                                android:text="@string/smart15"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/dip_14.5" />
+
+                            <RelativeLayout
+                                android:layout_width="@dimen/dip_37.0"
+                                android:layout_height="@dimen/dip_20.0"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true">
+
+                                <com.grasp.training.view.SlideSwitch
+
+                                    android:id="@+id/swit_dd"
+                                    android:layout_width="@dimen/dip_37.0"
+                                    android:layout_height="@dimen/dip_20.0"
+                                    android:focusable="true"
+                                    android:focusableInTouchMode="true"
+                                    slideswitch:isOpen="false"
+                                    slideswitch:shape="circle"
+                                    slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+                            </RelativeLayout>
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>
