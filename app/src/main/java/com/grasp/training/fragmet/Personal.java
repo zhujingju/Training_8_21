@@ -78,16 +78,13 @@ public class Personal extends Fragment {
     }
 
 
-    @OnClick({R.id.personal_tx, R.id.personal_layout,R.id.sp})
+    @OnClick({R.id.personal_tx, R.id.personal_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.personal_tx:
                 getTp();
                 break;
             case R.id.personal_layout:
-                break;
-            case R.id.sp:
-                context.startActivity(new Intent(context, ControlActivity.class));
                 break;
         }
     }

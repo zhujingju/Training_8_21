@@ -52,11 +52,6 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/sp"
-            android:text="视频"
-            android:layout_width="200dp"
-            android:layout_height="100dp" />
 
     </LinearLayout>
 

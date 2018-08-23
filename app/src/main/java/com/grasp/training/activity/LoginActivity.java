@@ -1,8 +1,6 @@
 package com.grasp.training.activity;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,14 +9,10 @@ import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.Player.Core.PlayerClient;
 import com.Player.web.websocket.ClientCore;
@@ -29,7 +23,6 @@ import com.grasp.training.Umeye_sdk.ShowProgress;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.Utility;
-import com.grasp.training.tool.myActivityManage;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +39,8 @@ public class LoginActivity extends BaseActivity {
     EditText pwdEditText;
     @BindView(R.id.login_y)
     ConstraintLayout loginY;
+    @BindView(R.id.login_zc)
+    TextView loginZc;
 
     private ClientCore clientCore;
     private PlayerClient playClient;
@@ -128,22 +123,6 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    @OnClick(R.id.login)
-    public void onViewClicked() {
-        Log.d("qqq", "login");
-
-        if (pd == null) {
-            pd = new ShowProgress(getContext());
-            pd.setMessage("登录中...");
-            pd.setCanceledOnTouchOutside(true);
-        }
-        if (pd != null) {
-            pd.show();
-        }
-        startBestServer();
-//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//        finish();
-    }
 
 
     ShowProgress pd;
@@ -185,4 +164,27 @@ public class LoginActivity extends BaseActivity {
 
     };
 
+
+    @OnClick({R.id.login_zc, R.id.login})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.login_zc:
+                startActivity(new Intent(LoginActivity.this, RegisteredActivity.class));
+                break;
+            case R.id.login:
+
+                Log.d("qqq", "login");
+
+                if (pd == null) {
+                    pd = new ShowProgress(getContext());
+                    pd.setMessage("登录中...");
+                    pd.setCanceledOnTouchOutside(true);
+                }
+                if (pd != null) {
+                    pd.show();
+                }
+                startBestServer();
+                break;
+        }
+    }
 }

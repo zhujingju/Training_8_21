@@ -66,7 +66,6 @@ public class ControlActivity extends BaseActivity {
     @BindView(R.id.control_stop)
     Button controlStop;
 
-    public static final int MD_STOP_ZHUAN = -1; // 停止
     public static final int MD_STOP = 0; // 停止
     public static final int MD_LEFT = 11; // 左
     public static final int MD_RIGHT = 12; // 右
@@ -148,7 +147,6 @@ public class ControlActivity extends BaseActivity {
                 break;
             case R.id.control_stop:
                 push_move(MD_STOP);
-                push_move(MD_STOP_ZHUAN);
                 break;
         }
     }
@@ -221,10 +219,10 @@ public class ControlActivity extends BaseActivity {
 
                             break;
                         case R.id.control_left:
-                            push_move(MD_STOP_ZHUAN);
+                            push_move(MD_STOP);
                             break;
                         case R.id.control_right:
-                            push_move(MD_STOP_ZHUAN);
+                            push_move(MD_STOP);
                             break;
 
                         case R.id.control_tou_left:
@@ -327,9 +325,18 @@ public class ControlActivity extends BaseActivity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        push_move(MD_STOP);
+        push_head(MD_STOP);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         disconnect();
         close();
         handler.removeCallbacks(null);
@@ -638,7 +645,7 @@ public class ControlActivity extends BaseActivity {
     private void subscribe() {
 //        String[] topics2 = new String[]{"#"};
 //        mqttService.unSubscribe(topics2);
-        String[] topics = new String[]{"iotbroad/iot"};
+        String[] topics = new String[]{myTopic};
 //        String[] topics = new String[]{"#"};
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心
@@ -736,7 +743,9 @@ public class ControlActivity extends BaseActivity {
             public void connectSuccess(IMqttToken arg0) {
                 //连接成功
                 Log.e("qqq", "connectSuccess");
-
+                if (isConnected()) {
+                    subscribe();
+                }
             }
 
             @Override
@@ -823,10 +832,11 @@ public class ControlActivity extends BaseActivity {
         }
     }
 
+    private String myTopic ="iotbroad/iot/robot";
     public boolean publish_String(String set_msg) {  //发送消息
         if (isConnected()) {
             //消息主题
-            String topic = "iotbroad/iot";
+            String topic = myTopic;
             //消息内容
             String msg = set_msg;
 
@@ -841,4 +851,34 @@ public class ControlActivity extends BaseActivity {
         }
         return false;
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (isConnected()) {
+
+        } else {
+            ha.sendEmptyMessageDelayed(1000, 500);
+        }
+    }
+
+
+    Handler ha=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1000:
+                    if (isConnected()) {
+
+                    } else {
+                        mqttService.connect(iEasyMqttCallBack);
+                        ha.sendEmptyMessageDelayed(1000, 3000);
+                    }
+
+                    break;
+            }
+        }
+    };
 }

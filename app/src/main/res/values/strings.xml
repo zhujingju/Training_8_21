@@ -44,7 +44,7 @@
     <string name="smart13_no">关闭百叶窗</string>
     <string name="smart15_no">关闭电灯</string>
 
-    <string name="login_tx">第一次登入为注册</string>
+    <string name="login_tx"><u>注册</u></string>
 
     <string name="xgtx"> 修改头像</string>
     <string name="pzsc">"   拍张上传"</string>

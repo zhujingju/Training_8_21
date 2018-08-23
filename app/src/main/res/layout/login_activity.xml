@@ -41,7 +41,7 @@
                     android:textSize="@dimen/dip_20.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Username" />
+                    android:hint="UserName" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -60,19 +60,21 @@
                     android:textColor="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:hint="PassWord"
                     android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
+                android:id="@+id/login_zc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/login_tx"
                 android:layout_gravity="right"
                 android:layout_marginRight="@dimen/dip_10.0"
-                android:textSize="@dimen/dip_10.0"
-                android:textColor="@color/hui"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="@color/white"
                 android:layout_marginTop="@dimen/dip_10.0"
+
                 />
 
             <Button

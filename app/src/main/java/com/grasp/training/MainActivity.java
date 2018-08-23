@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.grasp.training.fragmet.Personal;
+import com.grasp.training.fragmet.Robot;
 import com.grasp.training.fragmet.SmartHome;
 import com.grasp.training.tool.BaseFragmentActivity;
 import com.grasp.training.view.MyViewPager;
@@ -126,12 +127,12 @@ public class MainActivity extends BaseFragmentActivity {
         fragments = new ArrayList<Fragment>();
         SmartHome smartHome = new SmartHome();
         SmartHome smartHome2 = new SmartHome();
-        SmartHome smartHome3 = new SmartHome();
+        Robot robot = new Robot();
         Personal personal=new Personal();
 
         fragments.add(smartHome);
         fragments.add(smartHome2);
-        fragments.add(smartHome3);
+        fragments.add(robot);
         fragments.add(personal);
 
 

@@ -145,6 +145,8 @@ public class SmartHome extends Fragment {
     private Context context;
     Unbinder unbinder;
 
+    private String myTopic ="iotbroad/iot";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.smart_home, container, false);
@@ -503,6 +505,26 @@ public class SmartHome extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        disconnect();
+        close();
+        handler.removeMessages(1000);
+        handler.removeMessages(2000);
+        handler.removeMessages(setZERO);
+        handler.removeMessages(setONE);
+        handler.removeMessages(setTWO);
+        handler.removeMessages(setTHREE);
+        handler.removeMessages(setFOUR);
+        handler.removeMessages(setFIVE);
+        handler.removeMessages(setSIX);
+        handler.removeMessages(setSEVEN);
+        handler.removeMessages(setEIGHT);
+        handler.removeMessages(setNINE);
+        handler.removeMessages(setNINE2);
+        handler.removeMessages(setTEN);
+        handler.removeMessages(setELEVEN);
+        handler.removeMessages(setTWELVE);
+        handler.removeMessages(setTHIRTEEN);
+        handler.removeMessages(setFOURTEENTH);
         handler.removeCallbacks(null);
         unbinder.unbind();
     }
@@ -620,7 +642,7 @@ public class SmartHome extends Fragment {
     private void subscribe() {
 //        String[] topics2 = new String[]{"#"};
 //        mqttService.unSubscribe(topics2);
-        String[] topics = new String[]{"iotbroad/iot"};
+        String[] topics = new String[]{myTopic};
 //        String[] topics = new String[]{"#"};
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心
@@ -982,30 +1004,6 @@ public class SmartHome extends Fragment {
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disconnect();
-        close();
-        handler.removeMessages(1000);
-        handler.removeMessages(2000);
-        handler.removeMessages(setZERO);
-        handler.removeMessages(setONE);
-        handler.removeMessages(setTWO);
-        handler.removeMessages(setTHREE);
-        handler.removeMessages(setFOUR);
-        handler.removeMessages(setFIVE);
-        handler.removeMessages(setSIX);
-        handler.removeMessages(setSEVEN);
-        handler.removeMessages(setEIGHT);
-        handler.removeMessages(setNINE);
-        handler.removeMessages(setNINE2);
-        handler.removeMessages(setTEN);
-        handler.removeMessages(setELEVEN);
-        handler.removeMessages(setTWELVE);
-        handler.removeMessages(setTHIRTEEN);
-        handler.removeMessages(setFOURTEENTH);
-    }
 
     private final int setZERO = 1000;
     private final int setONE = 1001;
@@ -1503,7 +1501,7 @@ public class SmartHome extends Fragment {
     public boolean publish_String(String set_msg) {  //发送消息
         if (isConnected()) {
             //消息主题
-            String topic = "iotbroad/iot";
+            String topic = myTopic;
             //消息内容
             String msg = set_msg;
 
