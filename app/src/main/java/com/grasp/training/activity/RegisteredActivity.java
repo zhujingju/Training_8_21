@@ -75,12 +75,10 @@ public class RegisteredActivity extends BaseMqttActivity {
         phoneEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.e("qqq", "beforeTextChanged执行了....s = " + s + "---start = " + start + "---count = " + count + "---after = " + after);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("qqq", "onTextChanged执行了....s = " + s + "---start = " + start + "---count = " + count + "---before = " + before);
 //                if (s.length() > 7) {
 //                    tilUsername.setErrorEnabled(true);//设置是否打开错误提示
 //                    tilUsername.setError("用户名长度不能超过8个");//设置错误提示的信息
@@ -97,19 +95,16 @@ public class RegisteredActivity extends BaseMqttActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.e("qqq", "afterTextChanged执行了....s = " + s);
             }
         });
 
         userEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.e("qqq", "beforeTextChanged执行了....s = " + s + "---start = " + start + "---count = " + count + "---after = " + after);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("qqq", "onTextChanged执行了....s = " + s + "---start = " + start + "---count = " + count + "---before = " + before);
                 if (s.length() ==0) {
                     tilUsername.setErrorEnabled(true);//设置是否打开错误提示
                     tilUsername.setError("用户名不能为空");//设置错误提示的信息
@@ -120,7 +115,6 @@ public class RegisteredActivity extends BaseMqttActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.e("qqq", "afterTextChanged执行了....s = " + s);
             }
         });
 
@@ -163,11 +157,14 @@ public class RegisteredActivity extends BaseMqttActivity {
             @Override
             public void messageArrived(final String topic, final String message, final int qos) {
                 //推送消息到达
-
+                Log.e("messageArrived", "robot messageArrived  message= " + message);
+                if(!zc_zt){
+                    return;
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("messageArrived", "robot messageArrived  message= " + message);
+
                         try {
                             JSONObject jsonF;
                             Message me;
@@ -175,20 +172,28 @@ public class RegisteredActivity extends BaseMqttActivity {
                             String channel_0 = "";
                             int var = 0;
                             JSONObject jsonObject = new JSONObject(message);
-                            String cmd = jsonObject.getString("cmd");
-                            String mSid = jsonObject.optString("sid", "");
-                            if (!mSid.equals(sid)) {
-                                return;
-                            }
-
+                            String cmd = jsonObject.optString("cmd","");
+                            String mName = jsonObject.optString("uname", "");
+                            Log.e("messageArrived", "mName= " + mName+" name="+name);
                             switch (cmd) {
-                                case "read_ok":
-//                                    String data = jsonObject.optString("data");
-//                                    me = new Message();
-//                                    me.what = setTWO;
-//                                    me.obj = data;
-//                                    ha.sendMessage(me);
+                                case "registered_ok":
+
+                                    if (!mName.equals(name)) {
+                                        return;
+                                    }
                                     handler.sendEmptyMessage(1002);
+                                    break;
+
+                                case "registered_failed":
+                                    if (!mName.equals(name)) {
+                                        return;
+                                    }
+                                    String err = jsonObject.optString("err", "");
+                                    Message m=new Message();
+                                    m.what=1003;
+                                    m.obj=err;
+                                    handler.sendMessage(m);
+
                                     break;
 
                             }
@@ -235,6 +240,7 @@ public class RegisteredActivity extends BaseMqttActivity {
 
 
     private boolean zc_zt=false;
+    private String name="";
     @OnClick({R.id.reg_fh, R.id.registered})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -242,12 +248,26 @@ public class RegisteredActivity extends BaseMqttActivity {
                 finish();
                 break;
             case R.id.registered:
+                Log.e("qqq", getMyTopic());
+                handler.removeMessages(1001);
+                handler.removeMessages(1000);
+                handler.removeMessages(1002);
+                handler.removeMessages(1003);
+                zc_zt=false;
+                registered.setText("注册");
+                if (!isConnected()) {
+                    Toast.makeText(RegisteredActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
+                    return;
+                }else{
+                    connect();
+                }
+
                 String phone=phoneEditText.getText().toString();
-                String usre=userEditText.getText().toString();
+                name=userEditText.getText().toString();
                 String pw=pwdEditText.getText().toString();
-                if(!phone.equals("")&&!usre.equals("")&&!pw.equals("")){
+                if(!phone.equals("")&&!name.equals("")&&!pw.equals("")){
                     zc_zt=true;
-                    push(usre,pw,phone);
+                    push(name,pw,phone);
                     handler.sendEmptyMessage(1000);
                 }else{
                     Toast.makeText(RegisteredActivity.this,"不能为空",Toast.LENGTH_SHORT).show();
@@ -262,7 +282,7 @@ public class RegisteredActivity extends BaseMqttActivity {
     /**
      * 构建EasyMqttService对象
      */
-    private String myTopic ="iotbroad/iot";
+    private String myTopic ="iotbroad/iot/registered";
     @Override
     public void buildEasyMqttService() {
         setMyTopic(myTopic);
@@ -275,7 +295,7 @@ public class RegisteredActivity extends BaseMqttActivity {
                 .clientId(getIMEI(RegisteredActivity.this))
                 //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
 //                .serverUrl("tcp://broker.hivemq.com:1883")
-                .serverUrl("tcp://broker.hivemq.com:1883")
+                .serverUrl("tcp://192.168.31.60:3000")
                 //心跳包默认的发送间隔
                 .keepAliveInterval(20)
                 //构建出EasyMqttService 建议用application的context
@@ -320,6 +340,13 @@ public class RegisteredActivity extends BaseMqttActivity {
                     Toast.makeText(RegisteredActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
                     finish();
                     break;
+                case 1003:
+                    String s=msg.obj.toString();
+                    handler.removeMessages(1001);
+                    handler.removeMessages(1000);
+                    registered.setText("注册");
+                    Toast.makeText(RegisteredActivity.this,"注册失败,"+s,Toast.LENGTH_LONG).show();
+                    break;
             }
 
         }
@@ -331,5 +358,6 @@ public class RegisteredActivity extends BaseMqttActivity {
         handler.removeMessages(1001);
         handler.removeMessages(1000);
         handler.removeMessages(1002);
+        handler.removeMessages(1003);
     }
 }
