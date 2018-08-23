@@ -18,6 +18,12 @@ android {
             dimension "release"
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
     //  release
     signingConfigs {
         config {

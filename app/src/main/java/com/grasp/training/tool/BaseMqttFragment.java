@@ -96,6 +96,7 @@ public abstract class BaseMqttFragment extends Fragment {
      * 构建EasyMqttService对象
      */
     public void buildEasyMqttService() {
+        setMyTopic("iotbroad/iot");
         mqttService = new EasyMqttService.Builder()
                 //设置自动重连
                 .autoReconnect(true)
