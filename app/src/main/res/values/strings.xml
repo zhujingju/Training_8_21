@@ -51,7 +51,6 @@
     <string name="bdsc">"   本地上传"</string>
     <string name="nocz">"未找到存储卡，无法存储照片！"</string>
 
-
     <string name="connect_success">连接成功</string>
     <string name="connect_fail">连接失败</string>
     <string name="connecting">连接中……</string>

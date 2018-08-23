@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.grasp.training.R;
 
-
 public class Show {
 	public static void toast(Context con, int id) {
 		Toast.makeText(con, con.getResources().getString(id),

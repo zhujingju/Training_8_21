@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grasp.training.R;
-import com.grasp.training.activity.ControlActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;

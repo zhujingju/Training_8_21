@@ -30,7 +30,6 @@ public class MyApplication extends Application {
 
     @Override
     public void onCreate() {
-
         playerclient = new PlayerClient();
         WriteLogThread writeLogThread = new WriteLogThread(playerclient);
         writeLogThread.start();

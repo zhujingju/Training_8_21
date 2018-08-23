@@ -21,7 +21,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.view.SlideSwitch;
 import com.zs.easy.mqtt.EasyMqttService;
@@ -1517,7 +1516,7 @@ public class SmartHome extends Fragment {
         return false;
     }
 
-    private String sid = MainActivity.SID;
+    private String sid = "12345678";
 
     public void push_channel(String cmd, boolean channel) {
         try {

@@ -23,7 +23,6 @@
 
     </style>
 
-
     <style name="progress.Dialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>

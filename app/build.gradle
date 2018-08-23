@@ -12,11 +12,6 @@ android {
         flavorDimensions "release"
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
-    }
     productFlavors {
 
         tencent {

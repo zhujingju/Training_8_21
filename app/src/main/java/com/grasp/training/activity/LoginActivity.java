@@ -2,8 +2,6 @@ package com.grasp.training.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -14,15 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.Player.Core.PlayerClient;
-import com.Player.web.websocket.ClientCore;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
-import com.grasp.training.Umeye_sdk.Constants;
-import com.grasp.training.Umeye_sdk.ShowProgress;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.Utility;
+import com.grasp.training.tool.myActivityManage;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,10 +37,6 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_zc)
     TextView loginZc;
 
-    private ClientCore clientCore;
-    private PlayerClient playClient;
-    private MyApplication appMain;
-
     @Override
     public int setLayoutId() {
         return R.layout.login_activity;
@@ -58,7 +49,6 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        initPlay();
         userEditText = tilUsername.getEditText();
         pwdEditText = tilPassword.getEditText();
     }
@@ -133,36 +123,7 @@ public class LoginActivity extends BaseActivity {
 //        startBestServer();
     }
 
-    /**
-     * 新接口，获取最优P2P服务器，然后连接
-     */
-    void startBestServer() {
-        clientCore = ClientCore.getInstance();
-        int language = 1;
-        clientCore.setupHost(this, Constants.server, 0, Utility.getImsi(this),
-                language, Constants.CustomName, Utility.getVersionName(this),
-                "");
-        clientCore.getCurrentBestServer(this, handler);
-    }
 
-    private Handler handler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
-
-            super.handleMessage(msg);
-            Log.e("test", "startBestServer");
-//            ha.sendEmptyMessageDelayed(222, 500);
-            if (pd != null) {
-                pd.dismiss();
-            }
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-
-        }
-
-    };
 
 
     @OnClick({R.id.login_zc, R.id.login})
