@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 
 import com.zs.easy.mqtt.EasyMqttService;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
@@ -18,16 +19,21 @@ public abstract class BaseMqttActivity extends BaseActivity {
 
 
 
-    public EasyMqttService mqttService;
 
+    public EasyMqttService mqttService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         buildEasyMqttService();
         initIEasyMqttCallBack();
-        connect();
+//        connect();
     }
+
+    /**
+     * 连接Mqtt服务器
+     */
+    public abstract void connect() ;
     /**
      * 判断服务是否连接
      */
@@ -71,10 +77,6 @@ public abstract class BaseMqttActivity extends BaseActivity {
 
     }
 
-    /**
-     * 连接Mqtt服务器
-     */
-    public abstract void connect() ;
 
     /**
      * 构建EasyMqttService对象
@@ -98,6 +100,12 @@ public abstract class BaseMqttActivity extends BaseActivity {
     public static String getIMEI(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
         @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
+        if(imei!=null&&!imei.equals("")){
+
+        }else{
+            long timeStamp = System.currentTimeMillis();
+            imei=timeStamp+"";
+        }
 
         return imei;
     }
@@ -127,22 +135,20 @@ public abstract class BaseMqttActivity extends BaseActivity {
         disconnect();
         close();
         ha.removeMessages(1000);
+        ha.removeMessages(1001);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (isConnected()) {
-
-        } else {
+        Log.e("qqq","onStart");
             ha.sendEmptyMessageDelayed(1000, 500);
-        }
     }
 
     /**
      * 连接Mqtt服务器
      */
-    public  IEasyMqttCallBack iEasyMqttCallBack;
+    public IEasyMqttCallBack iEasyMqttCallBack;
     public abstract void initIEasyMqttCallBack();
 
     Handler ha=new Handler(){
@@ -162,7 +168,6 @@ public abstract class BaseMqttActivity extends BaseActivity {
             }
         }
     };
-
 
     private String myTopic ="iotbroad/iot";
 

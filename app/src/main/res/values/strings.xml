@@ -46,6 +46,8 @@
 
     <string name="login_tx"><u>注册</u></string>
 
+    <string name="login_RadioButton">记住账号密码</string>
+
     <string name="xgtx"> 修改头像</string>
     <string name="pzsc">"   拍张上传"</string>
     <string name="bdsc">"   本地上传"</string>

@@ -20,7 +20,7 @@ public abstract class BaseMqttFragmentActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         buildEasyMqttService();
         initIEasyMqttCallBack();
-        connect();
+//        connect();
     }
 
     /**
@@ -93,7 +93,12 @@ public abstract class BaseMqttFragmentActivity extends FragmentActivity {
     public static String getIMEI(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
         @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
+        if(imei!=null&&!imei.equals("")){
 
+        }else{
+            long timeStamp = System.currentTimeMillis();
+            imei=timeStamp+"";
+        }
         return imei;
     }
 
@@ -117,7 +122,7 @@ public abstract class BaseMqttFragmentActivity extends FragmentActivity {
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         disconnect();
         close();

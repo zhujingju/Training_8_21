@@ -23,6 +23,8 @@ import com.grasp.training.fragmet.Personal;
 import com.grasp.training.fragmet.Robot;
 import com.grasp.training.fragmet.SmartHome;
 import com.grasp.training.tool.BaseFragmentActivity;
+import com.grasp.training.tool.MyApplication;
+import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.view.MyViewPager;
 
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class MainActivity extends BaseFragmentActivity {
 //    @BindView(R.id.main_gl_frame)
 //    FrameLayout mainGlFrame;
 
-
+    public static String NameUser = "";
     public static String Mode_kx = "MODEKX";
     public static String Mode_fm = "MODEFM";
     public static String Mode_zdy = "MODEZDY";
@@ -89,6 +91,7 @@ public class MainActivity extends BaseFragmentActivity {
     @BindView(R.id.viewpager)
     MyViewPager viewPager;
 
+
     private List<Fragment> fragments;// Tab页面列表
 
     @Override
@@ -104,6 +107,8 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Override
     public void initView() {
+        NameUser=SharedPreferencesUtils.getParam(getContext(),MyApplication.NAME_USER,"").toString();
+
 
     }
 
@@ -124,6 +129,7 @@ public class MainActivity extends BaseFragmentActivity {
 //        mainYkTv.setLetterSpacing(0.2f);
 //        mainDhTv.setLetterSpacing(0.2f);
 //        initFragment2(new SmartHome());
+        NameUser= SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER,"").toString();
         fragments = new ArrayList<Fragment>();
         SmartHome smartHome = new SmartHome();
         SmartHome smartHome2 = new SmartHome();

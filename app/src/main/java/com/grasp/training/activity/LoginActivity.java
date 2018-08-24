@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.grasp.training.Umeye_sdk.ShowProgress;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.MyApplication;
+import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Utility;
 import com.grasp.training.tool.myActivityManage;
 import com.zs.easy.mqtt.EasyMqttService;
@@ -40,6 +42,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends BaseMqttActivity {
+    @BindView(R.id.login_checkbox)
+    CheckBox checkBox;
     @BindView(R.id.til_username)
     TextInputLayout tilUsername;
     @BindView(R.id.til_password)
@@ -56,6 +60,10 @@ public class LoginActivity extends BaseMqttActivity {
     private PlayerClient playClient;
     private MyApplication appMain;
 
+    private String c_name="Login_name";
+    private String c_pw="Login_pw";
+    private String c_zt="Login_zw";
+
     @Override
     public int setLayoutId() {
         return R.layout.login_activity;
@@ -71,6 +79,10 @@ public class LoginActivity extends BaseMqttActivity {
 
         userEditText = tilUsername.getEditText();
         pwdEditText = tilPassword.getEditText();
+
+        userEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_name,""));
+        pwdEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_pw,""));
+        checkBox.setChecked((Boolean) SharedPreferencesUtils.getParam(getContext(),c_zt,false));
         initPlay();
     }
 
@@ -158,14 +170,14 @@ public class LoginActivity extends BaseMqttActivity {
                 ha.removeMessages(1001);
                 ha.removeMessages(1000);
                 ha.removeMessages(1002);
+                ha.removeMessages(1003);
                 zc_zt=false;
                 login.setText("LOGIN");
-//                if (!isConnected()) {
-//                    Toast.makeText(LoginActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
-//                    return;
-//                }else{
-//                    connect();
-//                }
+                if (!isConnected()) {
+                    connect();
+                    Toast.makeText(LoginActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 name=userEditText.getText().toString();
                 pw=pwdEditText.getText().toString();
@@ -181,6 +193,7 @@ public class LoginActivity extends BaseMqttActivity {
                 break;
         }
     }
+
 
 
     /**
@@ -207,10 +220,10 @@ public class LoginActivity extends BaseMqttActivity {
 //            if (pd != null) {
 //                pd.dismiss();
 //            }
-            ha.sendEmptyMessage(1002);
+//            ha.sendEmptyMessage(1002);
 //            startActivity(new Intent(LoginActivity.this, MainActivity.class));
 //            finish();
-//            push(name,pw);
+            push(name,pw);
 
         }
 
@@ -232,7 +245,7 @@ public class LoginActivity extends BaseMqttActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("messageArrived", "robot messageArrived  message= " + message);
+                        Log.e("messageArrived", "login messageArrived  message= " + message);
                         if(!zc_zt){
                             return;
                         }
@@ -244,17 +257,34 @@ public class LoginActivity extends BaseMqttActivity {
                             int var = 0;
                             JSONObject jsonObject = new JSONObject(message);
                             String cmd = jsonObject.getString("cmd");
-
+                            String clientid = jsonObject.optString("clientid", "");
+                            if (!clientid.equals(getIMEI(getContext()))) {
+                                return;
+                            }
 
                             switch (cmd) {
                                 case "login_ok":
-                                    String mName = jsonObject.optString("uname", "");
-                                    if (!mName.equals(name)) {
-                                        return;
+                                    boolean zt= checkBox.isChecked();
+                                    SharedPreferencesUtils.setParam(getContext(),c_zt,zt);
+                                    if(zt){
+                                        SharedPreferencesUtils.setParam(getContext(),c_name,name);
+                                        SharedPreferencesUtils.setParam(getContext(),c_pw,pw);
+
+                                    }else{
+                                        SharedPreferencesUtils.setParam(getContext(),c_name,"");
+                                        SharedPreferencesUtils.setParam(getContext(),c_pw,"");
                                     }
+
+                                    String mName = jsonObject.optString("uname", "");
+                                    SharedPreferencesUtils.setParam(getContext(),MyApplication.NAME_USER,mName);
                                     ha.sendEmptyMessage(1002);
-                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                    finish();
+                                    break;
+                                case "login_failed":
+                                    String err = jsonObject.optString("err", "");
+                                    Message m=new Message();
+                                    m.what=1003;
+                                    m.obj=err;
+                                    ha.sendMessage(m);
                                     break;
 
                             }
@@ -331,6 +361,7 @@ public class LoginActivity extends BaseMqttActivity {
             jsonObject.put("cmd", "login");
             jsonObject.put("uname", uname);
             jsonObject.put("pwd", pwd);
+            jsonObject.put("clientid", getIMEI(getContext()));
             String js = jsonObject.toString();
             publish_String(js);
         } catch (JSONException e) {
@@ -358,10 +389,19 @@ public class LoginActivity extends BaseMqttActivity {
                 case 1002:
                     ha.removeMessages(1001);
                     ha.removeMessages(1000);
+                    ha.removeMessages(1003);
                     login.setText("LOGIN");
                     Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
+                    break;
+                case 1003:
+                    ha.removeMessages(1001);
+                    ha.removeMessages(1000);
+                    ha.removeMessages(1002);
+                    login.setText("LOGIN");
+                    String s=msg.obj.toString();
+                    Toast.makeText(LoginActivity.this,"登录失败"+s,Toast.LENGTH_SHORT).show();
                     break;
             }
 
@@ -374,5 +414,6 @@ public class LoginActivity extends BaseMqttActivity {
         ha.removeMessages(1001);
         ha.removeMessages(1000);
         ha.removeMessages(1002);
+        ha.removeMessages(1003);
     }
 }

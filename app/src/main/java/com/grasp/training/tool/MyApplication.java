@@ -1,8 +1,13 @@
 package com.grasp.training.tool;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Message;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.Player.Core.PlayerClient;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -14,6 +19,13 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.zs.easy.mqtt.EasyMqttService;
+import com.zs.easy.mqtt.IEasyMqttCallBack;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by zhujingju on 2017/8/17.
@@ -26,8 +38,9 @@ public class MyApplication extends Application {
     public static Context applicationContext;
     public static Application application;
     public final  static String NAME_TX="zjj_Name_TX";
+    public final  static String NAME_USER="zjj_Name_USER";
     private PlayerClient playerclient;
-
+    public static EasyMqttService mqttService;
     @Override
     public void onCreate() {
         playerclient = new PlayerClient();
@@ -38,6 +51,7 @@ public class MyApplication extends Application {
         mContext = this;
         applicationContext = getApplicationContext();
         initImageLoader(mContext);
+
     }
 
     public synchronized PlayerClient getPlayerclient() {
@@ -117,5 +131,9 @@ public class MyApplication extends Application {
         //imageLoader.init(ImageLoaderConfiguration.createDefault(context));
         imageLoader.init(iconfig);
     }
+
+
+
+
 
 }

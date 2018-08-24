@@ -100,7 +100,7 @@ public class ControlActivity extends BaseActivity {
         SharedPreferencesUtils.setParam(context, MainActivity.MainSB, "zw2017060802");
         initePlayCore();
         buildEasyMqttService();
-        connect();
+//        connect();
     }
 
     @Override
@@ -856,11 +856,7 @@ public class ControlActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (isConnected()) {
-
-        } else {
             ha.sendEmptyMessageDelayed(1000, 500);
-        }
     }
 
 

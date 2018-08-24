@@ -222,7 +222,7 @@ public class SmartHome extends Fragment {
         } else {
             ha.sendEmptyMessageDelayed(setONE, 1000);
         }
-
+            ha.sendEmptyMessageDelayed(setONE9, 500);
 
     }
 
@@ -511,6 +511,7 @@ public class SmartHome extends Fragment {
         handler.removeMessages(2000);
         handler.removeMessages(setZERO);
         handler.removeMessages(setONE);
+        handler.removeMessages(setONE9);
         handler.removeMessages(setTWO);
         handler.removeMessages(setTHREE);
         handler.removeMessages(setFOUR);
@@ -1004,9 +1005,10 @@ public class SmartHome extends Fragment {
     }
 
 
-
+    private final int setONE9 = 999;
     private final int setZERO = 1000;
     private final int setONE = 1001;
+
     private final int setTWO = 1002;
     private final int setTHREE = 1003;
     private final int setFOUR = 1004;
@@ -1032,6 +1034,14 @@ public class SmartHome extends Fragment {
             }
             JSONObject jsonObject;
             switch (msg.what) {
+                case setONE9:
+                    if (isConnected()) {
+
+                    } else {
+                        mqttService.connect(iEasyMqttCallBack);
+                        ha.sendEmptyMessageDelayed(1000, 3000);
+                    }
+                    break;
 
                 case setZERO:  //自动刷新
                     ha.sendEmptyMessageDelayed(setONE, 0);

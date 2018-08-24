@@ -157,7 +157,7 @@ public class RegisteredActivity extends BaseMqttActivity {
             @Override
             public void messageArrived(final String topic, final String message, final int qos) {
                 //推送消息到达
-                Log.e("messageArrived", "robot messageArrived  message= " + message);
+                Log.e("messageArrived", "regi messageArrived  message= " + message);
                 if(!zc_zt){
                     return;
                 }
@@ -174,20 +174,17 @@ public class RegisteredActivity extends BaseMqttActivity {
                             JSONObject jsonObject = new JSONObject(message);
                             String cmd = jsonObject.optString("cmd","");
                             String mName = jsonObject.optString("uname", "");
-                            Log.e("messageArrived", "mName= " + mName+" name="+name);
+                            String clientid = jsonObject.optString("clientid", "");
+
+                            if (!clientid.equals(getIMEI(getContext()))) {
+                                return;
+                            }
                             switch (cmd) {
                                 case "registered_ok":
-
-                                    if (!mName.equals(name)) {
-                                        return;
-                                    }
                                     handler.sendEmptyMessage(1002);
                                     break;
 
                                 case "registered_failed":
-                                    if (!mName.equals(name)) {
-                                        return;
-                                    }
                                     String err = jsonObject.optString("err", "");
                                     Message m=new Message();
                                     m.what=1003;
@@ -256,10 +253,9 @@ public class RegisteredActivity extends BaseMqttActivity {
                 zc_zt=false;
                 registered.setText("注册");
                 if (!isConnected()) {
+                    connect();
                     Toast.makeText(RegisteredActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
                     return;
-                }else{
-                    connect();
                 }
 
                 String phone=phoneEditText.getText().toString();
@@ -312,6 +308,7 @@ public class RegisteredActivity extends BaseMqttActivity {
             jsonObject.put("uname", uname);
             jsonObject.put("pwd", pwd);
             jsonObject.put("phone", phone);
+            jsonObject.put("clientid", getIMEI(getContext()));
             String js = jsonObject.toString();
             publish_String(js);
         } catch (JSONException e) {
@@ -336,6 +333,7 @@ public class RegisteredActivity extends BaseMqttActivity {
                 case 1002:
                     handler.removeMessages(1001);
                     handler.removeMessages(1000);
+                    handler.removeMessages(1003);
                     registered.setText("注册");
                     Toast.makeText(RegisteredActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
                     finish();
@@ -344,6 +342,7 @@ public class RegisteredActivity extends BaseMqttActivity {
                     String s=msg.obj.toString();
                     handler.removeMessages(1001);
                     handler.removeMessages(1000);
+                    handler.removeMessages(1002);
                     registered.setText("注册");
                     Toast.makeText(RegisteredActivity.this,"注册失败,"+s,Toast.LENGTH_LONG).show();
                     break;

@@ -64,6 +64,16 @@
                     android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/login_checkbox"
+                android:layout_marginLeft="@dimen/dip_10.0"
+                android:textSize="@dimen/dip_12.0"
+                android:textColor="@color/white"
+                android:layout_marginTop="@dimen/dip_10.0"
+                android:text="@string/login_RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dip_20.0" />
+
             <TextView
                 android:id="@+id/login_zc"
                 android:layout_width="wrap_content"

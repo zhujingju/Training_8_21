@@ -30,7 +30,7 @@ public abstract class BaseMqttFragment extends Fragment {
         context = getActivity();
         buildEasyMqttService();
         initIEasyMqttCallBack();
-        connect();
+//        connect();
         init(view);
         return view;
     }
@@ -115,7 +115,12 @@ public abstract class BaseMqttFragment extends Fragment {
     public static String getIMEI(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
         @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
+        if(imei!=null&&!imei.equals("")){
 
+        }else{
+            long timeStamp = System.currentTimeMillis();
+            imei=timeStamp+"";
+        }
         return imei;
     }
 
@@ -145,11 +150,14 @@ public abstract class BaseMqttFragment extends Fragment {
         disconnect();
         close();
         ha.removeMessages(1000);
+        ha.removeMessages(1001);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+
         if (isConnected()) {
 
         } else {
@@ -176,6 +184,7 @@ public abstract class BaseMqttFragment extends Fragment {
                     }
 
                     break;
+
             }
         }
     };
