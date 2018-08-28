@@ -86,4 +86,41 @@
     <string name="srmm8">绑定成功</string>
     <string name="srmm9">连接超时</string>
 
+
+    <string name="head_xl">下拉刷新</string>
+    <string name="head_xl2">刷新完毕</string>
+    <string name="head_sc">上次更新</string>
+    <string name="head_zz">正在刷新</string>
+    <string name="head_wb">下拉刷新已经加载完毕... </string>
+    <string name="news">最近更新:</string>
+    <string name="news2">松开刷新</string>
+    <string name="news3">载入中...</string>
+    <string name="news4">查看更多</string>
+    <string name="news5">到头了</string>
+    <string name="aaa000">#000000</string>
+
+    <string name="srmm">请输入密码：</string>
+    <string name="srmm1">密码错误</string>
+    <string name="srmm2">添加成功</string>
+    <string name="srmm3">请在同一网络下查找机器人...</string>
+    <string name="qt">其他...</string>
+    <string name="alert_dialog_ok">确定</string>
+    <string name="alert_dialog_cancel">取消</string>
+    <string name="shuru2">是否删除</string>
+    <string name="progress_per3">删除中...</string>
+    <string name="progress_pergood">删除成功</string>
+    <string name="nodataerro">无数据</string>
+    <string name="searching_device">正在搜索...</string>
+    <string name="searching_device2">添加设备中...</string>
+    <string name="searching_device3">正在登陆</string>
+    <string name="qqqq">请去个人设置里绑定机器人</string>
+    <string name="qqqq2">请输入机器人的信息</string>
+    <string name="add_main_gl1">添加设备</string>
+    <string name="name2">设备编号:</string>
+    <string name="pass2">设备密码:</string>
+    <string name="ybd">该设备已绑定</string>
+    <string name="name_err">名字不能为空</string>
+    <string name="kong_err">不能为空</string>
+    <string name="robote_list">查找机器人</string>
+
 </resources>

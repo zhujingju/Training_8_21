@@ -30,7 +30,7 @@ public abstract class BaseMqttFragment extends Fragment {
         context = getActivity();
         buildEasyMqttService();
         initIEasyMqttCallBack();
-//        connect();
+        connect();
         init(view);
         return view;
     }
@@ -158,11 +158,11 @@ public abstract class BaseMqttFragment extends Fragment {
         super.onStart();
 
 
-        if (isConnected()) {
-
-        } else {
-            ha.sendEmptyMessageDelayed(1000, 500);
-        }
+//        if (isConnected()) {
+//
+//        } else {
+//            ha.sendEmptyMessageDelayed(1000, 500);
+//        }
     }
     /**
      * 连接Mqtt服务器

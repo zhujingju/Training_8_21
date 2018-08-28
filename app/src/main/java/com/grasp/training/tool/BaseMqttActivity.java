@@ -27,7 +27,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         buildEasyMqttService();
         initIEasyMqttCallBack();
-//        connect();
+        connect();
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         Log.e("qqq","onStart");
-            ha.sendEmptyMessageDelayed(1000, 500);
+//            ha.sendEmptyMessageDelayed(1000, 500);
     }
 
     /**

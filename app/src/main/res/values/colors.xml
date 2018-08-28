@@ -9,11 +9,14 @@
     <color name="c_f0f0f0">#f0f0f0</color>
     <color name="c_6793e4">#2d4a8b</color>
     <color name="hui">#6793e4</color>
-    <color name="hu2">#4cffffff</color>
+    <color name="hu2">#2d4a8b</color>
     <color name="c_80ffffff">#80ffffff</color>
     <color name="c_000000">#000000</color>
     <color name="c_09000000">#90000000</color>
     <color name="c_33000000">#33000000</color>
+    <color name="c_9fffffff">#33ffffff</color>
+
+    <color name="c_666666">#666666</color>
 
     <drawable name="bai1" >#ffffff</drawable>
     <drawable name="bai2" >#4cffffff</drawable>
@@ -21,5 +24,14 @@
     <drawable name="c_layout1" >#00000000</drawable>
     <drawable name="c_layout2" >#09000000</drawable>
 
+    <drawable name="c3">#c6c6c6</drawable>
+    <drawable name="c2">#2b2b2b</drawable>
+    <drawable name="c1">#ff5913</drawable>
 
+
+    <color name="tab_title_normal_color">#a2a2a2</color>
+    <color name="tab_title_pressed_color">#2b2b2b</color>
+
+    <color name="c_dfdfdf">#dfdfdf</color>
+    c_dfdfdf
 </resources>

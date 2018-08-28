@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/fu_bg"
+        xmlns:fxxx="http://schemas.android.com/apk/res-auto"
+        >
+        <com.grasp.training.view.Head_Hurdle_view
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_48.0"
+            fxxx:myColor="@color/tab_title_pressed_color"
+            fxxx:myString="@string/robote_list"
+            />
+    <!--<com.grasp.mycontrol.swipemenulistview.SwipeMenuListView-->
+        <!--android:id="@+id/smlist"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:cacheColorHint="#00000000"-->
+        <!--android:divider="#0000"-->
+        <!--android:background="@color/bai"-->
+        <!--android:listSelector="#00000000"-->
+        <!--/>-->
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_30.0"
+
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/srmm3"
+            android:textSize="12sp"
+            android:layout_marginBottom="@dimen/dip_5.0"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dip_15.0"
+            android:textColor="@color/c_666666"
+            />
+
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_1.0"
+        android:background="@color/c_33000000"
+        />
+    <com.grasp.training.swipemenulistview.SwipeMenuListView
+        android:id="@+id/lvLive"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:cacheColorHint="#00000000"
+        android:divider="#0000"
+        android:background="@drawable/fu_bg"
+         />
+
+    </LinearLayout>
+</LinearLayout>

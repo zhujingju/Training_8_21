@@ -132,11 +132,11 @@ public abstract class BaseMqttFragmentActivity extends FragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (isConnected()) {
-
-        } else {
-            ha.sendEmptyMessageDelayed(1000, 500);
-        }
+//        if (isConnected()) {
+//
+//        } else {
+//            ha.sendEmptyMessageDelayed(1000, 500);
+//        }
     }
 
     /**

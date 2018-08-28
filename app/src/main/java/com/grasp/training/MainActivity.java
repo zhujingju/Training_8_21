@@ -310,6 +310,7 @@ public class MainActivity extends BaseFragmentActivity {
             //这个方法是重点
             super.setPrimaryItem(container, position, object);
             fragmentsList.get(position);
+            setLin(position);
         }
 
         @Override
@@ -360,6 +361,7 @@ public class MainActivity extends BaseFragmentActivity {
         public void onPageSelected(int i) {
             // TODO Auto-generated method stub
 //            SetCurSelText(i);
+
         }
     }
 

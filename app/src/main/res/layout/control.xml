@@ -131,7 +131,16 @@
 
 
 
-
+        <TextView
+            android:id="@+id/control_bs"
+            android:visibility="gone"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_14.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ping"
+            android:layout_alignParentBottom="true"
+            />
 
     </RelativeLayout>
 

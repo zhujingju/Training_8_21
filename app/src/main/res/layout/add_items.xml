@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0000"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0">
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dip_15.0"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="+添加机器人"
+
+
+            />
+        <!--<LinearLayout-->
+            <!--android:id="@+id/sw_item_last"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dip_1.0"-->
+            <!--android:background="@color/c_33000000"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;</LinearLayout>-->
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

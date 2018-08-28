@@ -10,11 +10,33 @@
         >
 
         <Button
+            android:visibility="gone"
             android:id="@+id/jqr"
             android:layout_width="200dp"
             android:layout_height="100dp"
             android:text="机器人"
             />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/robot_add"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:text="添加"
+            />
+
+        <com.grasp.training.swipemenulistview.SwipeMenuListView
+            android:id="@+id/robot_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="#00000000"
+            android:divider="#0000"
+            android:background="#0000"
+            android:listSelector="#00000000">
+
+
+        </com.grasp.training.swipemenulistview.SwipeMenuListView>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

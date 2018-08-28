@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fu_bg"
+    >
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0"
+
+        >
+        <TextView
+            android:id="@+id/r_a_qx"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_dialog_cancel"
+            android:textColor="@drawable/raz2"
+            android:textSize="@dimen/dip_20.0"
+            android:layout_marginLeft="@dimen/dip_5.0"
+            android:clickable="true"
+            />
+        <TextView
+            android:id="@+id/r_a_qd"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_dialog_ok"
+            android:textColor="@drawable/raz1"
+            android:textSize="@dimen/dip_20.0"
+            android:layout_marginRight="@dimen/dip_5.0"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            />
+        <TextView
+            android:id="@+id/r_a_zhong"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dip_18.0"
+            android:textColor="@color/c_000000"
+            android:text="@string/add_main_gl1"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_7.5"
+        android:background="@drawable/zhu_jianbian"
+        ></LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_0.5"
+        android:background="@color/c_dfdfdf"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        >
+        <TextView
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
+            android:layout_gravity="center_vertical"
+            android:text="@string/name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
+            android:id="@+id/r_a_name"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@null"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/c_dfdfdf"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        >
+        <TextView
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
+            android:layout_gravity="center_vertical"
+            android:text="@string/pass2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:singleLine="true"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
+            android:id="@+id/r_a_pass"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@null"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/c_dfdfdf"
+        />
+</LinearLayout>

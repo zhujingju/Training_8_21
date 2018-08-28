@@ -222,7 +222,7 @@ public class SmartHome extends Fragment {
         } else {
             ha.sendEmptyMessageDelayed(setONE, 1000);
         }
-            ha.sendEmptyMessageDelayed(setONE9, 500);
+//            ha.sendEmptyMessageDelayed(setONE9, 500);
 
     }
 
@@ -357,7 +357,7 @@ public class SmartHome extends Fragment {
 //                switSx.setState(false);
 //                smartTvSx.setText(getString(R.string.smart2_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("training_mode", true);
@@ -368,7 +368,7 @@ public class SmartHome extends Fragment {
 //                switSx.setState(true);
 //                smartTvSx.setText(getString(R.string.smart2));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
 
@@ -381,7 +381,7 @@ public class SmartHome extends Fragment {
 //                switKt.setState(true);
 //                smartTvKt.setText(getString(R.string.smart4_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("air_conditioning", true);
@@ -392,7 +392,7 @@ public class SmartHome extends Fragment {
 //                switKt.setState(false);
 //                smartTvKt.setText(getString(R.string.smart4));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("air_conditioning", false);
@@ -404,7 +404,7 @@ public class SmartHome extends Fragment {
 //                switJhq.setState(true);
 //                smartTvJhq.setText(getString(R.string.smart7));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("filter", true);
@@ -415,7 +415,7 @@ public class SmartHome extends Fragment {
 //                switJhq.setState(false);
 //                smartTvJhq.setText(getString(R.string.smart7_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("filter", false);
@@ -429,7 +429,7 @@ public class SmartHome extends Fragment {
 //                switCl.setState(true);
 //                smartTvCl.setText(getString(R.string.smart11_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("window", true);
@@ -440,7 +440,7 @@ public class SmartHome extends Fragment {
 //                switCl.setState(false);
 //                smartTvCl.setText(getString(R.string.smart11));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("window", false);
@@ -452,7 +452,7 @@ public class SmartHome extends Fragment {
 //                switByc.setState(true);
 //                smartTvByc.setText(getString(R.string.smart13));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("blinds", true);
@@ -463,7 +463,7 @@ public class SmartHome extends Fragment {
 //                switByc.setState(false);
 //                smartTvByc.setText(getString(R.string.smart13_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("blinds", false);
@@ -475,7 +475,7 @@ public class SmartHome extends Fragment {
 //                switDd.setState(true);
 //                smartTvDd.setText(getString(R.string.smart15));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("electric_light", true);
@@ -486,7 +486,7 @@ public class SmartHome extends Fragment {
 //                switDd.setState(false);
 //                smartTvDd.setText(getString(R.string.smart15_no));
                 if (!isConnected()) {
-                    mqttService.connect(iEasyMqttCallBack);
+//                    mqttService.connect(iEasyMqttCallBack);
                     return;
                 }
                 push_channel("electric_light", false);
@@ -1038,7 +1038,7 @@ public class SmartHome extends Fragment {
                     if (isConnected()) {
 
                     } else {
-                        mqttService.connect(iEasyMqttCallBack);
+//                        mqttService.connect(iEasyMqttCallBack);
                         ha.sendEmptyMessageDelayed(1000, 3000);
                     }
                     break;
@@ -1070,7 +1070,7 @@ public class SmartHome extends Fragment {
 
 
                     } else {
-                        mqttService.connect(iEasyMqttCallBack);
+//                        mqttService.connect(iEasyMqttCallBack);
                         ha.sendEmptyMessageDelayed(setONE, 3000);
                     }
                     break;

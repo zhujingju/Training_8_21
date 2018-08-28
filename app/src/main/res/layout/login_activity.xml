@@ -11,6 +11,7 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/login_im"
             android:layout_marginTop="@dimen/dip_80.0"
             android:layout_centerHorizontal="true"
             android:background="@drawable/logo"

@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.MyApplication;
@@ -59,6 +60,8 @@ public class Personal extends Fragment {
         context = getActivity();
 
         unbinder = ButterKnife.bind(this, view);
+
+
         String userPic = "";
         userPic = (String) SharedPreferencesUtils.getParam(context, MyApplication.NAME_TX, "");
         if (!TextUtils.isEmpty(userPic)) {
@@ -68,6 +71,12 @@ public class Personal extends Fragment {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.personalcenter_tabbar_portrait_selected, personalTx, MyApplication.options2);
         }
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        personalTvName.setText(MainActivity.NameUser);
     }
 
     @Override

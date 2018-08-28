@@ -158,15 +158,19 @@ public class LoginActivity extends BaseMqttActivity {
     private String name ="";
     private String pw="";
     private boolean zc_zt=false;
-    @OnClick({R.id.login_zc, R.id.login})
+    @OnClick({R.id.login_zc, R.id.login,R.id.login_im})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.login_im:
+//                ha.sendEmptyMessageDelayed(1002,0);
+                startBestServer2();
+                break;
             case R.id.login_zc:
                 startActivity(new Intent(LoginActivity.this, RegisteredActivity.class));
                 break;
             case R.id.login:
 
-                Log.e("qqq", getMyTopic());
+                Log.e("qqq", getMyTopic()+" "+isConnected());
                 ha.removeMessages(1001);
                 ha.removeMessages(1000);
                 ha.removeMessages(1002);
@@ -174,7 +178,7 @@ public class LoginActivity extends BaseMqttActivity {
                 zc_zt=false;
                 login.setText("LOGIN");
                 if (!isConnected()) {
-                    connect();
+////                    connect();
                     Toast.makeText(LoginActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -229,6 +233,30 @@ public class LoginActivity extends BaseMqttActivity {
 
     };
 
+
+    void startBestServer2() {
+        clientCore = ClientCore.getInstance();
+        int language = 1;
+        clientCore.setupHost(this, Constants.server, 0, Utility.getImsi(this),
+                language, Constants.CustomName, Utility.getVersionName(this),
+                "");
+        clientCore.getCurrentBestServer(this, handler2);
+    }
+
+    private Handler handler2 = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+
+            super.handleMessage(msg);
+            Log.e("test", "startBestServer");
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+
+        }
+
+    };
 
     @Override
     public void connect() {
@@ -344,8 +372,8 @@ public class LoginActivity extends BaseMqttActivity {
                 //唯一标示 保证每个设备都唯一就可以 建议 imei
                 .clientId(getIMEI(LoginActivity.this))
                 //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
-//                .serverUrl("tcp://broker.hivemq.com:1883")
-                .serverUrl("tcp://192.168.31.60:3000")
+                .serverUrl("tcp://broker.hivemq.com:1883")
+//                .serverUrl("tcp://192.168.31.60:3000")
                 //心跳包默认的发送间隔
                 .keepAliveInterval(20)
                 //构建出EasyMqttService 建议用application的context
