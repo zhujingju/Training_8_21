@@ -258,127 +258,11 @@ public class LoginActivity extends BaseMqttActivity {
 
     };
 
-    @Override
-    public void connect() {
-        mqttService.connect(iEasyMqttCallBack);
-    }
-
-    @Override
-    public void initIEasyMqttCallBack() {
-        iEasyMqttCallBack = new IEasyMqttCallBack() {
-            @Override
-            public void messageArrived(final String topic, final String message, final int qos) {
-                //推送消息到达
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("messageArrived", "login messageArrived  message= " + message);
-                        if(!zc_zt){
-                            return;
-                        }
-                        try {
-                            JSONObject jsonF;
-                            Message me;
-                            String js = "";
-                            String channel_0 = "";
-                            int var = 0;
-                            JSONObject jsonObject = new JSONObject(message);
-                            String cmd = jsonObject.getString("cmd");
-                            String clientid = jsonObject.optString("clientid", "");
-                            if (!clientid.equals(getIMEI(getContext()))) {
-                                return;
-                            }
-
-                            switch (cmd) {
-                                case "login_ok":
-                                    boolean zt= checkBox.isChecked();
-                                    SharedPreferencesUtils.setParam(getContext(),c_zt,zt);
-                                    if(zt){
-                                        SharedPreferencesUtils.setParam(getContext(),c_name,name);
-                                        SharedPreferencesUtils.setParam(getContext(),c_pw,pw);
-
-                                    }else{
-                                        SharedPreferencesUtils.setParam(getContext(),c_name,"");
-                                        SharedPreferencesUtils.setParam(getContext(),c_pw,"");
-                                    }
-
-                                    String mName = jsonObject.optString("uname", "");
-                                    SharedPreferencesUtils.setParam(getContext(),MyApplication.NAME_USER,mName);
-                                    ha.sendEmptyMessage(1002);
-                                    break;
-                                case "login_failed":
-                                    String err = jsonObject.optString("err", "");
-                                    Message m=new Message();
-                                    m.what=1003;
-                                    m.obj=err;
-                                    ha.sendMessage(m);
-                                    break;
-
-                            }
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
 
-
-            }
-
-            @Override
-            public void connectionLost(Throwable arg0) {
-                //连接断开
-                Log.e("qqq", "connectionLost");
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken arg0) {
-                //发送成功
-                Log.e("qqq", "deliveryComplete");
-
-            }
-
-            @Override
-            public void connectSuccess(IMqttToken arg0) {
-                //连接成功
-                Log.e("qqq", "connectSuccess");
-                if (isConnected()) {
-                    subscribe();
-                }
-            }
-
-            @Override
-            public void connectFailed(IMqttToken arg0, Throwable arg1) {
-                //连接失败
-                Log.e("qqq", "connectFailed");
-            }
-        };
-    }
-
-    /**
-     * 构建EasyMqttService对象
-     */
     private String myTopic ="iotbroad/iot/login";
-    @Override
-    public void buildEasyMqttService() {
-        setMyTopic(myTopic);
-        mqttService = new EasyMqttService.Builder()
-                //设置自动重连
-                .autoReconnect(true)
-                //设置不清除回话session 可收到服务器之前发出的推送消息
-                .cleanSession(false)
-                //唯一标示 保证每个设备都唯一就可以 建议 imei
-                .clientId(getIMEI(LoginActivity.this))
-                //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
-                .serverUrl("tcp://broker.hivemq.com:1883")
-//                .serverUrl("tcp://192.168.31.60:3000")
-                //心跳包默认的发送间隔
-                .keepAliveInterval(20)
-                //构建出EasyMqttService 建议用application的context
-                .bulid(this.getApplicationContext());
-    }
+
 
     public void push( String uname,String pwd) {
 
@@ -435,6 +319,68 @@ public class LoginActivity extends BaseMqttActivity {
 
         }
     };
+
+    @Override
+    public String  getMyTopic() {
+        return myTopic;
+    }
+
+    @Override
+    public void MyMessageArrived(final String message) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("messageArrived", "login messageArrived  message= " + message);
+                if(!zc_zt){
+                    return;
+                }
+                try {
+                    JSONObject jsonF;
+                    Message me;
+                    String js = "";
+                    String channel_0 = "";
+                    int var = 0;
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.getString("cmd");
+                    String clientid = jsonObject.optString("clientid", "");
+                    if (!clientid.equals(getIMEI(getContext()))) {
+                        return;
+                    }
+
+                    switch (cmd) {
+                        case "login_ok":
+                            boolean zt= checkBox.isChecked();
+                            SharedPreferencesUtils.setParam(getContext(),c_zt,zt);
+                            if(zt){
+                                SharedPreferencesUtils.setParam(getContext(),c_name,name);
+                                SharedPreferencesUtils.setParam(getContext(),c_pw,pw);
+
+                            }else{
+                                SharedPreferencesUtils.setParam(getContext(),c_name,"");
+                                SharedPreferencesUtils.setParam(getContext(),c_pw,"");
+                            }
+
+                            String mName = jsonObject.optString("uname", "");
+                            SharedPreferencesUtils.setParam(getContext(),MyApplication.NAME_USER,mName);
+                            ha.sendEmptyMessage(1002);
+                            break;
+                        case "login_failed":
+                            String err = jsonObject.optString("err", "");
+                            Message m=new Message();
+                            m.what=1003;
+                            m.obj=err;
+                            ha.sendMessage(m);
+                            break;
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
     @Override
     protected void onDestroy() {

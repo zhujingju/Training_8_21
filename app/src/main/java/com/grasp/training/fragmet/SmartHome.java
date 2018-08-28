@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.tool.BaseMqttFragment;
 import com.grasp.training.view.SlideSwitch;
 import com.zs.easy.mqtt.EasyMqttService;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
@@ -42,7 +43,7 @@ import butterknife.Unbinder;
  * Created by zhujingju on 2018/5/30.
  */
 
-public class SmartHome extends Fragment {
+public class SmartHome extends BaseMqttFragment {
 
 
     @BindView(R.id.smart_tv_bfb)
@@ -71,7 +72,6 @@ public class SmartHome extends Fragment {
     LinearLayout smartLayout5;
     @BindView(R.id.smart_layout6)
     RelativeLayout smartLayout6;
-    private EasyMqttService mqttService;
     /**
      * 回调时使用
      */
@@ -147,9 +147,14 @@ public class SmartHome extends Fragment {
 
     private String myTopic ="iotbroad/iot";
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.smart_home, container, false);
+    public int getInflate() {
+        return R.layout.smart_home;
+    }
+
+    @Override
+    public void init(View view) {
         context = getActivity();
 
         unbinder = ButterKnife.bind(this, view);
@@ -162,9 +167,6 @@ public class SmartHome extends Fragment {
         smartTvSd2.setTypeface(tf);
         smartTvKtwd.setVisibility(View.INVISIBLE);
         initView();
-        buildEasyMqttService();
-        connect();
-
         smartHomePro.setVisibility(View.VISIBLE);
         switSx.setSlideable(false);
         switKt.setSlideable(false);
@@ -211,17 +213,278 @@ public class SmartHome extends Fragment {
         smartLayout5.setVisibility(View.GONE);
         smartLayout6.setVisibility(View.GONE);
         ha.sendEmptyMessageDelayed(setZERO, 5 * 60 * 1000);  //5分钟获取一次
-        return view;
+    }
+
+    @Override
+    public String  getMyTopic() {
+        return myTopic;
+    }
+
+    @Override
+    public void MyMessageArrived(final String message) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("qqq", "messageArrived  message= " + message);
+                try {
+                    JSONObject jsonF;
+                    Message me;
+                    String js = "";
+                    String channel_0 = "";
+                    int var = 0;
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.getString("cmd");
+                    String mSid = jsonObject.optString("sid", "");
+                    if (!mSid.equals(sid)) {
+                        return;
+                    }
+
+                    switch (cmd) {
+                        case "read_ok":
+                            String data = jsonObject.optString("data");
+                            me = new Message();
+                            me.what = setTWO;
+                            me.obj = data;
+                            ha.sendMessage(me);
+                            break;
+
+                        case "training_mode_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setTHREE;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "air_conditioning_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setFOUR;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "air_conditioning_temperature_ok":
+                            var = jsonObject.optInt("var");
+                            me = new Message();
+                            me.what = setFIVE;
+                            me.arg1 = var;
+                            ha.sendMessage(me);
+                            break;
+                        case "air_conditioning_windSpeed_ok":
+                            var = jsonObject.optInt("var");
+                            me = new Message();
+                            me.what = setSIX;
+                            me.arg1 = var;
+                            ha.sendMessage(me);
+                            break;
+
+                        case "filter_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setSEVEN;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+
+                            break;
+                        case "filter_mode_ok":
+                            channel_0 = jsonObject.getString("channel_0");
+                            me = new Message();
+                            me.what = setEIGHT;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "filter_cycle_n_ok":
+                            channel_0 = jsonObject.getString("channel_0");
+                            me = new Message();
+                            me.what = setNINE;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "filter_cycle_w_ok":
+                            channel_0 = jsonObject.getString("channel_0");
+                            me = new Message();
+                            me.what = setNINE2;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "window_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setTEN;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+                        case "blinds_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setELEVEN;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+
+                        case "blinds_percentage_ok":
+                            var = jsonObject.optInt("var");
+                            me = new Message();
+                            me.what = setTHIRTEEN;
+                            me.arg1 = var;
+                            ha.sendMessage(me);
+                            break;
+
+                        case "electric_light_ok":
+                            channel_0 = jsonObject.optString("channel_0");
+                            me = new Message();
+                            me.what = setTWELVE;
+                            me.obj = channel_0;
+                            ha.sendMessage(me);
+                            break;
+
+                        case "dht12_ok":
+                            String dht = jsonObject.optString("data");
+                            me = new Message();
+                            me.what = setFOURTEENTH;
+                            me.obj = dht;
+                            ha.sendMessage(me);
+                            break;
+
+//                        case "filter":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "filter_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "filter_mode":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "filter_mode_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "filter_cycle_n":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "filter_cycle_n_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "filter_cycle_w":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "filter_cycle_w_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "window":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "window_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "blinds_percentage":
+//                            var = jsonObject.getInt("var");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "blinds_percentage_ok");
+//                            jsonF.put("var", var);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//
+//                        case "blinds":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "blinds_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "electric_light":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "electric_light_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//
+//                        case "air_conditioning":
+//                            channel_0 = jsonObject.optString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "air_conditioning_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "air_conditioning_temperature":
+//                            var = jsonObject.getInt("var");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "air_conditioning_temperature_ok");
+//                            jsonF.put("var", var);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "air_conditioning_windSpeed":
+//                            var = jsonObject.getInt("var");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "air_conditioning_windSpeed_ok");
+//                            jsonF.put("var", var);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//
+//
+//                        case "training_mode":
+//                            channel_0 = jsonObject.getString("channel_0");
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "training_mode_ok");
+//                            jsonF.put("channel_0", channel_0);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+//                        case "read":
+//                            jsonF = new JSONObject();
+//                            jsonF.put("cmd", "read_ok");
+//                            JSONObject jsonFs = new JSONObject();
+//                            jsonFs.put("temperature", "21");
+//                            jsonFs.put("humidity", "26");
+//                            jsonFs.put("pm2.5", "29");
+//                            jsonFs.put("training_mode", "on");
+//                            jsonFs.put("air_conditioning", "off");
+//                            jsonFs.put("air_conditioning_temperature", 20);
+//                            jsonFs.put("air_conditioning_windSpeed", 1);
+//                            jsonFs.put("filter", "off");
+//                            jsonFs.put("filter_mode", "off");
+//                            jsonFs.put("filter_cycle_n", "off");
+//                            jsonFs.put("filter_cycle_w", "off");
+//                            jsonFs.put("window", "on");
+//                            jsonFs.put("blinds", "off");
+//                            jsonFs.put("electric_light", "off");
+//                            jsonFs.put("blinds_percentage", 20);
+//
+//
+//                            jsonF.put("data", jsonFs);
+//                            js = jsonF.toString();
+//                            publish_String(js);
+//                            break;
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (isConnected()) {
-
-        } else {
-            ha.sendEmptyMessageDelayed(setONE, 1000);
-        }
+        ha.sendEmptyMessageDelayed(setONE, 1000);
 //            ha.sendEmptyMessageDelayed(setONE9, 500);
 
     }
@@ -505,8 +768,6 @@ public class SmartHome extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        disconnect();
-        close();
         handler.removeMessages(1000);
         handler.removeMessages(2000);
         handler.removeMessages(setZERO);
@@ -607,401 +868,6 @@ public class SmartHome extends Fragment {
             smartGs2Im.setBackgroundResource(R.drawable.control_jingyin_selected);
         }
 
-    }
-
-    /**
-     * 判断服务是否连接
-     */
-    private boolean isConnected() {
-        return mqttService.isConnected();
-    }
-
-    /**
-     * 发布消息
-     */
-    private void publish(String msg, String topic, int qos, boolean retained) {
-        mqttService.publish(msg, topic, qos, retained);
-    }
-
-    /**
-     * 断开连接
-     */
-    private void disconnect() {
-        mqttService.disconnect();
-    }
-
-    /**
-     * 关闭连接
-     */
-    private void close() {
-        mqttService.close();
-    }
-
-    /**
-     * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
-     */
-    private void subscribe() {
-//        String[] topics2 = new String[]{"#"};
-//        mqttService.unSubscribe(topics2);
-        String[] topics = new String[]{myTopic};
-//        String[] topics = new String[]{"#"};
-        //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
-        // 0 表示只会发送一次推送消息 收到不收到都不关心
-        // 1 保证能收到消息，但不一定只收到一条
-        // 2 保证收到切只能收到一条消息
-        int[] qoss = new int[]{0};
-        mqttService.subscribe(topics, qoss);
-
-
-    }
-
-    /**
-     * 连接Mqtt服务器
-     */
-    private IEasyMqttCallBack iEasyMqttCallBack;
-
-    private void connect() {
-        iEasyMqttCallBack = new IEasyMqttCallBack() {
-            @Override
-            public void messageArrived(final String topic, final String message, final int qos) {
-                //推送消息到达
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("qqq", "messageArrived  message= " + message);
-                        try {
-                            JSONObject jsonF;
-                            Message me;
-                            String js = "";
-                            String channel_0 = "";
-                            int var = 0;
-                            JSONObject jsonObject = new JSONObject(message);
-                            String cmd = jsonObject.getString("cmd");
-                            String mSid = jsonObject.optString("sid", "");
-                            if (!mSid.equals(sid)) {
-                                return;
-                            }
-
-                            switch (cmd) {
-                                case "read_ok":
-                                    String data = jsonObject.optString("data");
-                                    me = new Message();
-                                    me.what = setTWO;
-                                    me.obj = data;
-                                    ha.sendMessage(me);
-                                    break;
-
-                                case "training_mode_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setTHREE;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "air_conditioning_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setFOUR;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "air_conditioning_temperature_ok":
-                                    var = jsonObject.optInt("var");
-                                    me = new Message();
-                                    me.what = setFIVE;
-                                    me.arg1 = var;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "air_conditioning_windSpeed_ok":
-                                    var = jsonObject.optInt("var");
-                                    me = new Message();
-                                    me.what = setSIX;
-                                    me.arg1 = var;
-                                    ha.sendMessage(me);
-                                    break;
-
-                                case "filter_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setSEVEN;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-
-                                    break;
-                                case "filter_mode_ok":
-                                    channel_0 = jsonObject.getString("channel_0");
-                                    me = new Message();
-                                    me.what = setEIGHT;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "filter_cycle_n_ok":
-                                    channel_0 = jsonObject.getString("channel_0");
-                                    me = new Message();
-                                    me.what = setNINE;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "filter_cycle_w_ok":
-                                    channel_0 = jsonObject.getString("channel_0");
-                                    me = new Message();
-                                    me.what = setNINE2;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "window_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setTEN;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-                                case "blinds_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setELEVEN;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-
-                                case "blinds_percentage_ok":
-                                    var = jsonObject.optInt("var");
-                                    me = new Message();
-                                    me.what = setTHIRTEEN;
-                                    me.arg1 = var;
-                                    ha.sendMessage(me);
-                                    break;
-
-                                case "electric_light_ok":
-                                    channel_0 = jsonObject.optString("channel_0");
-                                    me = new Message();
-                                    me.what = setTWELVE;
-                                    me.obj = channel_0;
-                                    ha.sendMessage(me);
-                                    break;
-
-                                case "dht12_ok":
-                                    String dht = jsonObject.optString("data");
-                                    me = new Message();
-                                    me.what = setFOURTEENTH;
-                                    me.obj = dht;
-                                    ha.sendMessage(me);
-                                    break;
-
-//                        case "filter":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_mode":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_mode_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_cycle_n":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_cycle_n_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_cycle_w":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_cycle_w_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "window":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "window_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "blinds_percentage":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "blinds_percentage_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//                        case "blinds":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "blinds_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "electric_light":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "electric_light_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//                        case "air_conditioning":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "air_conditioning_temperature":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_temperature_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "air_conditioning_windSpeed":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_windSpeed_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//
-//                        case "training_mode":
-//                            channel_0 = jsonObject.getString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "training_mode_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "read":
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "read_ok");
-//                            JSONObject jsonFs = new JSONObject();
-//                            jsonFs.put("temperature", "21");
-//                            jsonFs.put("humidity", "26");
-//                            jsonFs.put("pm2.5", "29");
-//                            jsonFs.put("training_mode", "on");
-//                            jsonFs.put("air_conditioning", "off");
-//                            jsonFs.put("air_conditioning_temperature", 20);
-//                            jsonFs.put("air_conditioning_windSpeed", 1);
-//                            jsonFs.put("filter", "off");
-//                            jsonFs.put("filter_mode", "off");
-//                            jsonFs.put("filter_cycle_n", "off");
-//                            jsonFs.put("filter_cycle_w", "off");
-//                            jsonFs.put("window", "on");
-//                            jsonFs.put("blinds", "off");
-//                            jsonFs.put("electric_light", "off");
-//                            jsonFs.put("blinds_percentage", 20);
-//
-//
-//                            jsonF.put("data", jsonFs);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-
-
-            }
-
-            @Override
-            public void connectionLost(Throwable arg0) {
-                //连接断开
-                Log.e("qqq", "connectionLost");
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken arg0) {
-                //发送成功
-                try {
-                    Log.e("qqq", "deliveryComplete" + arg0.getMessage().toString());
-                    JSONObject jsonObject = new JSONObject(arg0.getMessage().toString());
-                    String cmd = jsonObject.getString("cmd");
-
-                    switch (cmd) {
-                        case "read":
-
-                            break;
-
-                        case "training_mode":
-                            break;
-                    }
-
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-
-            @Override
-            public void connectSuccess(IMqttToken arg0) {
-                //连接成功
-                Log.e("qqq", "connectSuccess");
-
-            }
-
-            @Override
-            public void connectFailed(IMqttToken arg0, Throwable arg1) {
-                //连接失败
-                Log.e("qqq", "connectFailed");
-            }
-        };
-
-        mqttService.connect(iEasyMqttCallBack);
-
-
-    }
-
-    /**
-     * 构建EasyMqttService对象
-     */
-    private void buildEasyMqttService() {
-        mqttService = new EasyMqttService.Builder()
-                //设置自动重连
-                .autoReconnect(true)
-                //设置不清除回话session 可收到服务器之前发出的推送消息
-                .cleanSession(false)
-                //唯一标示 保证每个设备都唯一就可以 建议 imei
-                .clientId(getIMEI(context))
-                //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
-                .serverUrl("tcp://broker.hivemq.com:1883")
-                //心跳包默认的发送间隔
-                .keepAliveInterval(20)
-                //构建出EasyMqttService 建议用application的context
-                .bulid(context.getApplicationContext());
-    }
-
-    public static String getIMEI(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
-        @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
-
-        return imei;
     }
 
 
@@ -1508,24 +1374,6 @@ public class SmartHome extends Fragment {
         }
     };
 
-    public boolean publish_String(String set_msg) {  //发送消息
-        if (isConnected()) {
-            //消息主题
-            String topic = myTopic;
-            //消息内容
-            String msg = set_msg;
-
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
-
-            return true;
-        }
-        return false;
-    }
 
     private String sid = MainActivity.SID;
 

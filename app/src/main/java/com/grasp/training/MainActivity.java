@@ -23,6 +23,7 @@ import com.grasp.training.fragmet.Personal;
 import com.grasp.training.fragmet.Robot;
 import com.grasp.training.fragmet.SmartHome;
 import com.grasp.training.tool.BaseFragmentActivity;
+import com.grasp.training.tool.BaseMqttFragmentActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.view.MyViewPager;
@@ -34,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseFragmentActivity {
+public class MainActivity extends BaseMqttFragmentActivity {
 
     public static String MainSB = "MainActivity_UID";
     public static String SID = "12345678";
@@ -205,6 +206,16 @@ public class MainActivity extends BaseFragmentActivity {
 //        //提交事务
 //        transaction.commit();
 //    }
+    private String myTopic = "iotbroad/iot";
+    @Override
+    public String  getMyTopic() {
+        return myTopic;
+    }
+
+    @Override
+    public void MyMessageArrived(String message) {
+
+    }
 
     @Override
     protected void onDestroy() {

@@ -62,7 +62,7 @@ public class Robot extends BaseMqttFragment {
     SwipeMenuListView toulistView;
     private List<Goods> toulist;
     private myListViewAdapter adapter;
-
+    private String myTopic ="iotbroad/iot";
     @Override
     public int getInflate() {
         return R.layout.robot;
@@ -74,91 +74,20 @@ public class Robot extends BaseMqttFragment {
         initlistView();
     }
 
+    @Override
+    public String  getMyTopic() {
+        return myTopic;
+    }
+
+    @Override
+    public void MyMessageArrived(String message) {
+
+    }
+
 
     private String sid = MainActivity.SID;
 
-    @Override
-    public void connect() {
-        mqttService.connect(iEasyMqttCallBack);
-    }
 
-
-
-
-    @Override
-    public void initIEasyMqttCallBack() {
-        iEasyMqttCallBack = new IEasyMqttCallBack() {
-            @Override
-            public void messageArrived(final String topic, final String message, final int qos) {
-                //推送消息到达
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("messageArrived", "robot messageArrived  message= " + message);
-                        try {
-                            JSONObject jsonF;
-                            Message me;
-                            String js = "";
-                            String channel_0 = "";
-                            int var = 0;
-                            JSONObject jsonObject = new JSONObject(message);
-                            String cmd = jsonObject.getString("cmd");
-                            String mSid = jsonObject.optString("sid", "");
-                            if (!mSid.equals(sid)) {
-                                return;
-                            }
-
-                            switch (cmd) {
-                                case "read_ok":
-//                                    String data = jsonObject.optString("data");
-//                                    me = new Message();
-//                                    me.what = setTWO;
-//                                    me.obj = data;
-//                                    ha.sendMessage(me);
-                                    break;
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-
-
-            }
-
-            @Override
-            public void connectionLost(Throwable arg0) {
-                //连接断开
-                Log.e("qqq", "connectionLost");
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken arg0) {
-                //发送成功
-                Log.e("qqq", "deliveryComplete");
-
-            }
-
-            @Override
-            public void connectSuccess(IMqttToken arg0) {
-                //连接成功
-                Log.e("qqq", "connectSuccess");
-                if (isConnected()) {
-                    subscribe();
-                }
-            }
-
-            @Override
-            public void connectFailed(IMqttToken arg0, Throwable arg1) {
-                //连接失败
-                Log.e("qqq", "connectFailed");
-            }
-        };
-    }
 
 
     @OnClick({R.id.jqr, R.id.robot_add})
