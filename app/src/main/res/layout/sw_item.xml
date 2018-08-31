@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dip_60.0"
             android:textColor="@color/white"
-            android:textSize="15sp"
+            android:textSize="@dimen/dip_15.0"
             android:text="66666"
 
 

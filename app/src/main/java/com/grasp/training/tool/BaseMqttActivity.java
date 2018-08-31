@@ -12,17 +12,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.grasp.training.service.MqttService;
-import com.zs.easy.mqtt.EasyMqttService;
-import com.zs.easy.mqtt.IEasyMqttCallBack;
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 
 public abstract class BaseMqttActivity extends BaseActivity {
 
@@ -48,7 +39,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
 
     public abstract String getMyTopic() ;
 
-
+    public abstract String getMyTopicDing() ;
     /**
      * 注册广播接收者
      */
@@ -118,7 +109,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
      */
     public void subscribe() {
-        String[] topics = new String[]{getMyTopic() };
+        String[] topics = new String[]{getMyTopicDing() };
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心
         // 1 保证能收到消息，但不一定只收到一条

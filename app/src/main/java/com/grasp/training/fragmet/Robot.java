@@ -80,6 +80,11 @@ public class Robot extends BaseMqttFragment {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(String message) {
 
     }

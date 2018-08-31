@@ -213,6 +213,11 @@ public class MainActivity extends BaseMqttFragmentActivity {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(String message) {
 
     }

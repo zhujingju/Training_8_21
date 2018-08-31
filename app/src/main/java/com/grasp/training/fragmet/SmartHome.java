@@ -221,6 +221,11 @@ public class SmartHome extends BaseMqttFragment {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         new Thread(new Runnable() {
             @Override

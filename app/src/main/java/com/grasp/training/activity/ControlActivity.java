@@ -2,8 +2,10 @@ package com.grasp.training.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -98,6 +100,8 @@ public class ControlActivity extends BaseMqttActivity {
     private Context context;
     private String Uid="";
     private String myTopic = "iotbroad/iot/robot";
+    private IntentFilter intentFilter;
+    private NetworkChangeReceiver networkChangeReceiver;
     @Override
     public int setLayoutId() {
         return R.layout.control;
@@ -123,7 +127,12 @@ public class ControlActivity extends BaseMqttActivity {
         controlTouDown.setOnTouchListener(pic);
 
         initePlayCore();
-        ha.sendEmptyMessageDelayed(2000,1000);
+//        ha.sendEmptyMessageDelayed(2000,1000);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        networkChangeReceiver = new NetworkChangeReceiver();
+        registerReceiver(networkChangeReceiver, intentFilter);
+
     }
 
     @Override
@@ -461,6 +470,10 @@ public class ControlActivity extends BaseMqttActivity {
         ha.removeMessages(3000);
         ha.removeMessages(4000);
         ha.removeMessages(222);
+        if(networkChangeReceiver!=null){
+            unregisterReceiver(networkChangeReceiver);
+        }
+
     }
 
     @Override
@@ -815,17 +828,17 @@ public class ControlActivity extends BaseMqttActivity {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // mobile 3G Data Network
-        android.net.NetworkInfo.State mobile = conMan.getNetworkInfo(
-                ConnectivityManager.TYPE_MOBILE).getState();
+//        android.net.NetworkInfo.State mobile = conMan.getNetworkInfo(
+//                ConnectivityManager.TYPE_MOBILE).getState();
         // wifi
         android.net.NetworkInfo.State wifi = conMan.getNetworkInfo(
                 ConnectivityManager.TYPE_WIFI).getState();
 
         // 如果3G网络和wifi网络都未连接，且不是处于正在连接状态 则进入Network Setting界面 由用户配置网络连接
-        if (mobile == android.net.NetworkInfo.State.CONNECTED
-                || mobile == android.net.NetworkInfo.State.CONNECTING) {
-            ip =  getLocalIpAddress();
-        }
+//        if (mobile == android.net.NetworkInfo.State.CONNECTED
+//                || mobile == android.net.NetworkInfo.State.CONNECTING) {
+//            ip =  getLocalIpAddress();
+//        }
         if (wifi == android.net.NetworkInfo.State.CONNECTED
                 || wifi == android.net.NetworkInfo.State.CONNECTING) {
             //获取wifi服务
@@ -847,26 +860,6 @@ public class ControlActivity extends BaseMqttActivity {
 
 
 
-    private static String getLocalIpAddress()
-    {
-        try {
-            //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {//获取IPv4的IP地址
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
-
-        return null;
-    }
 
 
 
@@ -932,6 +925,11 @@ public class ControlActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         new Thread(new Runnable() {
             @Override
@@ -977,4 +975,14 @@ public class ControlActivity extends BaseMqttActivity {
             }
         }).start();
     }
+
+
+    class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            Toast.makeText(context, "网络状态改变", Toast.LENGTH_SHORT).show();
+            ha.sendEmptyMessageDelayed(2000,1000);
+        }
+    }
+
 }

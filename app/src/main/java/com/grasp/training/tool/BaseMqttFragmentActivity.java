@@ -41,6 +41,7 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
 //    private String myTopic ="iotbroad/iot";
 
     public  abstract  String getMyTopic();
+    public abstract String getMyTopicDing() ;
 
 
     /**
@@ -112,7 +113,7 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
      */
     public void subscribe() {
-        String[] topics = new String[]{getMyTopic() };
+        String[] topics = new String[]{getMyTopicDing() };
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心
         // 1 保证能收到消息，但不一定只收到一条

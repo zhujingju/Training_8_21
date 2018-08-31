@@ -4,6 +4,7 @@ package com.grasp.training.tool;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class MyThread  extends Thread {
     public String ip;
 
     public MyThread(String str,String ip) {
+        Log.e("MyThread",str);
         content = str;
         this.ip=ip;
     }
@@ -59,14 +61,17 @@ public class MyThread  extends Thread {
             bff.close();
             ou.close();
             socket.close();
+            Log.e("MyThread","good");
         } catch (SocketTimeoutException aa) {
             //连接超时 在UI界面显示消息
             msg.what=2;
             msg.obj =  "服务器连接失败！请检查网络是否打开";
             //发送消息 修改UI线程中的组件
             myHandler.sendMessage(msg);
+            Log.e("MyThread","err="+aa.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("MyThread","err="+e.getMessage());
         }
     }
 

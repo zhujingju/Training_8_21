@@ -261,6 +261,11 @@ public class RegisteredActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         if(!zc_zt){
             return;

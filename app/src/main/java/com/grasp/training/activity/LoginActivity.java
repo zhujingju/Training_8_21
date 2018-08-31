@@ -326,6 +326,11 @@ public class LoginActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getMyTopicDing() {
+        return myTopic;
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         new Thread(new Runnable() {
             @Override

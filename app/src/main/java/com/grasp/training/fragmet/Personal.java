@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
@@ -86,13 +87,17 @@ public class Personal extends Fragment {
     }
 
 
-    @OnClick({R.id.personal_tx, R.id.personal_layout})
+    @OnClick({R.id.personal_tx, R.id.personal_layout, R.id.per_tui})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.personal_tx:
                 getTp();
                 break;
             case R.id.personal_layout:
+                break;
+
+            case R.id.per_tui:
+                startActivity(new Intent(context, LoginActivity.class));
                 break;
         }
     }
