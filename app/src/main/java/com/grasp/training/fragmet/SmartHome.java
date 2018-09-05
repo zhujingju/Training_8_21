@@ -350,131 +350,6 @@ public class SmartHome extends BaseMqttFragment {
                             ha.sendMessage(me);
                             break;
 
-//                        case "filter":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_mode":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_mode_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_cycle_n":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_cycle_n_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "filter_cycle_w":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "filter_cycle_w_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "window":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "window_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "blinds_percentage":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "blinds_percentage_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//                        case "blinds":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "blinds_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "electric_light":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "electric_light_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//                        case "air_conditioning":
-//                            channel_0 = jsonObject.optString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "air_conditioning_temperature":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_temperature_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "air_conditioning_windSpeed":
-//                            var = jsonObject.getInt("var");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "air_conditioning_windSpeed_ok");
-//                            jsonF.put("var", var);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//
-//
-//                        case "training_mode":
-//                            channel_0 = jsonObject.getString("channel_0");
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "training_mode_ok");
-//                            jsonF.put("channel_0", channel_0);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
-//                        case "read":
-//                            jsonF = new JSONObject();
-//                            jsonF.put("cmd", "read_ok");
-//                            JSONObject jsonFs = new JSONObject();
-//                            jsonFs.put("temperature", "21");
-//                            jsonFs.put("humidity", "26");
-//                            jsonFs.put("pm2.5", "29");
-//                            jsonFs.put("training_mode", "on");
-//                            jsonFs.put("air_conditioning", "off");
-//                            jsonFs.put("air_conditioning_temperature", 20);
-//                            jsonFs.put("air_conditioning_windSpeed", 1);
-//                            jsonFs.put("filter", "off");
-//                            jsonFs.put("filter_mode", "off");
-//                            jsonFs.put("filter_cycle_n", "off");
-//                            jsonFs.put("filter_cycle_w", "off");
-//                            jsonFs.put("window", "on");
-//                            jsonFs.put("blinds", "off");
-//                            jsonFs.put("electric_light", "off");
-//                            jsonFs.put("blinds_percentage", 20);
-//
-//
-//                            jsonF.put("data", jsonFs);
-//                            js = jsonF.toString();
-//                            publish_String(js);
-//                            break;
 
                     }
 
@@ -964,6 +839,7 @@ public class SmartHome extends BaseMqttFragment {
                         String blinds = jsonObject.optString("blinds", "??");
                         String electricLight = jsonObject.optString("electric_light", "??");
                         int blinds_percentage = jsonObject.optInt("blinds_percentage", -99);
+                        Log.e("qqq","blinds_percentage="+blinds_percentage);
 
                         smartTvWd.setText(temperature);
                         smartTvSd.setText(humidity);

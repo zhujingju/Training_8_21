@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -127,6 +129,7 @@ public class SlideSwitch extends View {
 		return result;
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (shape == SHAPE_RECT) {
@@ -225,16 +228,16 @@ public class SlideSwitch extends View {
 //				}
 				break;
 			case MotionEvent.ACTION_UP:
-				int wholeX = (int) (event.getRawX() - eventStartX);
-				frontRect_left_begin = frontRect_left;
+//				int wholeX = (int) (event.getRawX() - eventStartX);
+//				frontRect_left_begin = frontRect_left;
 				boolean toRight=false;
-				toRight = (frontRect_left_begin > max_left / 2 ? true : false);
-				if (Math.abs(wholeX) < 3) {
-					toRight = !toRight;
-				}
+//				toRight = (frontRect_left_begin > max_left / 2 ? true : false);
+//				if (Math.abs(wholeX) < 3) {
+//					toRight = !toRight;
+//				}
 
 //				Log.e("qqq","wholeX="+wholeX+" frontRect_left_begin="+frontRect_left_begin+" Math.abs(wholeX)= "+Math.abs(wholeX));
-				moveToDest(toRight);
+				moveToDest(!isOpen);
 				break;
 			default:
 				break;
@@ -284,6 +287,7 @@ public class SlideSwitch extends View {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				Log.e("Slide","toRight ="+toRight );
 				if (toRight) {
 					while (frontRect_left <= max_left) {
 						alpha = (int) (255 * (float) frontRect_left / (float) max_left);
@@ -298,8 +302,9 @@ public class SlideSwitch extends View {
 					alpha = 255;
 					frontRect_left = max_left;
 					isOpen = true;
-					if (listener != null)
+					if (listener != null) {
 						handler.sendEmptyMessage(1);
+					}
 					frontRect_left_begin = max_left;
 
 				} else {
@@ -316,8 +321,9 @@ public class SlideSwitch extends View {
 					alpha = 0;
 					frontRect_left = min_left;
 					isOpen = false;
-					if (listener != null)
+					if (listener != null) {
 						handler.sendEmptyMessage(0);
+					}
 					frontRect_left_begin = min_left;
 
 				}
@@ -346,6 +352,7 @@ public class SlideSwitch extends View {
 	}
 
 	public void setState(boolean isOpen) {
+
 		this.isOpen = isOpen;
 		zt=false;
 		initDrawingVal();

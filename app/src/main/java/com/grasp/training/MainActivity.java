@@ -155,7 +155,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         int[] in2 = {R.drawable.bg_nor, R.drawable.bg_pre};
         int[] in3 = {R.drawable.bg_nor, R.drawable.bg_pre};
         int[] in4 = {R.drawable.bg_nor, R.drawable.bg_pre};
-        int[] c_1 = {R.color.hui, R.color.hu2};
+        int[] c_1 = {R.color.app1, R.color.app2};
         mainXiaIm1.setBackgroundResource(in1[0]);
         mainXiaIm2.setBackgroundResource(in2[0]);
         mainXiaIm3.setBackgroundResource(in3[0]);
