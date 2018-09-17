@@ -27,6 +27,7 @@ import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
 import com.grasp.training.tool.Utility;
 import com.grasp.training.tool.myActivityManage;
 import com.zs.easy.mqtt.EasyMqttService;
@@ -63,6 +64,8 @@ public class LoginActivity extends BaseMqttActivity {
     private String c_name="Login_name";
     private String c_pw="Login_pw";
     private String c_zt="Login_zw";
+
+    private boolean dl=false;
 
     @Override
     public int setLayoutId() {
@@ -163,7 +166,8 @@ public class LoginActivity extends BaseMqttActivity {
         switch (view.getId()) {
             case R.id.login_im:
 //                ha.sendEmptyMessageDelayed(1002,0);
-                startBestServer2();
+
+//                startBestServer2();
                 break;
             case R.id.login_zc:
                 startActivity(new Intent(LoginActivity.this, RegisteredActivity.class));
@@ -261,7 +265,7 @@ public class LoginActivity extends BaseMqttActivity {
 
 
 
-    private String myTopic ="iotbroad/iot/login";
+    private String myTopic ="iotbroad/iot/user";
 
 
     public void push( String uname,String pwd) {
@@ -273,7 +277,7 @@ public class LoginActivity extends BaseMqttActivity {
             jsonObject.put("cmd", "login");
             jsonObject.put("uname", uname);
             jsonObject.put("pwd", pwd);
-            jsonObject.put("clientid", getIMEI(getContext()));
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
             String js = jsonObject.toString();
             publish_String(js);
         } catch (JSONException e) {
@@ -299,6 +303,10 @@ public class LoginActivity extends BaseMqttActivity {
                     break;
 
                 case 1002:
+                    if(dl){
+                       return;
+                    }
+                    dl=true;
                     ha.removeMessages(1001);
                     ha.removeMessages(1000);
                     ha.removeMessages(1003);
@@ -331,6 +339,11 @@ public class LoginActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getSid() {
+        return "";
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         new Thread(new Runnable() {
             @Override
@@ -348,7 +361,7 @@ public class LoginActivity extends BaseMqttActivity {
                     JSONObject jsonObject = new JSONObject(message);
                     String cmd = jsonObject.getString("cmd");
                     String clientid = jsonObject.optString("clientid", "");
-                    if (!clientid.equals(getIMEI(getContext()))) {
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
                         return;
                     }
 
@@ -371,9 +384,19 @@ public class LoginActivity extends BaseMqttActivity {
                             break;
                         case "login_failed":
                             String err = jsonObject.optString("err", "");
+                            int errCode = jsonObject.optInt("err", -1);
                             Message m=new Message();
                             m.what=1003;
-                            m.obj=err;
+                            if(errCode==4){
+                                m.obj="用户名不存在";
+                            }
+                            else  if(errCode==5){
+                                m.obj="用户名和密码不匹配";
+                            }
+                            else{
+                                m.obj=err;
+                            }
+
                             ha.sendMessage(m);
                             break;
 

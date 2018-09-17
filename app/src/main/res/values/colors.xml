@@ -11,8 +11,13 @@
     <color name="hui">#6793e4</color>
     <color name="hu2">#4cffffff</color>
 
-    <color name="app1">#6793e4</color>
-    <color name="app2">#2d4a8b</color>
+    <color name="app_color">#2f54e9</color>
+    <color name="c_b32f54e9">#b32f54e9</color>
+
+    <color name="main_hui">#3f000000</color>
+
+    <color name="app1">#000000</color>
+    <color name="app2">#2f54e9</color>
     <color name="c_80ffffff">#80ffffff</color>
     <color name="c_000000">#000000</color>
     <color name="c_09000000">#90000000</color>

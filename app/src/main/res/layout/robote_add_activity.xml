@@ -112,6 +112,7 @@
             android:textColor="@color/c_000000"
             android:textSize="@dimen/dip_18.0"
             android:id="@+id/r_a_pass"
+            android:text="admin"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"

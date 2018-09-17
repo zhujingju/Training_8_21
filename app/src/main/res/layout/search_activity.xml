@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/search_lin"
+    android:background="@drawable/app_bg"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0">
+        <LinearLayout
+            android:onClick="fh"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/search_fh"
+                android:background="@drawable/fh"
+                android:layout_marginLeft="@dimen/dip_10.0"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dip_16.0"
+                android:textColor="@color/white"
+                android:text="返回"
+                />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:layout_centerInParent="true"
+            android:textSize="@dimen/dip_18.0"
+            android:text="添加设备"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+
+            android:background="@drawable/zhu_chazuo_selected"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_width="@dimen/dip_287.0"
+            android:layout_height="@dimen/dip_287.0">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ss_sid"
+                android:textSize="@dimen/dip_20.0"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                />
+            <RelativeLayout
+                android:id="@+id/search_rel"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/dip_250.0"
+                android:layout_height="@dimen/dip_250.0">
+                <ImageView
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/search_dong"
+                    android:background="@drawable/dong_diana"
+                    android:layout_width="@dimen/dip_12.0"
+                    android:layout_height="@dimen/dip_12.0" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_200.0"
+        android:id="@+id/search_list"
+        android:cacheColorHint="#00000000"
+        android:divider="#0000"
+        android:listSelector="#00000000"
+        android:scrollbars="none"
+        android:layout_marginBottom="@dimen/dip_5.0"
+        ></ListView>
+
+    <TextView
+        android:layout_marginLeft="@dimen/dip_10.0"
+        android:layout_marginRight="@dimen/dip_10.0"
+        android:layout_marginBottom="@dimen/dip_10.0"
+        android:textColor="#fff"
+        android:layout_gravity="center"
+        android:textSize="@dimen/dip_14.0"
+        android:text="添加失败且连搜不上设备，请长按开关键重置设备"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

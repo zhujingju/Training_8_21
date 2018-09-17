@@ -1256,7 +1256,7 @@ public class SmartHome extends BaseMqttFragment {
     };
 
 
-    private String sid = MainActivity.SID;
+    private String sid = "12345678";
 
     public void push_channel(String cmd, boolean channel) {
         try {

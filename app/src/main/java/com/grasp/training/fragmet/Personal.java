@@ -3,13 +3,20 @@ package com.grasp.training.fragmet;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +33,7 @@ import com.grasp.training.R;
 import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.MyApplication;
+import com.grasp.training.tool.PhotoUtils;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -40,6 +48,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static com.grasp.training.dialog.Dialog_touxiao_layout.CODE_CAMERA_REQUEST;
+import static com.grasp.training.dialog.Dialog_touxiao_layout.CODE_GALLERY_REQUEST;
+import static com.grasp.training.dialog.Dialog_touxiao_layout.CODE_RESULT_REQUEST;
 
 
 public class Personal extends Fragment {
@@ -63,11 +75,14 @@ public class Personal extends Fragment {
         unbinder = ButterKnife.bind(this, view);
 
 
+        ImageLoader.getInstance().clearDiskCache();
+        ImageLoader.getInstance().clearMemoryCache();
         String userPic = "";
         userPic = (String) SharedPreferencesUtils.getParam(context, MyApplication.NAME_TX, "");
+        Log.e("qqq","userPic="+userPic);
         if (!TextUtils.isEmpty(userPic)) {
-            Log.d("logo", "+++" + userPic);
             ImageLoader.getInstance().displayImage("file://" + userPic, personalTx, MyApplication.options2);
+//            ImageLoader.getInstance().displayImage("" + userPic, personalTx, MyApplication.options2);
         } else {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.personalcenter_tabbar_portrait_selected, personalTx, MyApplication.options2);
         }
@@ -94,6 +109,7 @@ public class Personal extends Fragment {
                 getTp();
                 break;
             case R.id.personal_layout:
+
                 break;
 
             case R.id.per_tui:
@@ -117,86 +133,77 @@ public class Personal extends Fragment {
     private Dialog builder, timeDialog2;
     private Dialog_touxiao_layout layout;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {  //设置返回调用
         // TODO Auto-generated method stub
 
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("qqq", "onActivityResult   " + requestCode);
-        switch (requestCode) {
-
-            case Dialog_touxiao_layout.PHOTO_REQUEST_GALLERY:
-                if (data != null) {
-                    Uri uri = data.getData();
-                    if (uri != null) {
-                        layout.crop(uri);
+        int output_X = 200, output_Y = 200;
+        if (resultCode == ((Activity)getContext()).RESULT_OK) {
+            switch (requestCode) {
+                case CODE_CAMERA_REQUEST://拍照完成回调
+                        layout.cropImageUri = Uri.fromFile(layout.fileCropUri);
+                        PhotoUtils.cropImageUri(this, layout.imageUri, layout.cropImageUri, 1, 1, output_X, output_Y, CODE_RESULT_REQUEST);
+                    break;
+                case CODE_GALLERY_REQUEST://访问相册完成回调
+                    if (layout.hasSdcard()) {
+                        layout.cropImageUri = Uri.fromFile(layout.fileCropUri);
+                        Uri newUri = Uri.parse(PhotoUtils.getPath(getContext(), data.getData()));
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            newUri = FileProvider.getUriForFile(getContext(), "com.MainActivity.provider", new File(newUri.getPath()));
+                        PhotoUtils.cropImageUri(getActivity(), newUri, layout.cropImageUri, 1, 1, output_X, output_Y, CODE_RESULT_REQUEST);
+                    } else {
+                        Toast.makeText(getContext(), "设备没有SD卡!", Toast.LENGTH_SHORT).show();
                     }
+                    break;
+                case CODE_RESULT_REQUEST:
+                    Bitmap bitmap = PhotoUtils.getBitmapFromUri(layout.cropImageUri, getContext());
+                    if (bitmap != null) {
+                        showImages(bitmap);
+                    }
+                    break;
 
-                }
-                break;
-
-            case Dialog_touxiao_layout.PHOTO_REQUEST_CAMERA:
-
-                if (layout.hasSdcard()) {
-                    tempFile = new File(Environment.getExternalStorageDirectory(),
-                            layout.PHOTO_FILE_NAME);
-
-                    layout.crop(Uri.fromFile(tempFile));
-
-                } else {
-                    Toast.makeText(context, R.string.nocz, Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case Dialog_touxiao_layout.PHOTO_REQUEST_CUT:
-
-                builder.dismiss();
-                Log.d("bitmap", data + "+++++++" + data.getData());
-//                if(data==null){
-//                    return;
-//                }
-//                if(data.getData()==null){
-//
-//
-//                    break;
-//                }
-//                Bundle extras = data.getExtras();
-//                if (extras != null) {
-//                    Bitmap bitmap =extras.getParcelable("data");
-//                    saveBitmap(bitmap);
-////                    personalTx.setImageBitmap(bitmap);
-//                    Log.d("qqq","bitmap  "+bitmap);
-
-                String newName = layout.PHOTO_FILE_NAME;
-                String uploadFile = Environment.getExternalStorageDirectory() + "/"
-                        + newName;
-                String url = uploadFile;
-
-
-                ImageLoader.getInstance().clearDiskCache();
-                ImageLoader.getInstance().clearMemoryCache();
-                ImageLoader.getInstance().displayImage("file://" + url, personalTx, MyApplication.options2);
-                SharedPreferencesUtils.setParam(context, MyApplication.NAME_TX, url);
-//                }
-
-
-//                bitmap=getBitmapFromUri(data.getData(),this);
-
-//                    Drawable drawable = new BitmapDrawable(getResources(), photo);
-
-
-//                Log.d("qqq","good "+url);
-
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
+                default:
+                    super.onActivityResult(requestCode, resultCode, data);
+                    break;
+            }
         }
+
+
     }
 
 
     /**
-     * 保存方法
+     * 展示图片
+     * @param bitmap
      */
+    private void showImages(Bitmap bitmap) {
+//        personalTx.setImageBitmap(bitmap);
+        if(builder!=null){
+            builder.cancel();
+        }
+        ImageLoader.getInstance().clearDiskCache();
+        ImageLoader.getInstance().clearMemoryCache();
+        SharedPreferencesUtils.setParam(context, MyApplication.NAME_TX, Environment.getExternalStorageDirectory().getPath() + "/crop_photo.jpg");
+        Log.e("qqq","cropImageUri="+layout.cropImageUri);
+        ImageLoader.getInstance().displayImage("file://" + Environment.getExternalStorageDirectory().getPath() + "/crop_photo.jpg", personalTx, MyApplication.options2);
+
+    }
+    public String getName(){
+        String name="";
+		Date date=new Date();
+		long time=date.getTime();
+        name="grasp_"+time+".png";
+        return name;
+    }
+
+
+
+        /**
+         * 保存方法
+         */
     public void saveBitmap(Bitmap bm) {
         if (bm == null) {
             return;
@@ -206,18 +213,20 @@ public class Personal extends Fragment {
         {    // 获取SDCard指定目录下
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String t = format.format(new Date());
-            String newName = layout.PHOTO_FILE_NAME;
-            String sdCardDir = Environment.getExternalStorageDirectory() + "";
+            String newName = getName();
+            String sdCardDir =layout.Pash();
             File dirFile = new File(sdCardDir);  //目录转化成文件夹
             if (!dirFile.exists()) {              //如果不存在，那就建立这个文件夹
                 dirFile.mkdirs();
             }                          //文件夹有啦，就可以保存图片啦
 
             File file = new File(sdCardDir, "" + newName);// 在SDcard的目录下创建图片文,以当前时间为其命名
-
+            Log.e("qqq","userPic="+sdCardDir+newName);
             try {
                 FileOutputStream out = new FileOutputStream(file);
                 bm.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                SharedPreferencesUtils.setParam(context, MyApplication.NAME_TX, sdCardDir+newName);
+                Log.e("qqq","userPic="+sdCardDir+newName);
                 out.flush();
                 out.close();
             } catch (FileNotFoundException e) {

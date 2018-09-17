@@ -25,10 +25,21 @@
             android:text="添加"
             />
 
+    <LinearLayout
+        android:layout_marginLeft="@dimen/dip_20.0"
+        android:layout_marginRight="@dimen/dip_20.0"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_120.5"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
         <com.grasp.training.swipemenulistview.SwipeMenuListView
             android:id="@+id/robot_listview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:cacheColorHint="#00000000"
             android:divider="#0000"
             android:background="#0000"

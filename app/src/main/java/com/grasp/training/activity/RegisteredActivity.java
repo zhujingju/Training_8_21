@@ -17,6 +17,7 @@ import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
 import com.zs.easy.mqtt.EasyMqttService;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
 
@@ -41,7 +42,6 @@ public class RegisteredActivity extends BaseMqttActivity {
     Button registered;
     @BindView(R.id.login_y)
     ConstraintLayout loginY;
-    private String sid = MainActivity.SID;
 
     EditText userEditText;
     EditText pwdEditText;
@@ -191,7 +191,7 @@ public class RegisteredActivity extends BaseMqttActivity {
     /**
      * 构建EasyMqttService对象
      */
-    private String myTopic ="iotbroad/iot/registered";
+    private String myTopic ="iotbroad/iot/user";
 
     public void push( String uname,String pwd,String phone) {
 
@@ -203,7 +203,7 @@ public class RegisteredActivity extends BaseMqttActivity {
             jsonObject.put("uname", uname);
             jsonObject.put("pwd", pwd);
             jsonObject.put("phone", phone);
-            jsonObject.put("clientid", getIMEI(getContext()));
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
             String js = jsonObject.toString();
             publish_String(js);
         } catch (JSONException e) {
@@ -266,6 +266,11 @@ public class RegisteredActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getSid() {
+        return "";
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         if(!zc_zt){
             return;
@@ -285,7 +290,7 @@ public class RegisteredActivity extends BaseMqttActivity {
                     String mName = jsonObject.optString("uname", "");
                     String clientid = jsonObject.optString("clientid", "");
 
-                    if (!clientid.equals(getIMEI(getContext()))) {
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
                         return;
                     }
                     switch (cmd) {
@@ -295,9 +300,19 @@ public class RegisteredActivity extends BaseMqttActivity {
 
                         case "registered_failed":
                             String err = jsonObject.optString("err", "");
+
+                            int errCode = jsonObject.optInt("err", -1);
                             Message m=new Message();
                             m.what=1003;
-                            m.obj=err;
+                            if(errCode==1){
+                                m.obj="用户名已存在";
+                            }
+                            else  if(errCode==2){
+                                m.obj="手机号已存在";
+                            }else{
+                                m.obj=err;
+                            }
+
                             handler.sendMessage(m);
 
                             break;

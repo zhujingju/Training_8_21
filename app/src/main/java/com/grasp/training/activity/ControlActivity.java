@@ -930,6 +930,11 @@ public class ControlActivity extends BaseMqttActivity {
     }
 
     @Override
+    public String getSid() {
+        return "";
+    }
+
+    @Override
     public void MyMessageArrived(final String message) {
         new Thread(new Runnable() {
             @Override

@@ -40,18 +40,23 @@
  import com.grasp.training.activity.Robote_add_activity;
  import com.grasp.training.swipemenulistview.SwipeMenuListView;
  import com.grasp.training.tool.BaseActivity;
+ import com.grasp.training.tool.BaseMqttActivity;
  import com.grasp.training.tool.MyApplication;
  import com.grasp.training.tool.SharedPreferencesUtils;
+ import com.grasp.training.tool.Tool;
+
+ import org.json.JSONException;
+ import org.json.JSONObject;
 
  import java.util.ArrayList;
  import java.util.List;
 
  public class AcSearchDevice extends BaseActivity {
-     public ShowProgress pd;
+//     public ShowProgress pd;
      private SwipeMenuListView listView;
 //     private SwipeMenuListView toulistView;
      private SearchDeviceAdapter sAdapter;
-     public static ArrayList<SearchDeviceInfo> list;
+     public  ArrayList<SearchDeviceInfo> list;
 
      private MyApplication appMain;
 
@@ -182,6 +187,20 @@
  //		}
  //	}
 
+     private ProgressDialog dialog;
+
+     public void showPro() {
+
+         dialog = new ProgressDialog(this);
+         dialog.setMessage("搜索中...");
+         dialog.setCancelable(true);
+
+         dialog.show();
+     }
+
+
+
+
 
 
      @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
@@ -240,7 +259,11 @@
          @Override
          protected void onPostExecute(List<SearchDeviceInfo> flist) {
              // TODO Auto-generated method stub
-             pd.dismiss();
+//             pd.dismiss();
+             if(dialog!=null){
+                 dialog.dismiss();
+             }
+
              if (list.size() > 0) {
  //				listView.setVisibility(View.VISIBLE);
                  sAdapter.setNodeList(flist);
@@ -266,14 +289,11 @@
          @Override
          protected void onPreExecute() {
              // TODO Auto-generated method stub
-             if (pd == null) {
-                 pd = new ShowProgress(context);
-                 pd.setMessage(AcSearchDevice.this.getResources().getString(
-                         R.string.searching_device));
-                 pd.setCanceledOnTouchOutside(true);
+             if(dialog==null){
+                 showPro();
              }
-             if(pd!=null){
-                 pd.show();
+             if(dialog!=null&&!dialog.isShowing()){
+                 showPro();
              }
 
              super.onPreExecute();

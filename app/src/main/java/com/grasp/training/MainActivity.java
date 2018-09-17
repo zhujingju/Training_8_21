@@ -1,8 +1,11 @@
 package com.grasp.training;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +22,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grasp.training.fragmet.Personal;
 import com.grasp.training.fragmet.Robot;
+import com.grasp.training.fragmet.Scenario;
 import com.grasp.training.fragmet.SmartHome;
+import com.grasp.training.fragmet.SmartHomeMain;
 import com.grasp.training.tool.BaseFragmentActivity;
 import com.grasp.training.tool.BaseMqttFragmentActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
 import com.grasp.training.view.MyViewPager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +50,7 @@ import butterknife.OnClick;
 public class MainActivity extends BaseMqttFragmentActivity {
 
     public static String MainSB = "MainActivity_UID";
-    public static String SID = "12345678";
+    public final static String MainData = "MainActivity_Data";
     public static Activity activity;
     @BindView(R.id.main_sb)
     RelativeLayout mainSb;
@@ -57,7 +69,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //    @BindView(R.id.main_gl_frame)
 //    FrameLayout mainGlFrame;
 
-    public static String NameUser = "";
+    public static String NameUser = "";  //Uid
     public static String Mode_kx = "MODEKX";
     public static String Mode_fm = "MODEFM";
     public static String Mode_zdy = "MODEZDY";
@@ -67,20 +79,12 @@ public class MainActivity extends BaseMqttFragmentActivity {
     DrawerLayout drawerLayout;
     @BindView(R.id.main_xia_im1)
     ImageView mainXiaIm1;
-    @BindView(R.id.main_xia_tv1)
-    TextView mainXiaTv1;
     @BindView(R.id.main_xia_im2)
     ImageView mainXiaIm2;
-    @BindView(R.id.main_xia_tv2)
-    TextView mainXiaTv2;
     @BindView(R.id.main_xia_im3)
     ImageView mainXiaIm3;
-    @BindView(R.id.main_xia_tv3)
-    TextView mainXiaTv3;
     @BindView(R.id.main_xia_im4)
     ImageView mainXiaIm4;
-    @BindView(R.id.main_xia_tv4)
-    TextView mainXiaTv4;
     @BindView(R.id.main_xia_ll1)
     LinearLayout mainXiaLl1;
     @BindView(R.id.main_xia_ll2)
@@ -108,7 +112,12 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
     @Override
     public void initView() {
-        NameUser=SharedPreferencesUtils.getParam(getContext(),MyApplication.NAME_USER,"").toString();
+        handler.sendEmptyMessageDelayed(1000, 0); //获取设备类型
+        NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
+        String data = SharedPreferencesUtils.getParam(getContext(), MainData, "").toString();
+        if (data.equals("")) {
+            inData();
+        }
 
 
     }
@@ -130,15 +139,14 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //        mainYkTv.setLetterSpacing(0.2f);
 //        mainDhTv.setLetterSpacing(0.2f);
 //        initFragment2(new SmartHome());
-        NameUser= SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER,"").toString();
+        NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
         fragments = new ArrayList<Fragment>();
-        SmartHome smartHome = new SmartHome();
-        SmartHome smartHome2 = new SmartHome();
+//        SmartHome smartHome = new SmartHome();
+//        SmartHome smartHome2 = new SmartHome();
         Robot robot = new Robot();
-        Personal personal=new Personal();
-
-        fragments.add(smartHome);
-        fragments.add(smartHome2);
+        Personal personal = new Personal();
+        fragments.add(new SmartHomeMain());
+        fragments.add(new Scenario());
         fragments.add(robot);
         fragments.add(personal);
 
@@ -151,38 +159,29 @@ public class MainActivity extends BaseMqttFragmentActivity {
     }
 
     private void setLin(int i) {
-        int[] in1 = {R.drawable.bg_nor, R.drawable.bg_pre};
-        int[] in2 = {R.drawable.bg_nor, R.drawable.bg_pre};
-        int[] in3 = {R.drawable.bg_nor, R.drawable.bg_pre};
-        int[] in4 = {R.drawable.bg_nor, R.drawable.bg_pre};
-        int[] c_1 = {R.color.app1, R.color.app2};
+        int[] in1 = {R.drawable.icon_dao_znjj_normal, R.drawable.icon_dao_znjj_selected};
+        int[] in2 = {R.drawable.icon_dao_yycj_normal, R.drawable.icon_dao_yycj_selected};
+        int[] in3 = {R.drawable.icon_dao_jqr_normal, R.drawable.icon_dao_jqr_selected};
+        int[] in4 = {R.drawable.icon_dao_grzx_normal, R.drawable.icon_dao_grzx_selected};
         mainXiaIm1.setBackgroundResource(in1[0]);
         mainXiaIm2.setBackgroundResource(in2[0]);
         mainXiaIm3.setBackgroundResource(in3[0]);
         mainXiaIm4.setBackgroundResource(in4[0]);
-        mainXiaTv1.setTextColor(getResources().getColor(c_1[0]));
-        mainXiaTv2.setTextColor(getResources().getColor(c_1[0]));
-        mainXiaTv3.setTextColor(getResources().getColor(c_1[0]));
-        mainXiaTv4.setTextColor(getResources().getColor(c_1[0]));
         if (i == 0) {
             mainXiaIm1.setBackgroundResource(in1[1]);
-            mainXiaTv1.setTextColor(getResources().getColor(c_1[1]));
 
         } else if (i == 1) {
             mainXiaIm2.setBackgroundResource(in2[1]);
-            mainXiaTv2.setTextColor(getResources().getColor(c_1[1]));
 
         } else if (i == 2) {
             mainXiaIm3.setBackgroundResource(in3[1]);
-            mainXiaTv3.setTextColor(getResources().getColor(c_1[1]));
 
         } else if (i == 3) {
             mainXiaIm4.setBackgroundResource(in4[1]);
-            mainXiaTv4.setTextColor(getResources().getColor(c_1[1]));
         }
     }
 
-//    //显示fragment
+    //    //显示fragment
 //    private void initFragment2(Fragment f1) {
 //        //开启事务，fragment的控制是由事务来实现的
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -206,9 +205,10 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //        //提交事务
 //        transaction.commit();
 //    }
-    private String myTopic = "iotbroad/iot";
+    private String myTopic = "iotbroad/iot/device";
+
     @Override
-    public String  getMyTopic() {
+    public String getMyTopic() {
         return myTopic;
     }
 
@@ -218,13 +218,51 @@ public class MainActivity extends BaseMqttFragmentActivity {
     }
 
     @Override
-    public void MyMessageArrived(String message) {
+    public String getSid() {
+        return "";
+    }
 
+    @Override
+    public void MyMessageArrived(final String message) {
+        Log.e("qqq", "main messageArrived  message= " + message);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.optString("cmd", "");
+                    String uname = jsonObject.optString("uname", "");
+                    if (!uname.equals(NameUser)) {
+                        return;
+                    }
+                    String clientid = jsonObject.optString("clientid", "");
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                        return;
+                    }
+                    switch (cmd) {
+                        case "querydevicetype_ok":
+                            SharedPreferencesUtils.setParam(getContext(), MainData, message);
+//                            JSONArray js=jsonObject.getJSONArray("data");
+//                            for(int i=0;i<js.length();i++){
+//                                JSONObject jsonObject1=js.getJSONObject(i);
+//                                String dname=jsonObject1.optString("dname","");//名称
+//                                String type=jsonObject1.optString("type","");//类型
+//                                String thumbnail=jsonObject1.optString("dname",""); //预览图
+//                                String stateall=jsonObject1.optString("stateall","");
+//                            }
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        handler.removeMessages(1000);
 
     }
 
@@ -289,7 +327,6 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
         }
     }
-
 
 
     /**
@@ -379,6 +416,54 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //            SetCurSelText(i);
 
         }
+    }
+
+
+    public void push_data() {  //获取数据类型列表
+        if (NameUser.equals("")) {
+            return;
+        }
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "querydevicetype");
+            jsonObject.put("uname", NameUser);
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
+            String js = jsonObject.toString();
+            publish_String(js);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1000:
+                    if (isConnected()) {
+                        push_data();
+                    } else {
+                        handler.sendEmptyMessageDelayed(1000, 1000);
+                    }
+                    break;
+            }
+        }
+    };
+
+
+    public void inData() {
+        String ss = "{\"cmd\":\"querydevicetype_ok\",\"uname\":\"zjj\",\"clientid\":\"862534031873693\",\"data\":[{\"dname\":\"摄像头\",\"type\":\"camera\",\"stateall\":\"on|off\",\"thumbnail\":\"server://images/\"},{\"dname\":\"插座\",\"type\":\"socket\",\"stateall\":\"on|off\",\"thumbnail\":\"server://images/\"},{\"dname\":\"灯\",\"type\":\"light\",\"stateall\":\"on|off\",\"thumbnail\":\"server://images/\"},{\"dname\":\"网关\",\"type\":\"gateway\",\"stateall\":\"on|off\",\"thumbnail\":\"server://images/\"},{\"dname\":\"定时器\",\"type\":\"timer\",\"stateall\":\"0~24\",\"thumbnail\":\"server://images/\"}]}";
+        SharedPreferencesUtils.setParam(getContext(), MainData, ss);
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
 }

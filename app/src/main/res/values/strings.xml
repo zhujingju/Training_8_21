@@ -8,7 +8,7 @@
     <string name="ie_sn_good">环境质量良好</string>
     <string name="ie_sn_wd">温度</string>
     <string name="ie_sn_sd">湿度</string>
-    <string name="ie_sn_pm">Pm2.5</string>
+    <string name="ie_sn_pm">PM2.5</string>
     <string name="ie_sn_kt">空调</string>
     <string name="ie_sn_js">加湿</string>
     <string name="ie_sn_jh">净化</string>
@@ -109,6 +109,7 @@
     <string name="shuru2">是否删除</string>
     <string name="progress_per3">删除中...</string>
     <string name="progress_pergood">删除成功</string>
+    <string name="progress_pergood2">删除失败</string>
     <string name="nodataerro">无数据</string>
     <string name="searching_device">正在搜索...</string>
     <string name="searching_device2">添加设备中...</string>
@@ -123,4 +124,8 @@
     <string name="kong_err">不能为空</string>
     <string name="robote_list">查找机器人</string>
 
+    <string name="uid_no">请登录后再试</string>
+    <string name="add_sid">添加新设备</string>
+    <string name="del_sid">长按删除设备</string>
+    <string name="ss_sid">正在搜索设备</string>
 </resources>

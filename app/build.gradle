@@ -97,4 +97,5 @@ dependencies {
     implementation files('libs/NewLivePlayer-new.jar')
     implementation files('libs/SmartLink.jar')
     implementation files('libs/WebSocket.jar')
+    implementation project(':mypicker')
 }

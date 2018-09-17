@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:slideswitch="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:descendantFocusability="blocksDescendants"
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_70.0">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:descendantFocusability="blocksDescendants"
+
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/dip_10.0"
+                android:layout_centerVertical="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/items_timing_tv1"
+                    android:textSize="@dimen/dip_25.0"
+                    android:textColor="#fff"
+                    />
+
+                <TextView
+                    android:layout_marginTop="@dimen/dip_2.0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/items_timing_tv2"
+                    android:textSize="@dimen/dip_12.0"
+                    android:textColor="#dfff"
+                    />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/items_timing_rel"
+                android:layout_marginRight="@dimen/dip_10.0"
+                android:layout_width="@dimen/dip_37.0"
+                android:layout_height="@dimen/dip_20.0"
+                android:gravity="center">
+
+                <com.grasp.training.view.SlideSwitch
+
+                    android:id="@+id/items_timing_ss"
+                    android:layout_width="@dimen/dip_37.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    slideswitch:isOpen="true"
+                    slideswitch:shape="circle"
+                    slideswitch:themeColor="@color/c_6793e4"></com.grasp.training.view.SlideSwitch>
+            </RelativeLayout>
+        </LinearLayout>
+
+
+
+
+
+
+
+
+
+        <TextView
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/week_pop_lin"
+    >
+    <LinearLayout
+
+        android:background="#fff"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_40.0"
+            android:background="#F8F8F8">
+
+            <TextView
+                android:id="@+id/week_pop_tv_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:text="确认"
+                android:layout_marginRight="@dimen/dip_22.0"
+                android:textColor="@drawable/raz2"
+                android:textSize="@dimen/dip_18.0" />
+
+            <TextView
+                android:id="@+id/week_pop_tv_qx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginLeft="@dimen/dip_22.0"
+                android:text="取消"
+                android:textColor="@drawable/raz2"
+                android:textSize="@dimen/dip_18.0"
+                />
+        </FrameLayout>
+        <RelativeLayout
+            android:id="@+id/week_pop_layout1"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv1"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周一"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im1"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout2"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv2"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周二"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im2"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout3"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv3"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周三"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im3"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout4"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv4"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周四"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im4"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout5"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv5"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周五"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im5"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout6"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv6"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周六"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im6"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/week_pop_layout7"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:id="@+id/week_pop_tv7"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周日"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#000"
+                />
+            <ImageView
+                android:background="@drawable/control_selected_normal"
+                android:id="@+id/week_pop_im7"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

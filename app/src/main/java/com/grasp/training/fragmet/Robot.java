@@ -2,6 +2,7 @@ package com.grasp.training.fragmet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,10 +38,12 @@ import com.grasp.training.swipemenulistview.SwipeMenuItem;
 import com.grasp.training.swipemenulistview.SwipeMenuListView;
 import com.grasp.training.tool.AddSQLiteHelper;
 import com.grasp.training.tool.BaseMqttFragment;
+import com.grasp.training.tool.Tool;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,7 +65,7 @@ public class Robot extends BaseMqttFragment {
     SwipeMenuListView toulistView;
     private List<Goods> toulist;
     private myListViewAdapter adapter;
-    private String myTopic ="iotbroad/iot";
+
     @Override
     public int getInflate() {
         return R.layout.robot;
@@ -74,8 +77,10 @@ public class Robot extends BaseMqttFragment {
         initlistView();
     }
 
+    private String myTopic = "iotbroad/iot/robotwithuser";
+
     @Override
-    public String  getMyTopic() {
+    public String getMyTopic() {
         return myTopic;
     }
 
@@ -85,14 +90,64 @@ public class Robot extends BaseMqttFragment {
     }
 
     @Override
-    public void MyMessageArrived(String message) {
+    public void MyMessageArrived(final String message) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("qqq","Robote_add messs="+message);
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.getString("cmd");
+                    String uname = jsonObject.optString("uname", "");  //
+                    if (!uname.equals(MainActivity.NameUser)) {
+                        return;
+                    }
+                    String clientid = jsonObject.optString("clientid", "");
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                        return;
+                    }
+                    switch (cmd) {
+                        case "queryrobotid_ok":
+                            toulist = new ArrayList<>();
+                            JSONArray jsonArray = jsonObject.getJSONArray("data");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                                String rid = jsonObject1.optString("rid", "");//id
+                                Goods g = new Goods();
+                                g.setName(rid);
+                                toulist.add(g);
+                            }
+                            handler.sendEmptyMessageDelayed(999,500);
+                            break;
+                        case "deleterobot_ok":
+                            handler.sendEmptyMessageDelayed(2000,500);
+                            break;
+                    }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
     }
 
 
-    private String sid = MainActivity.SID;
-
-
+    public void push_read() {  //获取机器人
+//        Log.e("qqq","消息 push_read");
+        try {
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "queryrobotid");
+            jsonObject.put("uname", MainActivity.NameUser);
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
+            String js = jsonObject.toString();
+            publish_String(js);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     @OnClick({R.id.jqr, R.id.robot_add})
@@ -113,20 +168,29 @@ public class Robot extends BaseMqttFragment {
         adapter = new myListViewAdapter(context, toulist);
 //        dataListview();
 
-        View la= LayoutInflater.from(context).inflate(R.layout.add_items, null);
+        View la = LayoutInflater.from(context).inflate(R.layout.add_items, null);
         toulistView.addFooterView(la);
         toulistView.setAdapter(adapter);
+
+        toulistView.setonRefreshListener(new SwipeMenuListView.OnRefreshListener() { //刷新
+
+            @Override
+            public void onRefresh() {
+                dataListview();
+
+            }
+        });
 
         toulistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                i--;
-                if(i==toulist.size()){
+                i = i - 1;
+                Log.e("qqq",i+"=i "+" toulist.s="+toulist.size());
+                if (i == toulist.size()) {
                     context.startActivity(new Intent(context, AcSearchDevice.class));
-                }else{
-
-                    Intent in=new Intent(context, ControlActivity.class);
-                    in.putExtra("uid",toulist.get(i).getName());
+                } else {
+                    Intent in = new Intent(context, ControlActivity.class);
+                    in.putExtra("uid", toulist.get(i).getName());
                     context.startActivity(in);
                 }
 
@@ -139,22 +203,6 @@ public class Robot extends BaseMqttFragment {
 
             @Override
             public void create(SwipeMenu menu) {
-                // create "open" item
-                //				SwipeMenuItem openItem = new SwipeMenuItem(
-                //						getApplicationContext());
-                // set item background
-                //				openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
-                //						0xCE)));
-                //				// set item width
-                //				openItem.setWidth(dp2px(90));
-                //				// set item title
-                //				openItem.setTitle("Open");
-                //				// set item title fontsize
-                //				openItem.setTitleSize(18);
-                //				// set item title font color
-                //				openItem.setTitleColor(Color.WHITE);
-                //				// add to menu
-                //				menu.addMenuItem(openItem);
 
                 // create "delete" item
                 SwipeMenuItem deleteItem = new SwipeMenuItem(
@@ -192,7 +240,7 @@ public class Robot extends BaseMqttFragment {
                         //					adapter.notifyDataSetChanged();
 
                         posi = position;
-                        ha.sendEmptyMessage(888);
+                        handler.sendEmptyMessage(888);
 
 
                         break;
@@ -217,7 +265,7 @@ public class Robot extends BaseMqttFragment {
 
     }
 
-    Handler ha = new Handler() {
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -227,8 +275,22 @@ public class Robot extends BaseMqttFragment {
                     break;
                 case 999:
                     adapter.setList(toulist);
+                    toulistView.onRefreshComplete();
                     adapter.notifyDataSetChanged();
                     ss_zt = true;
+                    break;
+                case 2000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, R.string.progress_pergood, Toast.LENGTH_SHORT).show();
+                    dataListview();
+                    break;
+                case 2001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, R.string.progress_pergood2, Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -239,22 +301,23 @@ public class Robot extends BaseMqttFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                toulist = new ArrayList<Goods>();
-
-                AddSQLiteHelper dbHelper = new AddSQLiteHelper(context, "add.db", null, 1);
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                String s = "select * from AddEquipment ";
-                Cursor cursor = db.rawQuery(s, null);
-                while (cursor.moveToNext()) {
-
-                    String uid = cursor.getString(1);//获取第2列的值
-
-                    Goods g = new Goods();
-                    g.setName(uid);
-                    toulist.add(g);
-
-                }
-                ha.sendEmptyMessage(999);
+                push_read();
+//                toulist = new ArrayList<Goods>();
+////
+////                AddSQLiteHelper dbHelper = new AddSQLiteHelper(context, "add.db", null, 1);
+////                SQLiteDatabase db = dbHelper.getWritableDatabase();
+////                String s = "select * from AddEquipment ";
+////                Cursor cursor = db.rawQuery(s, null);
+////                while (cursor.moveToNext()) {
+////
+////                    String uid = cursor.getString(1);//获取第2列的值
+////
+////                    Goods g = new Goods();
+////                    g.setName(uid);
+////                    toulist.add(g);
+////
+////                }
+////                ha.sendEmptyMessage(999);
             }
         }).start();
 
@@ -290,22 +353,59 @@ public class Robot extends BaseMqttFragment {
     private boolean ss_zt = false;
 
     private void delData() {
-        AddSQLiteHelper dbHelper = new AddSQLiteHelper(context, "add.db", null, 1);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        AddSQLiteHelper dbHelper = new AddSQLiteHelper(context, "add.db", null, 1);
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//
+//        String s = "delete from  AddEquipment    where uid='" + toulist.get(posi).getName() + "'";
+//        db.execSQL(s);
+//        Toast.makeText(context, R.string.progress_pergood, Toast.LENGTH_SHORT).show();
+        push_del();
+//        dataListview();
+    }
 
-        String s = "delete from  AddEquipment    where uid='" + toulist.get(posi).getName() + "'";
-        db.execSQL(s);
-        Toast.makeText(context, R.string.progress_pergood, Toast.LENGTH_SHORT).show();
 
+    private ProgressDialog dialog;
 
-        dataListview();
+    public void showPro() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("删除中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+
+    public void push_del() {  //删除机器人
+//        Log.e("qqq","消息 push_read");
+
+        showPro();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "deleterobot");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("rid", toulist.get(posi).getName());
+                    String js = jsonObject.toString();
+
+                    publish_String(js);  //主题
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        if(adapter!=null){
+        if (adapter != null) {
             dataListview();
         }
     }
@@ -324,8 +424,9 @@ public class Robot extends BaseMqttFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ha.removeMessages(888);
-        ha.removeMessages(999);
+        handler.removeMessages(888);
+        handler.removeMessages(999);
+        handler.removeMessages(2000);
         unbinder.unbind();
     }
 
@@ -384,7 +485,6 @@ public class Robot extends BaseMqttFragment {
                 too = new ListViewTool();
 
                 too.name = (TextView) view.findViewById(R.id.ybd_tv);
-                too.last = (LinearLayout) view.findViewById(R.id.sw_item_last);
 
                 view.setTag(too);
             } else {
@@ -393,18 +493,18 @@ public class Robot extends BaseMqttFragment {
             if (camera == null) return null;
 
             too.name.setText(camera.getName());
-            too.last.setBackgroundResource(R.drawable.d1);
-            if (list.size() > 1) {
-                if (position == list.size() - 1) {
-                    too.last.setBackgroundResource(R.drawable.d2);
-                } else {
-
-                }
-            } else {
-
-                too.last.setBackgroundResource(R.drawable.d2);
-
-            }
+//            too.last.setBackgroundResource(R.drawable.d1);
+//            if (list.size() > 1) {
+//                if (position == list.size() - 1) {
+//                    too.last.setBackgroundResource(R.drawable.d2);
+//                } else {
+//
+//                }
+//            } else {
+//
+//                too.last.setBackgroundResource(R.drawable.d2);
+//
+//            }
 
             //			if(camera.getName().equals(Uid)){
             //				too.ss.setState(true);

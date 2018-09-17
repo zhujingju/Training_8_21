@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/app_bg"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <ImageView
+            android:id="@+id/equipment_im"
+            android:background="@drawable/zhu_chazuo_normalno"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/dip_287.0"
+            android:layout_height="@dimen/dip_287.0"/>
+        <TextView
+            android:id="@+id/equipment_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/dip_25.0"
+            android:layout_marginTop="@dimen/dip_20.0"
+            />
+
+        <Button
+            android:id="@+id/equipment_fh"
+            android:layout_marginLeft="@dimen/dip_20.0"
+            android:layout_marginTop="@dimen/dip_20.0"
+            android:layout_width="@dimen/dip_33.0"
+            android:layout_height="@dimen/dip_33.0"
+            android:background="@drawable/fh"
+            />
+        <LinearLayout
+            android:layout_marginBottom="@dimen/dip_5.5"
+            android:visibility="gone"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/search_ds_layout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+
+                android:id="@+id/search_ds_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="倒计时：3:20"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="#fff"
+                android:layout_marginRight="@dimen/dip_5.0"
+                />
+            <ImageView
+                android:id="@+id/search_ds_del"
+                android:layout_width="@dimen/dip_20.0"
+                android:layout_height="@dimen/dip_20.0"
+                android:src="@drawable/zhu_del"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:background="#fff"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_134.0"
+        >
+
+        <Button
+            android:layout_marginRight="@dimen/dip_36.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/equipment_ds"
+            android:text="定时"
+            android:layout_width="@dimen/dip_68.0"
+            android:layout_height="@dimen/dip_68.0" />
+        <Button
+
+            android:background="@drawable/yuan"
+            android:id="@+id/equipment_state"
+            android:text="开启"
+            android:layout_width="@dimen/dip_68.0"
+            android:layout_height="@dimen/dip_68.0" />
+        <Button
+            android:layout_marginLeft="@dimen/dip_36.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/equipment_djs"
+            android:text="倒计时"
+            android:layout_width="@dimen/dip_68.0"
+            android:layout_height="@dimen/dip_68.0" />
+    </LinearLayout>
+</LinearLayout>

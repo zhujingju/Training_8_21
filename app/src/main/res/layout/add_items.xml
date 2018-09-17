@@ -4,23 +4,31 @@
     android:layout_height="match_parent"
     android:background="#0000"
     >
-
     <RelativeLayout
+        android:background="#0000"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dip_48.0">
-        <TextView
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dip_15.0"
-            android:textColor="@color/white"
-            android:textSize="@dimen/dip_15.0"
-            android:text="+添加机器人"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_marginLeft="@dimen/dip_5.0"
+            android:layout_marginTop="@dimen/dip_5.0"
+            android:layout_marginRight="@dimen/dip_5.0"
+            android:background="@drawable/kuang_bai"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dip_18.0"
+                android:textColor="@color/c_000000"
+                android:textSize="@dimen/dip_15.0"
+                android:text="+添加机器人"
 
 
-            />
-        <!--<LinearLayout-->
+                />
+            <!--<LinearLayout-->
             <!--android:id="@+id/sw_item_last"-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="@dimen/dip_1.0"-->
@@ -28,5 +36,7 @@
             <!--android:layout_alignParentBottom="true"-->
             <!--android:orientation="horizontal"-->
             <!--&gt;</LinearLayout>-->
+        </RelativeLayout>
     </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

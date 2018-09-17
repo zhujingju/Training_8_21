@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_40.0"
+        android:background="#F8F8F8">
+
+        <TextView
+            android:id="@+id/tx_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:text="确认"
+            android:layout_marginRight="@dimen/dip_22.0"
+            android:textColor="@drawable/raz2"
+            android:textSize="@dimen/dip_18.0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|left"
+            android:layout_marginLeft="@dimen/dip_22.0"
+            android:text="取消"
+            android:textColor="@drawable/raz2"
+            android:textSize="@dimen/dip_18.0"
+            android:id="@+id/textView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text=""
+            android:textColor="@drawable/raz2"
+            android:textSize="@dimen/dip_18.0"
+            android:id="@+id/timePicker_tv" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dip_5.0"
+            android:paddingTop="@dimen/dip_5.0">
+
+            <View
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:layout_weight="1" />
+
+            <FrameLayout
+                android:layout_width="@dimen/dip_100.0"
+                android:layout_height="wrap_content">
+
+                <com.example.liangmutian.mypicker.LoopView
+                    android:id="@+id/loop_hour"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/dip_40.0"
+                    android:text="@string/timepicker_hour"
+                    android:textColor="#B3B3B3" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="@dimen/dip_120.0"
+                android:layout_height="wrap_content">
+
+                <com.example.liangmutian.mypicker.LoopView
+                    android:id="@+id/loop_min"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_marginRight="@dimen/dip_15.0"
+                    android:text="@string/timepicker_min"
+                    android:textColor="#B3B3B3" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:layout_width="@dimen/dip_100.0"
+                android:layout_height="wrap_content">
+
+                <com.example.liangmutian.mypicker.LoopView
+                    android:id="@+id/loop_s"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/dip_40.0"
+                    android:text="@string/timepicker_s"
+                    android:textColor="#B3B3B3" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="0dip"
+                android:layout_height="0dip"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/dip_15.0"
+            android:background="#A5A5A5" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/dip_15.0"
+            android:background="#A5A5A5" />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#E2E2E2" />
+
+</LinearLayout>

@@ -43,12 +43,7 @@ public abstract class BaseMqttFragment extends Fragment {
         context.bindService(new Intent(context, MqttService.class), conn,
                 context.BIND_AUTO_CREATE);
         doRegisterReceiver();
-        if (isConnected()) {
-            subscribe();
-        } else {
 
-            ha.sendEmptyMessageDelayed(1000, 500);
-        }
         init(view);
         return view;
     }
@@ -72,6 +67,18 @@ public abstract class BaseMqttFragment extends Fragment {
         context.registerReceiver(mReceiver, filter);
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (isConnected()) {
+            subscribe();
+        } else {
+
+            ha.sendEmptyMessageDelayed(1000, 0);
+        }
+
+    }
 
     public abstract void MyMessageArrived(String message);
     public class ContentReceiver extends BroadcastReceiver {
@@ -124,6 +131,26 @@ public abstract class BaseMqttFragment extends Fragment {
             boolean retained = false;
             //发布消息
             publish(msg, topic, qos, retained);
+            Log.e("qqq",topic+" 发送消息="+set_msg);
+
+            return true;
+        }
+        return false;
+    }
+
+    public boolean publish_String2(String set_msg, String topic) {  //发送消息
+        if (isConnected()) {
+            //消息主题
+            //消息内容
+            String msg = set_msg;
+
+            //消息策略
+            int qos = 0;
+            //是否保留
+            boolean retained = false;
+            //发布消息
+            publish(msg, topic, qos, retained);
+            Log.e("qqq",topic+" 发送消息="+set_msg);
 
             return true;
         }
@@ -173,7 +200,7 @@ public abstract class BaseMqttFragment extends Fragment {
                         subscribe();
                     } else {
 
-                        ha.sendEmptyMessageDelayed(1000, 3000);
+                        ha.sendEmptyMessageDelayed(1000, 500);
                     }
 
                     break;
@@ -182,16 +209,4 @@ public abstract class BaseMqttFragment extends Fragment {
         }
     };
 
-    public static String getIMEI(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
-        @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
-        if(imei!=null&&!imei.equals("")){
-
-        }else{
-            long timeStamp = System.currentTimeMillis();
-            imei=timeStamp+"";
-        }
-
-        return imei;
-    }
 }

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
+    android:background="@drawable/bg"
     android:orientation="horizontal">
 
     <android.support.v4.widget.DrawerLayout
@@ -32,7 +32,7 @@
                     android:orientation="vertical">
 
                     <RelativeLayout
-
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dip_48.0">
 
@@ -84,7 +84,7 @@
                         <LinearLayout
                             android:background="@color/white"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dip_40.0"
+                            android:layout_height="@dimen/dip_48.0"
                             android:orientation="horizontal"
                             >
                             <LinearLayout
@@ -97,19 +97,9 @@
                                 android:layout_height="match_parent">
                                 <ImageView
                                     android:id="@+id/main_xia_im1"
-                                    android:layout_width="@dimen/dip_20.0"
-                                    android:layout_height="@dimen/dip_20.0"
-                                    android:background="@drawable/bg_pre"
-                                    />
-                                <TextView
-                                    android:id="@+id/main_xia_tv1"
-                                    android:layout_marginTop="@dimen/dip_2.5"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/hui"
-                                    android:textSize="@dimen/dip_10.0"
-                                    android:text="我的"
-
+                                    android:layout_width="@dimen/dip_48.0"
+                                    android:layout_height="@dimen/dip_48.0"
+                                    android:background="@drawable/icon_dao_grzx_normal"
                                     />
                             </LinearLayout>
 
@@ -123,19 +113,9 @@
                                 android:layout_height="match_parent">
                                 <ImageView
                                     android:id="@+id/main_xia_im2"
-                                    android:layout_width="@dimen/dip_20.0"
-                                    android:layout_height="@dimen/dip_20.0"
-                                    android:background="@drawable/bg_pre"
-                                    />
-                                <TextView
-                                    android:id="@+id/main_xia_tv2"
-                                    android:layout_marginTop="@dimen/dip_2.5"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/hui"
-                                    android:textSize="@dimen/dip_10.0"
-                                    android:text="我的"
-
+                                    android:layout_width="@dimen/dip_48.0"
+                                    android:layout_height="@dimen/dip_48.0"
+                                    android:background="@drawable/icon_dao_yycj_normal"
                                     />
                             </LinearLayout>
 
@@ -149,19 +129,9 @@
                                 android:layout_height="match_parent">
                                 <ImageView
                                     android:id="@+id/main_xia_im3"
-                                    android:layout_width="@dimen/dip_20.0"
-                                    android:layout_height="@dimen/dip_20.0"
-                                    android:background="@drawable/bg_pre"
-                                    />
-                                <TextView
-                                    android:id="@+id/main_xia_tv3"
-                                    android:layout_marginTop="@dimen/dip_2.5"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/hui"
-                                    android:textSize="@dimen/dip_10.0"
-                                    android:text="机器人"
-
+                                    android:layout_width="@dimen/dip_48.0"
+                                    android:layout_height="@dimen/dip_48.0"
+                                    android:background="@drawable/icon_dao_jqr_normal"
                                     />
                             </LinearLayout>
 
@@ -175,19 +145,9 @@
                                 android:layout_height="match_parent">
                                 <ImageView
                                     android:id="@+id/main_xia_im4"
-                                    android:layout_width="@dimen/dip_20.0"
-                                    android:layout_height="@dimen/dip_20.0"
-                                    android:background="@drawable/bg_pre"
-                                    />
-                                <TextView
-                                    android:id="@+id/main_xia_tv4"
-                                    android:layout_marginTop="@dimen/dip_2.5"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/hui"
-                                    android:textSize="@dimen/dip_10.0"
-                                    android:text="我的"
-
+                                    android:layout_width="@dimen/dip_48.0"
+                                    android:layout_height="@dimen/dip_48.0"
+                                    android:background="@drawable/icon_dao_grzx_normal"
                                     />
                             </LinearLayout>
 

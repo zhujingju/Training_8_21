@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#30000000"
+
+
+    >
+
+    <RelativeLayout
+        android:id="@+id/popwindialog_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:padding="@dimen/dip_5.5"
+            android:layout_centerInParent="true"
+            android:background="#fff"
+            android:layout_margin="@dimen/dip_10.0"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/popwindialog_tv_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#f00"
+                android:text="上次连接失败"
+                android:textSize="@dimen/dip_18.0"
+                android:layout_gravity="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#f00"
+                android:text="5G网络暂不支持"
+                android:textSize="@dimen/dip_12.0"
+                android:layout_gravity="right"
+                />
+            <LinearLayout
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dip_10.0"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_15.0"
+                    android:textColor="#000"
+                    android:text="设备接入wifi名称："
+
+                    />
+
+                <RelativeLayout
+                    android:layout_gravity="center"
+                    android:background="#fff"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_40.0">
+                    <Spinner
+                        android:spinnerMode="dialog"
+                        android:textColor="#000"
+                        android:textSize="@dimen/dip_15.0"
+                        android:id="@+id/popwindialog_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_15.0"
+                    android:textColor="#000"
+                    android:text="设备接入wifi密码："
+
+                    />
+
+                <EditText
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:id="@+id/popwindialog_ed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="#000"
+                    android:background="@null"
+                    android:singleLine="true"
+                    android:textSize="@dimen/dip_15.0"
+                    />
+            </LinearLayout>
+            <ProgressBar
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/dip_10.0"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dip_10.0"
+                android:layout_gravity="center"
+                android:id="@+id/popwindialog_pro"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+
+            <LinearLayout
+                android:id="@+id/popwindialog_lin"
+                android:layout_marginBottom="@dimen/dip_10.0"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dip_10.0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:background="@null"
+                    android:id="@+id/popwindialog_b_qx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="#000"
+                    android:text="取消"
+                    android:layout_marginRight="@dimen/dip_40.0"
+                    />
+
+                <Button
+                    android:layout_marginLeft="@dimen/dip_20.0"
+                    android:background="@null"
+                    android:id="@+id/popwindialog_b_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="#000"
+                    android:text="确认"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

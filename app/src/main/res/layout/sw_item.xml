@@ -4,12 +4,14 @@
     android:layout_height="@dimen/dip_60.0"
     android:gravity="center_vertical">
     <RelativeLayout
+        android:layout_margin="@dimen/dip_5.0"
+        android:background="@drawable/kuang_bai"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dip_60.0">
 
         <ImageView
-            android:background="@drawable/zhu_znjj_fd"
-            android:layout_marginLeft="@dimen/dip_10.0"
+            android:background="@drawable/icon_image_jiqiren_normal"
+            android:layout_marginLeft="@dimen/dip_37.0"
             android:layout_centerVertical="true"
             android:layout_width="@dimen/dip_40.0"
             android:layout_height="@dimen/dip_40.0" />
@@ -18,23 +20,13 @@
             android:id="@+id/ybd_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dip_60.0"
-            android:textColor="@color/white"
-            android:textSize="@dimen/dip_15.0"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
             android:text="66666"
 
 
             />
-        <LinearLayout
-            android:layout_marginLeft="@dimen/dip_5.0"
-            android:layout_marginRight="@dimen/dip_5.0"
-            android:id="@+id/sw_item_last"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dip_1.0"
-            android:background="@color/white"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            ></LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>
