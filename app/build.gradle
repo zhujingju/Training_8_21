@@ -7,7 +7,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName "app-smarthome-1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "release"
     }
@@ -85,11 +85,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    compile 'com.jakewharton:butterknife:8.5.1'
+    implementation 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
-    compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
-    compile project(path: ':easyMqttLibrary')
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    implementation project(path: ':easyMqttLibrary')
     implementation 'com.android.support:design:27.1.1'
     implementation files('libs/universal-image-loader-1.9.5.jar')
     implementation files('libs/fastjson-1.1.43.android.jar')
@@ -98,4 +98,6 @@ dependencies {
     implementation files('libs/SmartLink.jar')
     implementation files('libs/WebSocket.jar')
     implementation project(':mypicker')
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
+
 }

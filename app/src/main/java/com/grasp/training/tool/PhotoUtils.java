@@ -129,7 +129,7 @@ public class PhotoUtils {
         intent.putExtra("scale", true);
         //将剪切的图片保存到目标Uri中
         intent.putExtra(MediaStore.EXTRA_OUTPUT, desUri);
-        intent.putExtra("return-data", false);
+        intent.putExtra("return-data", true);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true);
         activity.startActivityForResult(intent, requestCode);
@@ -174,14 +174,16 @@ public class PhotoUtils {
         }
         intent.setDataAndType(orgUri, "image/*");
         intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", aspectX);
-        intent.putExtra("aspectY", aspectX);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
         intent.putExtra("outputX", 160);
         intent.putExtra("outputY", 160);
         intent.putExtra("scale", true);
         //将剪切的图片保存到目标Uri中
         intent.putExtra(MediaStore.EXTRA_OUTPUT, desUri);
-        intent.putExtra("return-data", false);
+//        Uri uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
+        intent.putExtra("return-data", true);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true);
         fragment.startActivityForResult(intent, requestCode);

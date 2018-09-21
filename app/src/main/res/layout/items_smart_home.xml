@@ -12,7 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ImageView
-                android:background="@drawable/icon_image_chazuo_normal"
                 android:id="@+id/items_smart_home_im"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/dip_15.0"
@@ -28,11 +27,13 @@
                 >
                 <TextView
                     android:text="aaa"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/items_smart_home_tv1"
                     android:textColor="#000"
                     android:textSize="@dimen/dip_12.0"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_width="@dimen/dip_80.0"
                     />
                 <TextView
                     android:text="bbb"

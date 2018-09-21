@@ -1,7 +1,10 @@
 package com.grasp.training.activity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +12,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +42,7 @@ public class EquipmentActivity extends BaseMqttActivity {
 
     public final static String equipment1 = "Equipment_1";
     public final static String equipment2 = "Equipment_2";
+    public final static String equipment3 = "Equipment_3";
     @BindView(R.id.equipment_im)
     ImageView im;
     @BindView(R.id.equipment_tv)
@@ -55,14 +61,20 @@ public class EquipmentActivity extends BaseMqttActivity {
     Button state;
     @BindView(R.id.equipment_djs)
     Button equipmentDjs;
-    private String sid, type;
+    @BindView(R.id.equipment_sys)
+    TextView tv_sys;
+    @BindView(R.id.equipment_sys_im)
+    ImageView tv_sys_im;
+    private String sid, type,dname;
     private Context context;
     private String myTopicding, myTopic;
+    private String sys_ver="",hard_ver = "";
 
-    public static void starstEquipmentActivity(Context context, String sid, String type) {
+    public static void starstEquipmentActivity(Context context, String sid, String type,String name) {
         Intent in = new Intent(context, EquipmentActivity.class);
         in.putExtra(equipment1, sid);
         in.putExtra(equipment2, type);
+        in.putExtra(equipment3, name);
         context.startActivity(in);
     }
 
@@ -77,6 +89,7 @@ public class EquipmentActivity extends BaseMqttActivity {
         context = getContext();
         sid = getIntent().getStringExtra(equipment1);
         type = getIntent().getStringExtra(equipment2);
+        dname = getIntent().getStringExtra(equipment3);
         myTopicding = "iotbroad/iot/"+type+"_ack/" + sid;
         myTopic = "iotbroad/iot/"+type+"/" + sid;
         if (sid==null || type==null) {
@@ -89,6 +102,8 @@ public class EquipmentActivity extends BaseMqttActivity {
             finish();
             return;
         }
+        tv_sys_im.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -109,9 +124,9 @@ public class EquipmentActivity extends BaseMqttActivity {
     @Override
     public void init() {
         if(eMap.get(type)!=null){
-            equipmentTv.setText(eMap.get(type));
+//            equipmentTv.setText(eMap.get(type));
         }
-
+        equipmentTv.setText(dname);
 
     }
 
@@ -157,6 +172,14 @@ public class EquipmentActivity extends BaseMqttActivity {
                         handler.removeMessages(3000);
                         handler.removeMessages(5000);
                         state = jsonObject.optString("state");
+                        String ver= jsonObject.optString("sys_ver","");
+                        if(!ver.equals("")){
+                            sys_ver=ver;
+                        }
+                        String hard = jsonObject.optString("hard_ver", "");
+                        if (!hard.equals("")) {
+                            hard_ver = hard;
+                        }
                         me=new Message();
                         me.what=1000;
                         me.obj=state;
@@ -201,6 +224,17 @@ public class EquipmentActivity extends BaseMqttActivity {
                         handler.removeMessages(2000);
                         handler.removeMessages(2001);
                         handler.sendMessage(me);
+                    }else if(cmd.equals("updatedevicename_ok")){
+                        String uname = jsonObject.optString("uname", "");  //
+                        if (!uname.equals(MainActivity.NameUser)) {
+                            return;
+                        }
+                        String clientid = jsonObject.optString("clientid", "");
+                        if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                            return;
+                        }
+                        dname= jsonObject.optString("dname", "");
+                        handler.sendEmptyMessageDelayed(233,500);
                     }
 
                 } catch (JSONException e) {
@@ -215,10 +249,14 @@ public class EquipmentActivity extends BaseMqttActivity {
         if(!sid.equals("")){
             handler.removeMessages(3000);
             handler.removeMessages(4000);
-            handler.sendEmptyMessageDelayed(3000,1000);
-            handler.sendEmptyMessageDelayed(4000,1000);
+            handler.sendEmptyMessageDelayed(3000,000);
+            handler.sendEmptyMessageDelayed(4000,000);
         }
         super.onStart();
+    }
+
+    public void put_sz(View v){
+        EquipmentUpdataActivity.starstEquipmentActivity(context,sid,type,sys_ver,hard_ver);
     }
 
     @Override
@@ -231,6 +269,8 @@ public class EquipmentActivity extends BaseMqttActivity {
         handler.removeMessages(4000);
         handler.removeMessages(5000);
         handler.removeMessages(6000);
+        handler.removeMessages(233);
+        handler.removeMessages(2222);
     }
 
     private boolean ds_state=false;//倒计时将要变的状态
@@ -243,6 +283,14 @@ public class EquipmentActivity extends BaseMqttActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
+
+                case 233:
+                    if(dialog!=null){
+                        dialog.dismiss();
+                    }
+                    equipmentTv.setText(dname);
+
+                    break;
                 case 1000:
                     String s=msg.obj.toString();
                     if(s.equals("on")){
@@ -250,6 +298,7 @@ public class EquipmentActivity extends BaseMqttActivity {
                     }else{
                         search_zt=false;
                     }
+//                    tv_sys.setText("版本号："+sys_ver);
                     setStateView(search_zt);
                     break;
 
@@ -375,9 +424,19 @@ public class EquipmentActivity extends BaseMqttActivity {
     }
 
 
-    @OnClick({R.id.equipment_im, R.id.equipment_fh, R.id.search_ds_del, R.id.search_ds_layout, R.id.equipment_ds, R.id.equipment_state, R.id.equipment_djs})
+    @OnClick({R.id.equipment_sys,R.id.equipment_tv,R.id.equipment_im, R.id.equipment_fh, R.id.search_ds_del, R.id.search_ds_layout, R.id.equipment_ds, R.id.equipment_state, R.id.equipment_djs})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.equipment_sys://更新检查
+//                if(!sys_ver.equals("")){
+//                    if(updata_zt){
+//                        updata();
+//                    }
+//                }
+                break;
+            case R.id.equipment_tv:
+                setName();
+                break;
             case R.id.equipment_im:
                 if(search_zt){
                     push("off");
@@ -621,9 +680,76 @@ public class EquipmentActivity extends BaseMqttActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
         }
+    }
+
+
+
+
+
+    private String mc = "";
+
+    public void setName() {
+        Log.e("qqq","setName");
+        final EditText et = new EditText(this);
+        et.setText(dname);
+        new AlertDialog.Builder(this).setTitle("改变名称")
+                .setView(et)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String input = et.getText().toString();
+                        if (input.equals("")) {
+                            Toast.makeText(getApplicationContext(), "内容不能为空！" + input, Toast.LENGTH_LONG).show();
+                        } else {
+                            mc = input;
+                            push_name();
+                            showPro();
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null).show();
 
     }
+
+
+    public void push_name() { //修改名称
+
+        final String myTopicding_too = "iotbroad/iot/device";
+        subscribe(myTopicding_too);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "updatedevicename");
+                    jsonObject.put("sid", sid);
+                    jsonObject.put("dname", mc);
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    String js = jsonObject.toString();
+                    publish_String3(js, myTopicding_too);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+
+    }
+
+
+    private ProgressDialog dialog;
+
+    public void showPro() {
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("修改中...");
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
+
+
+
 }

@@ -128,4 +128,22 @@
     <string name="add_sid">添加新设备</string>
     <string name="del_sid">长按删除设备</string>
     <string name="ss_sid">正在搜索设备</string>
+    <string name="pre_xgmm">修改密码</string>
+    <string name="pre_tc">退出登录</string>
+
+    <string name="personal_2">更改密码</string>
+    <string name="personal_1">更改昵称</string>
+    <string name="personal_3">请输入旧密码：</string>
+    <string name="personal_4">输入新密码：</string>
+    <string name="personal_5">确认旧密码：</string>
+    <string name="personal_6">退出登录</string>
+    <string name="personal_7">昵称:</string>
+    <string name="personal_8">请点击软键盘的确认</string>
+    <string name="personal_9">检查更新</string>
+    <string name="personal_10">修改手机号</string>
+
+    <string name="eu_tv1">设备类型</string>
+    <string name="eu_tv2">软件版本</string>
+    <string name="eu_tv3">硬件版本</string>
+    <string name="eu_tv4">检查更新</string>
 </resources>

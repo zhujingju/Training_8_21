@@ -231,6 +231,27 @@ public abstract class BaseMqttActivity extends BaseActivity {
         }
         return false;
     }
+
+
+    public boolean publish_String3(String set_msg, String topic) {  //发送消息
+        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+
+        if (isConnected()) {
+            //消息主题
+            //消息内容
+            String msg = set_msg;
+
+            //消息策略
+            int qos = 0;
+            //是否保留
+            boolean retained = false;
+            //发布消息
+            publish(msg, topic, qos, retained);
+
+            return true;
+        }
+        return false;
+    }
     /**
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
      */
@@ -469,10 +490,10 @@ public abstract class BaseMqttActivity extends BaseActivity {
         try {
             //发送请求所有数据消息
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_ping");
+            jsonObject.put("cmd", "wifi_equipment_ping");
             jsonObject.put("sid", sid);
             String js = jsonObject.toString();
-            publish_String(js);
+            publish_String3(js,getMyTopic());
         } catch (JSONException e) {
             e.printStackTrace();
         }

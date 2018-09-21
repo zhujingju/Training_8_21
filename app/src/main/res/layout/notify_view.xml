@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:gravity="center_vertical"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/notify_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon"
+        android:layout_marginRight="@dimen/dip_10.0"
+         />
+
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/notify_icon"
+        android:singleLine="true"
+        android:textSize="@dimen/dip_16.0"
+        android:textColor="#000"
+        android:layout_marginBottom="5px"
+        android:text="下载进度..." />
+
+    <ProgressBar
+        android:id="@+id/pb"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv"
+        android:layout_toRightOf="@id/notify_icon"
+        android:max="100"
+        android:paddingRight="5dp"
+        android:progress="50"
+        android:secondaryProgress="74"
+        android:visibility="visible" />
+
+</RelativeLayout>

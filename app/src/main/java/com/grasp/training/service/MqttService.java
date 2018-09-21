@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.grasp.training.tool.SharedPreferencesUtils;
 import com.zs.easy.mqtt.EasyMqttService;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
 
@@ -22,9 +23,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class MqttService extends Service {
 
+
+    private final String MqttService1 = "MqttService1";
+    private final String MqttService2 = "MqttService2";
 
     @Override
     public void onCreate() {
@@ -32,8 +38,10 @@ public class MqttService extends Service {
         // The service is being created
         // 创建服务
         Log.e("qqq", "onCreate 服务");
-        ip_zt = new HashMap<>();
-        sid_ip = new HashMap<>();
+        ip_zt =    putMap(MqttService1);
+        sid_ip =    putMap(MqttService2);
+        Log.e("qqq", "ip.s=" + ip_zt.size()+" "+ip_zt);
+        Log.e("qqq", "sid_ip.s=" + sid_ip.size()+"  "+sid_ip);
         buildEasyMqttService();
         initIEasyMqttCallBack();
         connect();
@@ -95,15 +103,15 @@ public class MqttService extends Service {
                             JSONObject jsonObject = new JSONObject(message);
                             String cmd = jsonObject.getString("cmd");
                             switch (cmd) {
-                                case "wifi_socket_ping_ack":
-                                    String f_ip=jsonObject.optString("ip","");
-                                    String f_sid=jsonObject.optString("sid","");
-                                    Log.e("qqq","wifi_socket_ping_ack "+f_ip+ "  "+f_sid);
-                                    if(!f_ip.equals("")){
-                                        sid_ip.put(f_sid,f_ip);
+                                case "wifi_equipment_ping_ack":
+                                    String f_ip = jsonObject.optString("ip", "");
+                                    String f_sid = jsonObject.optString("sid", "");
+                                    Log.e("qqq", "wifi_equipment_ping_ack " + f_ip + "  " + f_sid);
+                                    if (!f_ip.equals("")) {
+                                        sid_ip.put(f_sid, f_ip);
                                         String ip = getIp(MqttService.this);
                                         if (ip != null && !ip.equals("")) {
-                                            ping_go(f_ip,f_sid);
+                                            ping_go(f_ip, f_sid);
                                         }
                                     }
 
@@ -193,7 +201,6 @@ public class MqttService extends Service {
         } finally {
 
             Log.i("TTT", "result = " + result);
-
         }
 
         return false;
@@ -224,7 +231,7 @@ public class MqttService extends Service {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                ip_zt.put(s+sid,ping_zt);
+                ip_zt.put(s + sid, ping_zt);
                 Log.e("qqq", "ping_zt=" + ping_zt + "  " + process);
             }
         }).start();
@@ -342,13 +349,30 @@ public class MqttService extends Service {
             imei = timeStamp + "";
         }
 
-        return imei+"S1";
+        return imei + "S1";
     }
 
 
     @Override
     public void onDestroy() {
         Log.e("qqq", "onDestroy 服务");
+        Log.e("qqq", "sid_ip=" + sid_ip);
+//        spUtils.setMap(MqttService2, sid_ip);
+//
+//        HashMap<String,String> hashMap=new HashMap();
+//        for(Map.Entry<String, Boolean> entry: ip_zt.entrySet())
+//        {
+//            if(entry.getValue()){
+//                hashMap.put(entry.getKey(),"on");
+//            }else{
+//                hashMap.put(entry.getKey(),"off");
+//            }
+//
+//        }
+
+//        spUtils.setMap(MqttService1, hashMap);
+        saveMap(ip_zt,MqttService1);
+        saveMap(sid_ip,MqttService2);
         super.onDestroy();
         disconnect();
         close();
@@ -365,4 +389,40 @@ public class MqttService extends Service {
     }
 
 
+
+    public  <Srring, V> void  saveMap(HashMap<String, V> map,String mz){
+        JSONObject jsonObject=new JSONObject();
+        for(Map.Entry<String, V> entry: map.entrySet())
+        {
+            try {
+                jsonObject.put(entry.getKey(),entry.getValue());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        SharedPreferencesUtils.setParam(this,mz,jsonObject.toString());
+    }
+
+
+    public  <Srring, V>  HashMap<String, V>  putMap(String mz){
+        HashMap hashMap=new HashMap();
+        String s=SharedPreferencesUtils.getParam(this,mz,"").toString();
+        if(!s.equals("")){
+                try {
+                    JSONObject jsonObject=new JSONObject(s);
+                    Iterator keys = jsonObject.keys();
+                    while(keys.hasNext()){
+                        String key =(String)keys.next();
+                        V var= (V) jsonObject.opt(key);
+                        hashMap.put(key,var);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+        }
+
+        return hashMap;
+
+    }
 }

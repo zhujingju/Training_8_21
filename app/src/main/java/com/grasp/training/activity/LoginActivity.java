@@ -61,9 +61,11 @@ public class LoginActivity extends BaseMqttActivity {
     private PlayerClient playClient;
     private MyApplication appMain;
 
-    private String c_name="Login_name";
-    private String c_pw="Login_pw";
-    private String c_zt="Login_zw";
+    public static final String c_name="Login_name";
+    public static final String c_pw="Login_pw";
+    public static final String c_im="Login_im";
+    public static final String c_nc="Login_nc";
+    private   String c_zt="Login_zw";
 
     private boolean dl=false;
 
@@ -379,7 +381,12 @@ public class LoginActivity extends BaseMqttActivity {
                             }
 
                             String mName = jsonObject.optString("uname", "");
+                            String nickname = jsonObject.optString("nickname", "");
+                            String uthumbnail = jsonObject.optString("uthumbnail", "");
                             SharedPreferencesUtils.setParam(getContext(),MyApplication.NAME_USER,mName);
+
+                            SharedPreferencesUtils.setParam(getContext(),c_im,uthumbnail);
+                            SharedPreferencesUtils.setParam(getContext(),c_nc,nickname);
                             ha.sendEmptyMessage(1002);
                             break;
                         case "login_failed":

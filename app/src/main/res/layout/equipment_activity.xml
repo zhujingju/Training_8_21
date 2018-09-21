@@ -19,11 +19,15 @@
             android:layout_height="@dimen/dip_287.0"/>
         <TextView
             android:id="@+id/equipment_tv"
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_width="@dimen/dip_150.0"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:textColor="#fff"
             android:textSize="@dimen/dip_25.0"
+            android:text="智能插aaaaaaaaa座"
             android:layout_marginTop="@dimen/dip_20.0"
             />
 
@@ -34,6 +38,16 @@
             android:layout_width="@dimen/dip_33.0"
             android:layout_height="@dimen/dip_33.0"
             android:background="@drawable/fh"
+            />
+        <Button
+            android:onClick="put_sz"
+            android:id="@+id/switch_sz"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:layout_marginTop="@dimen/dip_20.0"
+            android:layout_width="@dimen/dip_33.0"
+            android:layout_height="@dimen/dip_33.0"
+            android:background="@drawable/personalcenter_tabbar_setup_selected"
             />
         <LinearLayout
             android:layout_marginBottom="@dimen/dip_5.5"
@@ -63,6 +77,38 @@
                 />
 
         </LinearLayout>
+
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_10.0"
+            android:layout_marginBottom="@dimen/dip_10.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginRight="@dimen/dip_5.0"
+                android:layout_alignParentRight="true"
+                android:id="@+id/equipment_sys"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_14.0"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dip_5.0"
+                android:layout_height="@dimen/dip_5.0"
+                android:id="@+id/equipment_sys_im"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/yuan_hong"
+                />
+        </RelativeLayout>
 
     </RelativeLayout>
 

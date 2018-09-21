@@ -13,6 +13,20 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+
 /**
  * Mqtt服务
  * @author zhangshun
@@ -156,6 +170,12 @@ public class EasyMqttService {
         // 密码
         conOpt.setPassword(passWord.toCharArray());
         conOpt.setAutomaticReconnect(autoReconnect);
+
+//        SSLSocketFactory socketFactory = SslUtil.createSocketFactory(context);
+//        if (socketFactory != null) {
+//            conOpt.setSocketFactory(socketFactory);
+//        }
+
     }
 
     /**

@@ -53,6 +53,8 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         initListener() ;
         init();
     }
+
+
     public  abstract int setLayoutId();   //获得布局
     public  abstract void initData() ;//初始化数据
     public  abstract void initView();   // 这里初始化控件

@@ -1,6 +1,7 @@
 package com.grasp.training;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.fragmet.Personal;
 import com.grasp.training.fragmet.Robot;
 import com.grasp.training.fragmet.Scenario;
@@ -114,6 +116,12 @@ public class MainActivity extends BaseMqttFragmentActivity {
     public void initView() {
         handler.sendEmptyMessageDelayed(1000, 0); //获取设备类型
         NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
+        if(NameUser.equals("")){
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+            return;
+        }
+
         String data = SharedPreferencesUtils.getParam(getContext(), MainData, "").toString();
         if (data.equals("")) {
             inData();

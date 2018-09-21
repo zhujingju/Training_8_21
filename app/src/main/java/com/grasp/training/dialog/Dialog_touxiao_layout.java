@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Date;
 
 
-public class Dialog_touxiao_layout extends LinearLayout {
+public  class Dialog_touxiao_layout extends LinearLayout {
     //	Uri imUri;
     Context c;
     /* 头像名称 */
@@ -64,6 +64,7 @@ public class Dialog_touxiao_layout extends LinearLayout {
                         //通过FileProvider创建一个content类型的Uri
                         imageUri = FileProvider.getUriForFile(c, "com.grasp.training.cartoonprovider", fileUri);
                     PhotoUtils.takePicture((Activity) c, imageUri, CODE_CAMERA_REQUEST);
+//                    dialogTouxiaoLayoutIn.paizhao();
                 } else {
                     Toast.makeText(c, "设备没有SD卡！", Toast.LENGTH_SHORT).show();
                 }
@@ -82,8 +83,12 @@ public class Dialog_touxiao_layout extends LinearLayout {
 ////				intent.setType("image/*");
 //                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 //                        "image/*");
-//                ((Activity) c).startActivityForResult(intent, PHOTO_REQUEST_GALLERY);
+//                ((Activity) c).startActivityForResult(intent,PHOTO_REQUEST_GALLERY);
+
+
                 PhotoUtils.openPic((Activity) c, CODE_GALLERY_REQUEST);
+
+//                dialogTouxiaoLayoutIn.shangc();
             }
         });
     }
@@ -160,4 +165,15 @@ public class Dialog_touxiao_layout extends LinearLayout {
         return pash;
     }
 
+    private Dialog_touxiao_layoutIn dialogTouxiaoLayoutIn;
+
+
+    public void setDialogTouxiaoLayoutIn(Dialog_touxiao_layoutIn dialogTouxiaoLayoutIn) {
+        this.dialogTouxiaoLayoutIn = dialogTouxiaoLayoutIn;
+    }
+
+    public interface   Dialog_touxiao_layoutIn{
+        public void paizhao();
+        public void shangc();
+    }
 }

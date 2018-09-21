@@ -183,40 +183,40 @@ public class SplashActivity extends Activity implements OnPageChangeListener{//�
 		
 	@TargetApi(Build.VERSION_CODES.ECLAIR)
 	public void gotoView(View view) {  //动画
-//		Intent intent = new Intent();
-//		intent.setClass(SplashActivity.this, MainActivity.class);
-//		startActivity(intent);
-//		finish();
+		Intent intent = new Intent();
+		intent.setClass(SplashActivity.this, MainActivity.class);
+		startActivity(intent);
+		finish();
 		//淡入淡出效果
-		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-			//添加动画效果
-			AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
-			animation.setDuration(2000);
-			animation.setAnimationListener(new Animation.AnimationListener() {
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-					Log.d("qqq","onAnimationStart");
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-					Log.d("qqq","onAnimationRepeat");
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					//跳转界面
-					Log.d("qqq","onAnimationEnd");
-					Intent intent = new Intent();
-		            intent.setClass(SplashActivity.this, LoginActivity.class);
-		            startActivity(intent);
-					finish();
-					//淡入淡出效果
-					overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-				}
-			});
-			view.setAnimation(animation);
+//		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//			//添加动画效果
+//			AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
+//			animation.setDuration(2000);
+//			animation.setAnimationListener(new Animation.AnimationListener() {
+//
+//				@Override
+//				public void onAnimationStart(Animation animation) {
+//					Log.d("qqq","onAnimationStart");
+//				}
+//
+//				@Override
+//				public void onAnimationRepeat(Animation animation) {
+//					Log.d("qqq","onAnimationRepeat");
+//				}
+//
+//				@Override
+//				public void onAnimationEnd(Animation animation) {
+//					//跳转界面
+//					Log.d("qqq","onAnimationEnd");
+//					Intent intent = new Intent();
+//		            intent.setClass(SplashActivity.this, LoginActivity.class);
+//		            startActivity(intent);
+//					finish();
+//					//淡入淡出效果
+//					overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//				}
+//			});
+//			view.setAnimation(animation);
 		}
 		
 		
