@@ -1,8 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/app_bg"
     android:layout_height="match_parent">
 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_70.0">
+        <TextView
+            android:id="@+id/control_mc"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_width="@dimen/dip_180.0"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/dip_23.0"
+            android:text="zw2017060821"
+            />
+
+        <Button
+            android:id="@+id/control_fh"
+            android:layout_marginLeft="@dimen/dip_20.0"
+            android:layout_marginTop="@dimen/dip_20.0"
+            android:layout_width="@dimen/dip_33.0"
+            android:layout_height="@dimen/dip_33.0"
+            android:background="@drawable/fh"
+            />
+    </RelativeLayout>
     <RelativeLayout
 
         android:scaleType="centerCrop"

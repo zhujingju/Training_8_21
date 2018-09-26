@@ -380,13 +380,6 @@ public class EquipmentActivity extends BaseMqttActivity {
                 case 3000:
                     handler.sendEmptyMessageDelayed(5000,0);//循环获取开关状态
                     handler.sendEmptyMessageDelayed(3000,1000);
-//                    if(isConnected()){
-//                        push_read();
-//                        handler.sendEmptyMessageDelayed(4000,1000);
-////                        handler.sendEmptyMessageDelayed(5000,1000);
-//                    }else{
-//                        handler.sendEmptyMessageDelayed(3000,1000);
-//                    }
                     break;
                 case 4000:
                     handler.sendEmptyMessageDelayed(6000,0);//循环获取定时状态

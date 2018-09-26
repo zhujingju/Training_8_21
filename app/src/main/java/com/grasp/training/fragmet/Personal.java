@@ -641,7 +641,8 @@ public class Personal extends BaseMqttFragment {
 
     public void Update(String url) {//更新
         manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notification = new Notification(R.drawable.icon, "下载进度...", System.currentTimeMillis());
+        notification=new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
+//        notification = new Notification(R.drawable.icon, "下载进度...", System.currentTimeMillis());
         download(url, Path, apkName);
     }
 

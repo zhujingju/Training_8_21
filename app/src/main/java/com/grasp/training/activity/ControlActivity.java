@@ -69,6 +69,8 @@ public class ControlActivity extends BaseMqttActivity {
     TextView xs;
     @BindView(R.id.control_bs)
     TextView bs;
+    @BindView(R.id.control_mc)
+    TextView mc;
     @BindView(R.id.control_tou_left)
     Button controlTouLeft;
     @BindView(R.id.control_tou_right)
@@ -114,6 +116,7 @@ public class ControlActivity extends BaseMqttActivity {
         Uid=in.getStringExtra("uid");
 
         context = this;
+        mc.setText(Uid);
         appMain = (MyApplication) ((Activity) context).getApplication();
         playClient = appMain.getPlayerclient();
         PicOnLongClick pic = new PicOnLongClick();
@@ -156,9 +159,12 @@ public class ControlActivity extends BaseMqttActivity {
     }
 
 
-    @OnClick({R.id.control_sx, R.id.control_stop})
+    @OnClick({R.id.control_fh,R.id.control_sx, R.id.control_stop})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.control_fh:
+                finish();
+                break;
             case R.id.control_sx:
                 if (!Uid.equals("")) {
                     controlSx.setVisibility(View.GONE);

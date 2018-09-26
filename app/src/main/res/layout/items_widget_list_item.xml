@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:id = "@+id/widget_list_item_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_marginTop = "@dimen/dip_3.0"
+        android:layout_marginRight="@dimen/dip_3.0"
+        android:layout_marginLeft = "@dimen/dip_5.0"
+        android:id = "@+id/widget_list_item_im"
+        android:layout_width="@dimen/dip_16.0"
+        android:layout_height="@dimen/dip_16.0" />
+</android.support.constraint.ConstraintLayout>

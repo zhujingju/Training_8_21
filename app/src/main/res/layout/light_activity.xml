@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_bg"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+            <TextView
+                android:id="@+id/light_tv"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_width="@dimen/dip_150.0"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_25.0"
+                android:text="智能插aaaaaaaaa座"
+                android:layout_marginTop="@dimen/dip_20.0"
+                />
+
+            <Button
+                android:id="@+id/light_fh"
+                android:layout_marginLeft="@dimen/dip_20.0"
+                android:layout_marginTop="@dimen/dip_20.0"
+                android:layout_width="@dimen/dip_33.0"
+                android:layout_height="@dimen/dip_33.0"
+                android:background="@drawable/fh"
+                />
+            <Button
+                android:onClick="put_sz"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dip_20.0"
+                android:layout_marginTop="@dimen/dip_20.0"
+                android:layout_width="@dimen/dip_33.0"
+                android:layout_height="@dimen/dip_33.0"
+                android:background="@drawable/personalcenter_tabbar_setup_selected"
+                />m
+            <RelativeLayout
+                android:layout_marginTop="@dimen/dip_70.0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_width="@dimen/dip_287.0"
+                    android:layout_height="@dimen/dip_287.0"
+
+                    >
+                    <ImageView
+                        android:id="@+id/light_im_deng"
+                        android:background="@drawable/zhu_diandeng_normald"
+                        android:layout_centerInParent="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <ImageView
+                        android:id="@+id/light_im"
+                        android:background="@drawable/zhu_chazuo_selected"
+                        android:layout_centerInParent="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/light_im2"
+                        android:layout_margin="@dimen/dip_10.0"
+                        android:background="@drawable/zhu_chazuo_normal"
+                        android:layout_centerInParent="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </RelativeLayout>
+
+        </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="#fff"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_134.0"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_20.0" />
+            <LinearLayout
+                android:layout_marginRight="@dimen/dip_20.0"
+                android:layout_marginLeft="@dimen/dip_20.0"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/light_a_tv1"
+                    android:textSize="@dimen/dip_15.0"
+                    android:textColor="@color/c_000000"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+
+                    <ImageView
+                        android:layout_marginRight="@dimen/dip_8.0"
+                        android:layout_marginLeft="@dimen/dip_8.0"
+                        android:layout_centerVertical="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dip_5.5"
+                        android:background="@drawable/control_wendutiao"/>
+                    <SeekBar
+                        android:id="@+id/light_seekbar"
+                        android:layout_centerVertical="true"
+                        android:progressDrawable="@drawable/progressdra"
+                        android:thumb="@drawable/thumb"
+                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/smart_tv_seekbarByc1"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/dip_12.0"
+                        android:textColor="@color/c_000000"
+                        android:text="0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_marginRight="@dimen/dip_20.0"
+                android:layout_marginLeft="@dimen/dip_20.0"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/light_a_tv2"
+                    android:textSize="@dimen/dip_15.0"
+                    android:textColor="@color/c_000000"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                <ImageView
+                    android:layout_marginRight="@dimen/dip_8.0"
+                    android:layout_marginLeft="@dimen/dip_8.0"
+                    android:layout_centerVertical="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_5.5"
+                    android:background="@drawable/control_wendutiao"/>
+                <SeekBar
+                    android:id="@+id/light_seekbar2"
+                    android:layout_centerVertical="true"
+                    android:progressDrawable="@drawable/progressdra"
+                    android:thumb="@drawable/thumb"
+                    android:background="@null"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/smart_tv_seekbarByc2"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="@dimen/dip_12.0"
+                    android:textColor="@color/c_000000"
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_20.0" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

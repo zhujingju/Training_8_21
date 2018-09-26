@@ -58,8 +58,8 @@ import java.util.List;
 
 public class SearchActivity extends BaseMqttActivity {
 
-    private String myTopicding = "iotbroad/iot/uploadsingle";
-    private String myTopic = "iotbroad/iot/uploadsingle";
+    private String myTopicding = "iotbroad/iot/device";
+    private String myTopic = "iotbroad/iot/device";
     private Context context;
     private ListView listview;
     private List<Goods> list;
@@ -81,7 +81,7 @@ public class SearchActivity extends BaseMqttActivity {
     public void initData() {
         context = getContext();
         sid_List = getIntent().getStringArrayListExtra("sid_List");
-        wifiadmin = new WifiAdmin(context);  //wifi工具类
+
         listview = (ListView) findViewById(R.id.search_list);
         lin = (LinearLayout) findViewById(R.id.search_lin);
         dong_im= (ImageView) findViewById(R.id.search_dong);
@@ -511,7 +511,7 @@ public class SearchActivity extends BaseMqttActivity {
         if (!isWifiConnect()) {
             return;
         }
-
+        wifiadmin = new WifiAdmin(context);  //wifi工具类
         wifiadmin.openWifi();//打开wifi
         wifiadmin.startScan();  //扫描
 

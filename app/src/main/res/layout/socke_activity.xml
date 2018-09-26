@@ -11,12 +11,19 @@
         android:layout_weight="1"
         >
 
-        <ImageView
-            android:id="@+id/search_im"
-            android:background="@drawable/zjj_chazuo_normalno"
-            android:layout_centerInParent="true"
-            android:layout_width="@dimen/dip_287.0"
-            android:layout_height="@dimen/dip_287.0"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dip_70.0"
+            >
+            <ImageView
+                android:id="@+id/search_im"
+                android:background="@drawable/zjj_chazuo_normalno"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/dip_287.0"
+                android:layout_height="@dimen/dip_287.0"/>
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/socke_tv"
             android:gravity="center"

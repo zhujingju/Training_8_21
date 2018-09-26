@@ -115,119 +115,6 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
     }
 
 
-    public boolean publish_String(String set_msg) {  //发送消息
-        if(fs_zt){
-
-            return false;
-        }
-        fs_zt=true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                    fs_zt=false;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        String ip = MqttService.sid_ip.get(getSid());
-        Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
-        if (ip != null) {
-
-            Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
-            if(MqttService.ip_zt.get(ip + getSid())!=null){
-                boolean zt = MqttService.ip_zt.get(ip + getSid());
-                if (!getSid().equals("") && zt) {
-                    Log.e("tcp", "Tcp ip=" + ip + "  mess=" + set_msg);
-                    Message m = new Message();
-                    m.what = 2000;
-                    m.obj = set_msg;
-                    ha.sendMessage(m);
-
-                    return true;
-                }
-            }
-
-
-        }
-        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
-
-        if (isConnected()) {
-            //消息主题
-            String topic = getMyTopic();
-            //消息内容
-            String msg = set_msg;
-
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
-
-            return true;
-        }
-        return false;
-    }
-
-    private boolean fs_zt;
-    public boolean publish_String2(String set_msg, String topic) {  //发送消息
-        if(fs_zt){
-
-            return false;
-        }
-        fs_zt=true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                    fs_zt=false;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        String ip = MqttService.sid_ip.get(getSid());
-        Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
-        if (ip != null) {
-
-            Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
-            if(MqttService.ip_zt.get(ip + getSid())!=null){
-                boolean zt = MqttService.ip_zt.get(ip + getSid());
-                if (!getSid().equals("") && zt) {
-                    Log.e("tcp", "Tcp ip=" + ip + "  mess=" + set_msg);
-                    Message m = new Message();
-                    m.what = 2000;
-                    m.obj = set_msg;
-                    ha.sendMessage(m);
-
-                    return true;
-                }
-            }
-
-
-        }
-        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
-
-        if (isConnected()) {
-            //消息主题
-            //消息内容
-            String msg = set_msg;
-
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
-
-            return true;
-        }
-        return false;
-    }
     /**
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
      */
@@ -407,7 +294,7 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("MyThread", "err2=" + e.getMessage());
-                msg.what = 3;
+                msg.what = 2;
                 msg.obj = e.getMessage();
                 //发送消息 修改UI线程中的组件
                 myHander.sendMessage(msg);
@@ -491,30 +378,200 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
                         MqttService.ip_zt.put(myIp+getSid(), false);
 //                        canlce();
 //                        socket = null;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                    fa_zt=true;
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
                         if (!getSid().equals("")) {
-                            push_ping(getSid());
+                            if(fa_zt){
+                                fa_zt=false;
+                                push_ping(getSid());
+                            }
+
                         }
+
 
                     }
                     break;
             }
         }
     };
+    private boolean fa_zt=true;
+    public void push_ping(final String sid) { //ping
 
-    public void push_ping(String sid) { //ping
-
-        try {
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_ping");
-            jsonObject.put("sid", sid);
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_equipment_ping");
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String3(js,getMyTopic());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
+    public void publish_String(final String set_msg) {  //发送消息
+
+        if(fs_zt){
+
+            return ;
+        }
+        fs_zt=true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    fs_zt=false;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        String ip = MqttService.sid_ip.get(getSid());
+        Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
+        if (ip != null) {
+
+            Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
+            if(MqttService.ip_zt.get(ip + getSid())!=null){
+                boolean zt = MqttService.ip_zt.get(ip + getSid());
+                if (!getSid().equals("") && zt) {
+                    Log.e("tcp", "Tcp ip=" + ip + "  mess=" + set_msg);
+                    Message m = new Message();
+                    m.what = 2000;
+                    m.obj = set_msg;
+                    ha.sendMessage(m);
+
+                    return ;
+                }
+            }
+
+
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    String topic = getMyTopic();
+                    //消息内容
+                    String msg = set_msg;
+
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+                    publish(msg, topic, qos, retained);
+
+                }
+            }
+        }).start();
+
+    }
+
+
+    boolean fs_zt=false;
+    public void publish_String2(final String set_msg, final String topic) {  //发送消息
+        if(fs_zt){
+            return ;
+        }
+        fs_zt=true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    fs_zt=false;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+        String ip = MqttService.sid_ip.get(getSid());
+        Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
+        if (ip != null) {
+
+            Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
+            if(MqttService.ip_zt.get(ip + getSid())!=null){
+                boolean zt = MqttService.ip_zt.get(ip + getSid());
+                if (!getSid().equals("") && zt) {
+                    Log.e("tcp", "Tcp ip=" + ip + "  mess=" + set_msg);
+                    Message m = new Message();
+                    m.what = 2000;
+                    m.obj = set_msg;
+                    ha.sendMessage(m);
+
+                    return ;
+                }
+            }
+
+
+        }
+        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    //消息内容
+                    String msg = set_msg;
+
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
+
+                }
+            }
+        }).start();
+
+    }
+
+
+    public void publish_String3(final String set_msg, final String topic) {  //发送消息
+        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    //消息内容
+                    String msg = set_msg;
+
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
+
+                }
+            }
+        }).start();
+
+
+    }
 
     class NetworkChangeReceiver extends BroadcastReceiver {
         @Override
@@ -523,10 +580,10 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
             ha.sendEmptyMessageDelayed(1000, 0);
             Log.e("qqq","网络状态改变");
             int im=0;
-            while (im<3){
-                im++;
+//            while (im<3){
+//                im++;
                 ha.sendEmptyMessageDelayed(3000,500);
-            }
+//            }
         }
     }
 

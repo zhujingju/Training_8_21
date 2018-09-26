@@ -145,10 +145,23 @@ public class EasyMqttService {
      * @param retained
      */
     public void publish(String msg, String topic, int qos, boolean retained) {
+
         try {
-            client.publish(topic, msg.getBytes(), qos, retained);
+            client.publish(topic, msg.getBytes(), 1, retained, context, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.e("qqq","发布消息 onSuccess");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.e("qqq","发布消息 onFailure="+exception.getMessage());
+                }
+            });
+//            Log.e("qqq","发布消息"+client.isConnected()+"  "+ topic+" client="+client);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("qqq","发布消息"+e.getMessage());
         }
     }
 

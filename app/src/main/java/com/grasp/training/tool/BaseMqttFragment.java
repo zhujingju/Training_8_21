@@ -118,43 +118,53 @@ public abstract class BaseMqttFragment extends Fragment {
     }
 
 
-    public boolean publish_String(String set_msg) {  //发送消息
-        if (isConnected()) {
-            //消息主题
-            String topic = getMyTopic();
-            //消息内容
-            String msg = set_msg;
+    public void publish_String(final String set_msg) {  //发送消息
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    String topic = getMyTopic();
+                    //消息内容
+                    String msg = set_msg;
 
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
-            Log.e("qqq",topic+" 发送消息="+set_msg);
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
+                    Log.e("qqq",topic+" 发送消息="+set_msg);
 
-            return true;
-        }
-        return false;
+                    return ;
+                }
+            }
+        }).start();
+
+        return ;
     }
 
-    public boolean publish_String2(String set_msg, String topic) {  //发送消息
-        if (isConnected()) {
-            //消息主题
-            //消息内容
-            String msg = set_msg;
+    public void publish_String2(final String set_msg, final String topic) {  //发送消息
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    //消息内容
+                    String msg = set_msg;
 
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
-            Log.e("qqq",topic+" 发送消息="+set_msg);
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
+                    Log.e("qqq",topic+" 发送消息="+set_msg);
 
-            return true;
-        }
-        return false;
+                }
+            }
+        }).start();
+
     }
 
     /**

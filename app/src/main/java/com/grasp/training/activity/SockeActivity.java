@@ -237,65 +237,68 @@ public class SockeActivity extends BaseMqttActivity implements View.OnClickListe
 
     private boolean ds_state = false;//倒计时将要变的状态
 
-    public void push(String s) {
-        if (sid.equals("")) {
-            Toast.makeText(context, "先添加设备", Toast.LENGTH_LONG).show();
-            return;
-        }
+    public void push(final String s) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket");
+                    jsonObject.put("state", s);
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
 
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket");
-            jsonObject.put("state", s);
-            jsonObject.put("sid", sid);
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void push_red_down() {  //查询倒计时
-        if (sid.equals("")) {
-//            Toast.makeText(context,"先添加设备",Toast.LENGTH_LONG).show();
-            return;
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket_read_down");
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
 
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_read_down");
-            jsonObject.put("sid", sid);
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void push_read() {  //获取插座状态
-        if (sid.equals("")) {
-//            Toast.makeText(context,"先添加设备",Toast.LENGTH_LONG).show();
-            return;
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket_read");
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
 
-        try {
 
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_read");
-            jsonObject.put("sid", sid);
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-        }
     }
 
     Handler handler = new Handler() {
@@ -477,15 +480,15 @@ public class SockeActivity extends BaseMqttActivity implements View.OnClickListe
     @Override
     protected void onStart() {
 
-        myTopicding = "iotbroad/iot/socket_ack/" + sid;
-        myTopic = "iotbroad/iot/socket/" + sid;
+//        myTopicding = "iotbroad/iot/socket_ack/" + sid;
+//        myTopic = "iotbroad/iot/socket/" + sid;
         if (!sid.equals("")) {
             handler.removeMessages(3000);
             handler.removeMessages(4000);
             handler.sendEmptyMessageDelayed(3000, 000);
             handler.sendEmptyMessageDelayed(4000, 000);
         }
-        Log.e("qqq", "sid=" + sid);
+//        Log.e("qqq", "sid=" + sid);
         super.onStart();
 
     }
@@ -621,31 +624,36 @@ public class SockeActivity extends BaseMqttActivity implements View.OnClickListe
 
     }
 
-    public void push_d_time(String i) {
+    public void push_d_time(final String i) {
         if (sid.equals("")) {
             Toast.makeText(context, "先添加设备", Toast.LENGTH_LONG).show();
             return;
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket_count_down");
+                    jsonObject.put("data", i);
+                    jsonObject.put("sid", sid);
+                    if (search_zt) {
+                        jsonObject.put("state", "off");
+                    } else {
+                        jsonObject.put("state", "on");
+                    }
 
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_count_down");
-            jsonObject.put("data", i);
-            jsonObject.put("sid", sid);
-            if (search_zt) {
-                jsonObject.put("state", "off");
-            } else {
-                jsonObject.put("state", "on");
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
             }
+        }).start();
 
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void push_djs_del() { //删除倒计时
@@ -653,21 +661,26 @@ public class SockeActivity extends BaseMqttActivity implements View.OnClickListe
             Toast.makeText(context, "先添加设备", Toast.LENGTH_LONG).show();
             return;
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket_count_down");
+                    jsonObject.put("state", "cancel");
+                    jsonObject.put("data", "00,00,00");
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
 
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_socket_count_down");
-            jsonObject.put("state", "cancel");
-            jsonObject.put("data", "00,00,00");
-            jsonObject.put("sid", sid);
-            String js = jsonObject.toString();
-            publish_String(js);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-        }
     }
 
 

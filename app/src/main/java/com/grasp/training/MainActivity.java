@@ -37,6 +37,7 @@ import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
 import com.grasp.training.view.MyViewPager;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -127,7 +128,8 @@ public class MainActivity extends BaseMqttFragmentActivity {
             inData();
         }
 
-
+        ImageLoader.getInstance().clearDiskCache();
+        ImageLoader.getInstance().clearMemoryCache();
     }
 
     @Override

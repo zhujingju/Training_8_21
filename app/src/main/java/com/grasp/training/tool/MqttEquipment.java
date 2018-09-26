@@ -32,15 +32,37 @@ public  abstract class MqttEquipment {
     private IntentFilter intentFilter;
     private NetworkChangeReceiver networkChangeReceiver;
     private Context context;
-    private String sid, type,myTopic,myTopicDing;
+    private String sid;
+    private String type;
+    private String myTopic;
+    private String myTopicDing;
 
+    public String getIm_url() {
+        return im_url;
+    }
 
-    public  MqttEquipment(Context context,String sid,String type,String myTopic,String myTopicDing) {
+    public void setIm_url(String im_url) {
+        this.im_url = im_url;
+    }
+
+    private String im_url;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public  MqttEquipment(Context context, String sid, String type, String myTopic, String myTopicDing, String im_url) {
         this.context=context;
         this.sid=sid;
         this.type=type;
         this.myTopic=myTopic;
         this.myTopicDing=myTopicDing;
+        this.im_url=im_url;
         intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         networkChangeReceiver = new NetworkChangeReceiver();
@@ -139,12 +161,11 @@ public  abstract class MqttEquipment {
 //        canlce();
     }
 
-
-    public boolean publish_String(String set_msg) {  //发送消息
+    public void publish_String(final String set_msg) {  //发送消息
 
         if(fs_zt){
 
-            return false;
+            return ;
         }
         fs_zt=true;
         new Thread(new Runnable() {
@@ -172,38 +193,41 @@ public  abstract class MqttEquipment {
                     m.obj = set_msg;
                     ha.sendMessage(m);
 
-                    return true;
+                    return ;
                 }
             }
 
 
         }
-        Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
 
-        if (isConnected()) {
-            //消息主题
-            String topic = getMyTopic();
-            //消息内容
-            String msg = set_msg;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    String topic = getMyTopic();
+                    //消息内容
+                    String msg = set_msg;
 
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+                    publish(msg, topic, qos, retained);
 
-            return true;
-        }
-        return false;
+                }
+            }
+        }).start();
+
     }
 
 
     boolean fs_zt=false;
-    public boolean publish_String2(String set_msg, String topic) {  //发送消息
+    public void publish_String2(final String set_msg, final String topic) {  //发送消息
         if(fs_zt){
-
-            return false;
+            return ;
         }
         fs_zt=true;
         new Thread(new Runnable() {
@@ -233,7 +257,7 @@ public  abstract class MqttEquipment {
                     m.obj = set_msg;
                     ha.sendMessage(m);
 
-                    return true;
+                    return ;
                 }
             }
 
@@ -241,42 +265,50 @@ public  abstract class MqttEquipment {
         }
         Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
 
-        if (isConnected()) {
-            //消息主题
-            //消息内容
-            String msg = set_msg;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    //消息内容
+                    String msg = set_msg;
 
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
 
-            return true;
-        }
-        return false;
+                }
+            }
+        }).start();
+
     }
 
 
-    public boolean publish_String3(String set_msg, String topic) {  //发送消息
+    public void publish_String3(final String set_msg, final String topic) {  //发送消息
         Log.e("qqq", "主题 ="+getMyTopic()+"  发送消息 =" + set_msg);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected()) {
+                    //消息主题
+                    //消息内容
+                    String msg = set_msg;
 
-        if (isConnected()) {
-            //消息主题
-            //消息内容
-            String msg = set_msg;
+                    //消息策略
+                    int qos = 0;
+                    //是否保留
+                    boolean retained = false;
+                    //发布消息
+                    publish(msg, topic, qos, retained);
 
-            //消息策略
-            int qos = 0;
-            //是否保留
-            boolean retained = false;
-            //发布消息
-            publish(msg, topic, qos, retained);
+                }
+            }
+        }).start();
 
-            return true;
-        }
-        return false;
+
     }
     /**
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
@@ -461,7 +493,7 @@ public  abstract class MqttEquipment {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("MyThread", "err2=" + e.getMessage());
-                msg.what = 3;
+                msg.what = 2;
                 msg.obj = e.getMessage();
                 //发送消息 修改UI线程中的组件
                 myHander.sendMessage(msg);
@@ -495,16 +527,32 @@ public  abstract class MqttEquipment {
                         MqttService.ip_zt.put(myIp+getSid(), false);
 //                        canlce();
 //                        socket = null;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                    fa_zt=true;
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
                         if (!getSid().equals("")) {
-                            push_ping(getSid());
+                            if(fa_zt){
+                                fa_zt=false;
+                                push_ping(getSid());
+                            }
+
                         }
+
 
                     }
                     break;
             }
         }
     };
-
+    private boolean fa_zt=true;
     public void push_ping(String sid) { //ping
 
         try {
@@ -525,12 +573,12 @@ public  abstract class MqttEquipment {
         public void onReceive(Context context, Intent intent) {
 //            Toast.makeText(context, "网络状态改变", Toast.LENGTH_SHORT).show();
             ha.sendEmptyMessageDelayed(1000, 0);
-            Log.e("qqq","网络状态改变");
+            Log.e("qqq","网络状态改变来来来");
             int im=0;
-            while (im<3){
-                im++;
+//            while (im<3){
+//                im++;
                 ha.sendEmptyMessageDelayed(3000,500);
-            }
+//            }
         }
     }
 
