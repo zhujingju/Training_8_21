@@ -25,6 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.Player.Core.PlayerClient;
+import com.Player.web.websocket.ClientCore;
+import com.grasp.training.Umeye_sdk.Constants;
 import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.fragmet.Personal;
 import com.grasp.training.fragmet.Robot;
@@ -36,6 +39,7 @@ import com.grasp.training.tool.BaseMqttFragmentActivity;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
+import com.grasp.training.tool.Utility;
 import com.grasp.training.view.MyViewPager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -134,7 +138,8 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
     @Override
     public void initObject() {
-
+        initPlay();
+        startBestServer2();
     }
 
     @Override
@@ -476,4 +481,42 @@ public class MainActivity extends BaseMqttFragmentActivity {
         super.onConfigurationChanged(newConfig);
     }
 
+
+    private ClientCore clientCore;
+    private PlayerClient playClient;
+    private MyApplication appMain;
+    void initPlay() {
+        appMain = (MyApplication) this.getApplicationContext();
+        playClient = appMain.getPlayerclient();
+//        startBestServer();
+    }
+
+    void startBestServer2() {
+        clientCore = ClientCore.getInstance();
+        int language = 1;
+        clientCore.setupHost(this, Constants.server, 0, Utility.getImsi(this),
+                language, Constants.CustomName, Utility.getVersionName(this),
+                "");
+        clientCore.getCurrentBestServer(this, clientCorehandler);
+    }
+
+    private Handler clientCorehandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+
+            super.handleMessage(msg);
+            Log.e("test", "startBestServer");
+//            ha.sendEmptyMessageDelayed(222, 500);
+//            if (pd != null) {
+//                pd.dismiss();
+//            }
+//            ha.sendEmptyMessage(1002);
+//            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//            finish();
+
+        }
+
+    };
 }

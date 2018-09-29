@@ -106,7 +106,6 @@ public class SmartHomeMain extends BaseMqttFragment {
         head.addView(gridView.getView(), p);
         initListview();
 
-
     }
 
     @Override
@@ -183,7 +182,11 @@ public class SmartHomeMain extends BaseMqttFragment {
                                         goods.setJh_zt(false);
                                     }
                                 }
-
+                                if (oldState != null) {
+                                    if (oldState.get(sid) != null) {
+                                        goods.setDy(oldState.get(sid));
+                                    }
+                                }
 
                                 list.add(goods);
 
@@ -191,11 +194,11 @@ public class SmartHomeMain extends BaseMqttFragment {
                             Goods goods = new Goods();
                             goods.setAdd_zt(true);
                             list.add(goods);
-                            handler.sendEmptyMessageDelayed(1000, 500);
+                            handler.sendEmptyMessageDelayed(1000, 0);
                             break;
 
                         case "deletedevice_ok":
-                            handler.sendEmptyMessageDelayed(2000, 500);
+                            handler.sendEmptyMessageDelayed(2000, 0);
 
                             break;
 
@@ -219,6 +222,8 @@ public class SmartHomeMain extends BaseMqttFragment {
         in.putStringArrayListExtra("sid_List", slist);
         context.startActivity(in);
     }
+
+
 
     @Override
     public void onDestroyView() {
@@ -736,7 +741,10 @@ public class SmartHomeMain extends BaseMqttFragment {
 
     HashMap<String, String> oldMap;   //备份的map
     HashMap<String, String> newMap;   //使用的map
+    HashMap<String, Boolean> oldState;   //备份的map
+    HashMap<String, Boolean> newState;   //使用的map
     HashMap<String, MqttEquipment> MqttEquipmentMap;  //存放MqttEquipment的map
+//    HashMap<String, MqttEquipment> oldMqttEquipmentMap;  //放菜单中的数据
     Goods goods;
 
     public void getJh() {
@@ -747,13 +755,18 @@ public class SmartHomeMain extends BaseMqttFragment {
 
 
         if (MqttEquipmentMap == null) {
-            MqttEquipmentMap = new HashMap<>();
+        MqttEquipmentMap = new HashMap<>();
         }
+
 //        if(newMap==null){
         newMap = new HashMap<>();
+        newState = new HashMap<>();
 //        }
         if (oldMap == null) {
             oldMap = new HashMap<>();
+        }
+        if (oldState == null) {
+            oldState = new HashMap<>();
         }
         for (int i = 0; i < list.size(); i++) {
             goods = list.get(i);
@@ -761,7 +774,7 @@ public class SmartHomeMain extends BaseMqttFragment {
             if (goods.getSid() == null) {
                 break;
             }
-//            Log.e("qqq","goods "+goods.getSid());
+            Log.e("qqq","mqttEquipment "+goods.getSid());
             if (MqttEquipmentMap.get(goods.getSid()) == null) {
                 String type = goods.getType();
                 String myTopic = "iotbroad/iot/" + type + "/" + goods.getSid();
@@ -789,6 +802,15 @@ public class SmartHomeMain extends BaseMqttFragment {
 //                                        Log.e("qqq","mqttEquipment message= "+message);
                                         newMap.put(getSid(), type);
                                         oldMap.put(getSid(), type);
+                                        String state = jsonObject.optString("state", "");  //
+                                        boolean state_zt;
+                                        if (state.equals("on")) {
+                                            state_zt = true;
+                                        } else {
+                                            state_zt = false;
+                                        }
+                                        newState.put(getSid(), state_zt);
+                                        oldState.put(getSid(), state_zt);
                                         Message m = new Message();
                                         m.what = 1000;
                                         m.obj = getSid();
@@ -804,37 +826,54 @@ public class SmartHomeMain extends BaseMqttFragment {
                     }
                 };
 //                Log.e("qqq","mqttEquipment cun "+mqttEquipment.getSid()+" "+mqttEquipment.getType());
+
                 mqttEquipment.setName(goods.getName());
+
                 MqttEquipmentMap.put(goods.getSid(), mqttEquipment);
+//                mqttEquipment.onDestroy();
+
             }
         }
         //发送
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if (MqttEquipmentMap == null) {
+
+                    return;
+                }
+                if (MqttEquipmentMap.size() == 0) {
+
+                    return;
+                }
                 for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
                     e.publish_String(push_read(e.getType(), e.getSid()));
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 }
 
             }
         }).start();
 
 
-        equimentHandler.sendEmptyMessageDelayed(2000, 1000 * 15);
+        equimentHandler.sendEmptyMessageDelayed(2000, 1000 * MqttEquipmentMap.size() + 2000);
     }
 
-
     public void Map_del() {
+
         if (MqttEquipmentMap != null) {
             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-
                 MqttEquipment e = entry.getValue();
                 e.onDestroy();
             }
         }
+
         if (manager != null) {
             manager.cancel(0);
         }
@@ -875,6 +914,9 @@ public class SmartHomeMain extends BaseMqttFragment {
                             break;
                         }
                         if (sid.equals(msg.obj.toString())) {
+                            if (newState.get(sid) != null) {
+                                list.get(i).setDy(newState.get(sid));
+                            }
                             list.get(i).setJh_zt(true);
                             adapter.setList(list);
                             adapter.notifyDataSetChanged();
@@ -885,8 +927,12 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     break;
                 case 2000:
+//                    if (oldMqttEquipmentMap == null) {
+//                        oldMqttEquipmentMap = new HashMap<>();
+//                    }
                     oldMap = newMap;
-
+                    Log.e("qqq","oldMap.size()="+oldMap.size()+" newMap.size()= "+newMap.size());
+                    oldState = newState;
                     for (int i = 0; i < list.size(); i++) {
 
                         String sid = list.get(i).getSid();
@@ -895,7 +941,16 @@ public class SmartHomeMain extends BaseMqttFragment {
                         }
                         if (oldMap.get(sid) != null) {
                             list.get(i).setJh_zt(true);
+//                            if (MqttEquipmentMap.get(sid) != null) {
+//                                oldMqttEquipmentMap.put(sid, MqttEquipmentMap.get(sid));
+//                            }
+                        }else{
+                            list.get(i).setJh_zt(false);
                         }
+                        if (oldState.get(sid) != null) {
+                            list.get(i).setDy(newState.get(sid));
+                        }
+
                     }
                     adapter.setList(list);
                     adapter.notifyDataSetChanged();
@@ -908,12 +963,11 @@ public class SmartHomeMain extends BaseMqttFragment {
                     Log.e("qqq", "goods " + 3000);
                     equimentHandler.removeMessages(3000);
                     getJh();
-                    equimentHandler.sendEmptyMessageDelayed(3000, 3 * 60 * 1000);
+                    equimentHandler.sendEmptyMessageDelayed(3000, 2 * 60 * 1000);
                     break;
             }
         }
     };
-
     private RemoteViews contentView;
     private Notification notification;
     private NotificationManager manager;
@@ -921,7 +975,7 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void dataNotification() {
 
         manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon) .build();
+        notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
 //        notification.flags|= Notification.FLAG_ONGOING_EVENT;
         sendNotification();
     }
@@ -930,100 +984,126 @@ public class SmartHomeMain extends BaseMqttFragment {
      * 发送通知
      */
     public void sendNotification() {
-        Log.e("qqq", "dataNotification " );
+        Log.e("qqq", "dataNotification ");
         contentView = new RemoteViews(context.getPackageName(), R.layout.data_notification);
         notification.contentView = contentView;
-        manager.notify(3, notification);
+//        manager.notify(3, notification);
     }
 
     public static final String BT_REFRESH_ACTION = "BT_REFRESH_ACTION";
     public static final String COLLECTION_VIEW_ACTION = "COLLECTION_VIEW_ACTION";
     public static final String COLLECTION_VIEW_EXTRA = "COLLECTION_VIEW_EXTRA";
+
     private void sxNotification() {
+
         if (MqttEquipmentMap != null && contentView != null && notification != null && manager != null) {
+            Log.e("qqq", "oldMap.s=" + oldMap.size());
+            if (MqttEquipmentMap.size() == 0) {
+                return;
+            }
             int i = 0;
             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
                 MqttEquipment e = entry.getValue();
-                String type=e.getType();
-                if(type!=null&&!type.equals("")){  //添加菜单栏
-                    if(type.equals("socket")||type.equals("switch")||type.equals("light")){
-                        if (i == 0) {
-                            contentView.setTextViewText(R.id.data_notification_tv1, e.getName());
-                            setImage1(e.getIm_url());
-                            Intent btIntent = new Intent().setAction(BT_REFRESH_ACTION);
-                            btIntent.putExtra("sid",e.getSid());
-                            btIntent.putExtra("type",e.getType());
-                            btIntent.putExtra("num",1);
-                            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            contentView.setOnClickPendingIntent(R.id.data_notification_layout1,btPendingIntent);
-                        } else if (i == 1) {
-                            contentView.setTextViewText(R.id.data_notification_tv2, e.getName());
-                            setImage2(e.getIm_url());
-                            Intent btIntent = new Intent().setAction(COLLECTION_VIEW_ACTION);
-                            btIntent.putExtra("sid",e.getSid());
-                            btIntent.putExtra("type",e.getType());
-                            btIntent.putExtra("num",2);
-                            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            contentView.setOnClickPendingIntent(R.id.data_notification_layout2,btPendingIntent);
-                        } else if (i == 2) {
-                            contentView.setTextViewText(R.id.data_notification_tv3, e.getName());
-                            setImage3(e.getIm_url());
-                            Intent btIntent = new Intent().setAction(COLLECTION_VIEW_EXTRA);
-                            btIntent.putExtra("sid",e.getSid());
-                            btIntent.putExtra("type",e.getType());
-                            btIntent.putExtra("num",3);
-                            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            contentView.setOnClickPendingIntent(R.id.data_notification_layout3,btPendingIntent);
-                        }
-                        i++;
+                String type = e.getType();
+                String sid = e.getSid();
+                if (oldMap != null) {
+                    if (oldMap.get(sid) != null) {
+
+                        if (type != null && !type.equals("")) {  //添加菜单栏
+                            if (type.equals("socket") || type.equals("switch") || type.equals("light")) {
+//                    if (type.equals("switch") || type.equals("light")) {
+                                if (i == 0) {
+                                    contentView.setTextViewText(R.id.data_notification_tv1, e.getName());
+                                    setImage1(e.getIm_url());
+                                    Intent btIntent = new Intent().setAction(BT_REFRESH_ACTION);
+                                    btIntent.putExtra("sid", e.getSid());
+                                    btIntent.putExtra("type", e.getType());
+                                    btIntent.putExtra("num", 1);
+//                            if (oldState != null && oldState.get(e.getSid()) != null) {
+//                                btIntent.putExtra("state", oldState.get(e.getSid()));
+//                            }
+
+                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout1, btPendingIntent);
+                                } else if (i == 1) {
+                                    contentView.setTextViewText(R.id.data_notification_tv2, e.getName());
+                                    setImage2(e.getIm_url());
+                                    Intent btIntent = new Intent().setAction(COLLECTION_VIEW_ACTION);
+                                    btIntent.putExtra("sid", e.getSid());
+                                    btIntent.putExtra("type", e.getType());
+                                    btIntent.putExtra("num", 2);
+//                            if (oldState != null && oldState.get(e.getSid()) != null) {
+//                                btIntent.putExtra("state", oldState.get(e.getSid()));
+//                            }
+                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout2, btPendingIntent);
+                                } else if (i == 2) {
+                                    contentView.setTextViewText(R.id.data_notification_tv3, e.getName());
+                                    setImage3(e.getIm_url());
+                                    Intent btIntent = new Intent().setAction(COLLECTION_VIEW_EXTRA);
+                                    btIntent.putExtra("sid", e.getSid());
+                                    btIntent.putExtra("type", e.getType());
+                                    btIntent.putExtra("num", 3);
+//                            if (oldState != null && oldState.get(e.getSid()) != null) {
+//                                btIntent.putExtra("state", oldState.get(e.getSid()));
+//                            }
+                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout3, btPendingIntent);
+                                }
+                                i++;
+                            }
                     }
                 }
 
             }
-            notification.contentView = contentView;
-            manager.notify(3, notification);
+
         }
+        notification.contentView = contentView;
+        manager.notify(3, notification);
     }
+}
 
 
-    private Bitmap bitmap1,bitmap2,bitmap3;
-    private void setImage1(final String url){
+    private Bitmap bitmap1, bitmap2, bitmap3;
+
+    private void setImage1(final String url) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap1=getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1000,0);
-            }
-        }).start();
-    }
-    private void setImage2(final String url){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap2=getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1001,0);
+                bitmap1 = getURLimage(url);
+                image_hander.sendEmptyMessageDelayed(1000, 0);
             }
         }).start();
     }
 
-
-    private void setImage3(final String url){
+    private void setImage2(final String url) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap3=getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1002,0);
+                bitmap2 = getURLimage(url);
+                image_hander.sendEmptyMessageDelayed(1001, 0);
             }
         }).start();
     }
 
-    Handler image_hander=new Handler(){
+
+    private void setImage3(final String url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bitmap3 = getURLimage(url);
+                image_hander.sendEmptyMessageDelayed(1002, 0);
+            }
+        }).start();
+    }
+
+    Handler image_hander = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1000:
-                    if(bitmap1!=null){
+                    if (bitmap1 != null) {
                         contentView.setImageViewBitmap(R.id.data_notification_im1, bitmap1);
                         notification.contentView = contentView;
                         manager.notify(3, notification);
@@ -1031,14 +1111,14 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     break;
                 case 1001:
-                    if(bitmap2!=null){
+                    if (bitmap2 != null) {
                         contentView.setImageViewBitmap(R.id.data_notification_im2, bitmap2);
                         notification.contentView = contentView;
                         manager.notify(3, notification);
                     }
                     break;
                 case 1002:
-                    if(bitmap3!=null){
+                    if (bitmap3 != null) {
                         contentView.setImageViewBitmap(R.id.data_notification_im3, bitmap3);
                         notification.contentView = contentView;
                         manager.notify(3, notification);
@@ -1050,13 +1130,11 @@ public class SmartHomeMain extends BaseMqttFragment {
     };
 
 
-
-
     //加载图片
     public Bitmap getURLimage(String url1) {
 //        Log.e("qqq", "dataNotification e=" + url1);
         try {
-            URL url  = new URL(url1);
+            URL url = new URL(url1);
             HttpURLConnection conn = (HttpURLConnection) url
                     .openConnection();
             conn.setConnectTimeout(6000);// 设置超时
@@ -1081,6 +1159,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
     private ContentReceiver mReceiver;
     private MyServiceConn conn;
+
     private void doRegisterReceiver() {
         mReceiver = new ContentReceiver();
         IntentFilter filter = new IntentFilter(
@@ -1092,45 +1171,119 @@ public class SmartHomeMain extends BaseMqttFragment {
         IntentFilter filter3 = new IntentFilter(
                 "COLLECTION_VIEW_EXTRA");
         context.registerReceiver(mReceiver, filter3);
+
+        IntentFilter filter4 = new IntentFilter(
+                socketInNotification1);
+        context.registerReceiver(mReceiver, filter4);
+
+        IntentFilter filter5 = new IntentFilter(
+                socketInNotification2);
+        context.registerReceiver(mReceiver, filter5);
+
+        IntentFilter filter6 = new IntentFilter(
+                swithInNotification1);
+        context.registerReceiver(mReceiver, filter6);
+
+        IntentFilter filter7 = new IntentFilter(
+                swithInNotification2);
+        context.registerReceiver(mReceiver, filter7);
+        IntentFilter filter8 = new IntentFilter(
+                swithInNotification3);
+        context.registerReceiver(mReceiver, filter8);
+        IntentFilter filter9 = new IntentFilter(
+                swithInNotification4);
+        context.registerReceiver(mReceiver, filter9);
+
+        IntentFilter filter10 = new IntentFilter(
+                lightInNotification1);
+        context.registerReceiver(mReceiver, filter10);
+
+        IntentFilter filter11 = new IntentFilter(
+                lightInNotification2);
+        context.registerReceiver(mReceiver, filter11);
+
+        IntentFilter filter12 = new IntentFilter(
+                lightInNotification3);
+        context.registerReceiver(mReceiver, filter12);
     }
 
-    public class ContentReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String sid = intent.getStringExtra("sid");
-            String type = intent.getStringExtra("type");
-            int num=intent.getIntExtra("num",-1);
+public class ContentReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
 
-            Bitmap bitmap=null;
-            if(num==1){
-                bitmap=bitmap1;
-            }else if(num==2){
-                bitmap=bitmap2;
-            }
-            else if(num==3){
-                bitmap=bitmap3;
-            }
-            if(sid!=null&&!sid.equals("")){  //具体操作
-                Log.e("qqq","sid="+sid);
-                if(type!=null){
-                    if(type.equals("socket")){
-                        if(in_manager==null){
-                            inNotification();
-                        }
-                        socketInNotification(bitmap,sid);
-                    }else if(type.equals("switch")){
+        String sid = intent.getStringExtra("sid");
+        String type = intent.getStringExtra("type");
+        Log.e("qqq", "onReceive type=" + type);
+        int num = intent.getIntExtra("num", -1);
+        if (num == -10) {  //第二次
+            if (type.equals("socket")) {
+                boolean state = intent.getBooleanExtra("state", false);
+                if (MqttEquipmentMap.get(sid) != null) {
+                    MqttEquipment e = MqttEquipmentMap.get(sid);
+                    e.publish_String(push_socke(e.getType(), e.getSid(), state));
+                }
+            } else if (type.equals("switch")) {
+                boolean state = intent.getBooleanExtra("state", false);
+                int channel = intent.getIntExtra("channel", -1);
+                if (MqttEquipmentMap.get(sid) != null && channel != -1) {
+                    Log.e("qqq", "onReceive type=fa");
+                    MqttEquipment e = MqttEquipmentMap.get(sid);
+                    e.publish_String(push_switch(e.getType(), e.getSid(), state, channel));
+                }
 
-                    }else if(type.equals("light")){
-
+            } else if (type.equals("light")) {
+                int blight = intent.getIntExtra("blight", -1);
+                if (MqttEquipmentMap.get(sid) != null) {
+                    MqttEquipment e = MqttEquipmentMap.get(sid);
+                    Log.e("qqq", "onReceive blight=" + blight);
+                    if (blight != -1) {
+                        e.publish_String(push_light(e.getType(), e.getSid(), blight));
+                    } else {
+                        e.publish_String(push_light(e.getType(), e.getSid(), false));
                     }
+
                 }
 
             }
 
+        } else {
+            Bitmap bitmap = null;
+            if (num == 1) {
+                bitmap = bitmap1;
+            } else if (num == 2) {
+                bitmap = bitmap2;
+            } else if (num == 3) {
+                bitmap = bitmap3;
+            }
+            if (sid != null && !sid.equals("")) {  //具体操作
+                Log.e("qqq", "sid=" + sid);
+                if (type != null) {
+                    if (type.equals("socket")) {
+                        if (in_manager == null) {
+                            inNotification();
+                        }
+                        socketInNotification(bitmap, sid, type);
+                    } else if (type.equals("switch")) {
+                        if (in_manager == null) {
+                            inNotification();
+                        }
+                        swithInNotification(bitmap, sid, type);
+
+                    } else if (type.equals("light")) {
+                        if (in_manager == null) {
+                            inNotification();
+                        }
+                        lightInNotification(bitmap, sid, type);
+                    }
+                }
+
+            }
         }
+
+
     }
 
-
+}
 
 
     private RemoteViews in_contentView;
@@ -1140,21 +1293,228 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void inNotification() {
 
         in_manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        in_notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon) .build();
+        in_notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
 //        notification.flags|= Notification.FLAG_ONGOING_EVENT;
     }
+
+
+    private final static String socketInNotification1 = "socketInNotification1";
+    private final static String socketInNotification2 = "socketInNotification2";
+    private final static String swithInNotification1 = "swithInNotification1";
+    private final static String swithInNotification2 = "swithInNotification2";
+    private final static String swithInNotification3 = "swithInNotification3";
+    private final static String swithInNotification4 = "swithInNotification4";
+    private final static String lightInNotification1 = "swithInNotification1";
+    private final static String lightInNotification2 = "swithInNotification2";
+    private final static String lightInNotification3 = "swithInNotification3";
 
     /**
      * 发送通知
      */
-    public void socketInNotification(Bitmap bitmap,String sid) {  //插座
-        Log.e("qqq", "dataInNotification " );
-        in_contentView = new RemoteViews(context.getPackageName(), R.layout.data_notification);
+    public void socketInNotification(Bitmap bitmap, String sid, String type) {  //插座
+        Log.e("qqq", "dataInNotification ");
+        in_contentView = new RemoteViews(context.getPackageName(), R.layout.socket_in_notification);
         in_notification.contentView = in_contentView;
         in_manager.notify(6, in_notification);
-        if(bitmap!=null){
+        if (bitmap != null) {
+            in_contentView.setImageViewBitmap(R.id.socket_in_notification_im1, bitmap);
 
+            Intent btIntent = new Intent().setAction(socketInNotification1);
+            btIntent.putExtra("sid", sid);
+            btIntent.putExtra("type", type);
+            btIntent.putExtra("num", -10);
+            btIntent.putExtra("state", true);
+            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im2, btPendingIntent);
+
+            Intent btIntent2 = new Intent().setAction(socketInNotification2);
+            btIntent2.putExtra("sid", sid);
+            btIntent2.putExtra("type", type);
+            btIntent2.putExtra("num", -10);
+            btIntent2.putExtra("state", false);
+            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im3, btPendingIntent2);
+
+            in_notification.contentView = in_contentView;
+            in_manager.notify(6, in_notification);
         }
 
+    }
+
+
+    public String push_socke(String type, String sid, boolean state) {  //获取状态
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type);
+            if (state) {
+                jsonObject.put("state", "on");
+            } else {
+                jsonObject.put("state", "off");
+            }
+
+            jsonObject.put("sid", sid);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+            return "";
+        }
+    }
+
+
+    public void swithInNotification(Bitmap bitmap, String sid, String type) {  //开关
+        Log.e("qqq", "swithInNotification ");
+        in_contentView = new RemoteViews(context.getPackageName(), R.layout.swith_in_notification);
+        in_notification.contentView = in_contentView;
+        in_manager.notify(6, in_notification);
+        if (bitmap != null) {
+            in_contentView.setImageViewBitmap(R.id.switch_in_notification_im1, bitmap);
+
+            Intent btIntent = new Intent().setAction(swithInNotification1);
+            btIntent.putExtra("sid", sid);
+            btIntent.putExtra("type", type);
+            btIntent.putExtra("num", -10);
+            btIntent.putExtra("state", true);
+            btIntent.putExtra("channel", 1);
+            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im2, btPendingIntent);
+
+            Intent btIntent2 = new Intent().setAction(swithInNotification2);
+            btIntent2.putExtra("sid", sid);
+            btIntent2.putExtra("type", type);
+            btIntent2.putExtra("num", -10);
+            btIntent2.putExtra("state", false);
+            btIntent2.putExtra("channel", 1);
+            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im3, btPendingIntent2);
+
+            Intent btIntent3 = new Intent().setAction(swithInNotification3);
+            btIntent3.putExtra("sid", sid);
+            btIntent3.putExtra("type", type);
+            btIntent3.putExtra("num", -10);
+            btIntent3.putExtra("state", true);
+            btIntent3.putExtra("channel", 2);
+            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(context, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im4, btPendingIntent3);
+
+            Intent btIntent4 = new Intent().setAction(swithInNotification4);
+            btIntent4.putExtra("sid", sid);
+            btIntent4.putExtra("type", type);
+            btIntent4.putExtra("num", -10);
+            btIntent4.putExtra("state", false);
+            btIntent4.putExtra("channel", 2);
+            PendingIntent btPendingIntent4 = PendingIntent.getBroadcast(context, 0, btIntent4, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im5, btPendingIntent4);
+            in_notification.contentView = in_contentView;
+            in_manager.notify(6, in_notification);
+        }
+
+    }
+
+
+    public String push_switch(String type, String sid, boolean state, int channel) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type);
+            if (state) {
+                jsonObject.put("state", "on");
+            } else {
+                jsonObject.put("state", "off");
+            }
+            jsonObject.put("channel", channel);
+            jsonObject.put("sid", sid);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+            return "";
+        }
+    }
+
+
+    public void lightInNotification(Bitmap bitmap, String sid, String type) {  //灯
+        Log.e("qqq", "dataInNotification ");
+        in_contentView = new RemoteViews(context.getPackageName(), R.layout.light_in_notification);
+        in_notification.contentView = in_contentView;
+        in_manager.notify(6, in_notification);
+        if (bitmap != null) {
+            in_contentView.setImageViewBitmap(R.id.light_in_notification_im1, bitmap);
+
+            Intent btIntent = new Intent().setAction(lightInNotification1);
+            btIntent.putExtra("sid", sid);
+            btIntent.putExtra("type", type);
+            btIntent.putExtra("num", -10);
+            btIntent.putExtra("blight", 80);
+            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im2, btPendingIntent);
+
+            Intent btIntent2 = new Intent().setAction(lightInNotification2);
+            btIntent2.putExtra("sid", sid);
+            btIntent2.putExtra("type", type);
+            btIntent2.putExtra("num", -10);
+            btIntent2.putExtra("blight", 30);
+            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im3, btPendingIntent2);
+
+
+            Intent btIntent3 = new Intent().setAction(lightInNotification3);
+            btIntent3.putExtra("sid", sid);
+            btIntent3.putExtra("type", type);
+            btIntent3.putExtra("num", -10);
+            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(context, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im4, btPendingIntent3);
+
+            in_notification.contentView = in_contentView;
+            in_manager.notify(6, in_notification);
+        }
+
+    }
+
+
+    public String push_light(String type, String sid, boolean state) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type);
+            if (state) {
+                jsonObject.put("state", "on");
+            } else {
+                jsonObject.put("state", "off");
+            }
+
+            jsonObject.put("sid", sid);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+            return "";
+        }
+    }
+
+
+    public String push_light(String type, String sid, int blight) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type + "_setok");
+            jsonObject.put("sid", sid);
+            jsonObject.put("blight", blight);
+            jsonObject.put("alight", 0);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+            return "";
+        }
     }
 }

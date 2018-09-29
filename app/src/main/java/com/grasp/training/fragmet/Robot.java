@@ -117,10 +117,10 @@ public class Robot extends BaseMqttFragment {
                                 g.setName(rid);
                                 toulist.add(g);
                             }
-                            handler.sendEmptyMessageDelayed(999,500);
+                            handler.sendEmptyMessageDelayed(999,0);
                             break;
                         case "deleterobot_ok":
-                            handler.sendEmptyMessageDelayed(2000,500);
+                            handler.sendEmptyMessageDelayed(2000,0);
                             break;
                     }
 

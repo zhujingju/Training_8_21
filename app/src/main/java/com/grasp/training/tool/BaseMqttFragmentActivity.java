@@ -103,6 +103,7 @@ public abstract class BaseMqttFragmentActivity extends BaseFragmentActivity {
         unbindService(conn);
         ha.removeMessages(1000);
         ha.removeMessages(2000);
+        ha.removeMessages(3000);
         myHander.removeMessages(1);
         myHander.removeMessages(2);
         if (mReceiver != null) {

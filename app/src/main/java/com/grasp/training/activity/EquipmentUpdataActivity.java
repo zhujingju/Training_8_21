@@ -169,10 +169,15 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                         return;
                     }
                     if (cmd.equals("i am ok")) {
-                        String ver = jsonObject.optString("sys_ver", "");
-                        Log.e("qqq","i am ok="+ver+"  sys_ver="+sys_ver);
+                       if(bon==2){
+                           handler.sendEmptyMessageDelayed(3000,500);
+                            return;
+                        }
 
-                        if (ver.equals(sys_ver)) {
+                        String ver = jsonObject.optString("sys_ver", "");
+                        Log.e("qqq","i am ok="+ver+"  updata_ver="+updata_ver);
+
+                        if (!ver.equals(updata_ver)) {
                             handler.sendEmptyMessageDelayed(2001, 500);
 
                         } else {
@@ -187,7 +192,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
 
 
                     } else if (cmd.equals("wifi_" + type + "_ack")) {
-                        handler.sendEmptyMessageDelayed(2002, 500);
+//                        handler.sendEmptyMessageDelayed(2002, 500);
                         String ver= jsonObject.optString("sys_ver","");
                         if(!ver.equals("")){
                             sys_ver=ver;
@@ -215,14 +220,20 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                         if (!clientid.equals(Tool.getIMEI(getContext()))) {
                             return;
                         }
-                        String name = jsonObject.optString("name", "");  //
+                        String name = jsonObject.optString("vname", "");  //
                         double version = jsonObject.optDouble("version", 0.0);
+                        Log.e("qqq",name+" queryhardwareversion "+version);
                         if (!name.equals("")) {
                             String sys = name + "-v" + version;
                             updata_ver = sys;
                             if (!updata_ver.equals(sys_ver)) {
                                 updata_zt = true;
                                 handler.sendEmptyMessageDelayed(1000, 500);
+                            }else{
+                                handler.sendEmptyMessageDelayed(1002, 500);
+                                if(bon==1){
+                                    handler.sendEmptyMessageDelayed(1001, 500);
+                                }
                             }
 
                         }
@@ -239,13 +250,14 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
 
     private boolean dian_layout4;
 
-    @OnClick({R.id.equipment_fh, R.id.eu_layout4})
+    @OnClick({R.id.equipment_fh, R.id.eu_layout4, R.id.eu_layout5})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.equipment_fh:
                 finish();
                 break;
             case R.id.eu_layout4:
+                bon=1;
                 if (updata_zt) {
                     dian_layout4 = true;
                     updata();
@@ -254,9 +266,15 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                     isUpdata();
                 }
                 break;
+            case R.id.eu_layout5:  //c初始化数据
+                bon=2;
+                showPro4();
+                putInitdata();
+                break;
         }
     }
 
+    private int bon=0;
 
     private ProgressDialog dialog;
 
@@ -280,6 +298,12 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
         dialog.show();
     }
 
+    public void showPro4() {
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("初始化中...");
+        dialog.setCancelable(true);
+        dialog.show();
+    }
     private boolean builder_zt;
 
     private void updata() {   //更新
@@ -326,6 +350,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                     jsonObject.put("sid", sid);
                     jsonObject.put("uname", MainActivity.NameUser);
                     jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("type",type);
                     String js = jsonObject.toString();
                     publish_String3(js, myTopicding_too);
                 } catch (JSONException e) {
@@ -359,6 +384,27 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
 
     }
 
+    public void putInitdata() {  //版本更新
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_" + type + "_clear");
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+
+    }
+
     @Override
     protected void onDestroy() {
         handler.removeMessages(2222);
@@ -367,6 +413,9 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
         handler.removeMessages(2001);
         handler.removeMessages(2002);
         handler.removeMessages(4000);
+        handler.removeMessages(3000);
+        handler.removeMessages(1001);
+        handler.removeMessages(1002);
         super.onDestroy();
     }
 
@@ -390,6 +439,17 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
 
 
                     break;
+                case 1001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "已是最新版本", Toast.LENGTH_LONG).show();
+
+                    break;
+                case 1002:
+                        euLayout4Tv.setText(updata_ver);
+                        euSysIm.setVisibility(View.INVISIBLE);
+                        break;
                 case 2000:
                     if (dialog != null) {
                         dialog.dismiss();
@@ -427,6 +487,12 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                 case 4000:
                     euLayout2Tv.setText(sys_ver);
                     euLayout3Tv.setText(hard_ver);
+                    break;
+                case 3000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "初始化成功", Toast.LENGTH_LONG).show();
                     break;
             }
         }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.Tool;
 
 import org.json.JSONException;
@@ -30,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LightActivity extends BaseMqttActivity {
+public class LightActivity extends BaseTcpMqttActpvity {
 
     public final static String LightActivity1 = "LightActivity_1";
     public final static String LightActivity2 = "LightActivity_2";
@@ -177,17 +178,17 @@ public class LightActivity extends BaseMqttActivity {
                         }
                     }
                 }).start();
-                if(seek_in1!=-1&&Math.abs(seek_in1-seek_in)>10){  //判断滑动范围大于10就不发mqtt
-                    seek_in1=seek_in;
-                    return;
-                }
+//                if(seek_in1!=-1&&Math.abs(seek_in1-seek_in)>10){  //判断滑动范围大于10就不发mqtt
+//                    seek_in1=seek_in;
+//                    return;
+//                }
                 seek_in1=seek_in;
                 if(seek_in==100){
-//                    push_blight(99);
-                    push_blight_config(99);
+                    push_blight(99);
+//                    push_blight_config(99);
                 }else{
-//                    push_blight(seek_in);
-                    push_blight_config(seek_in);
+                    push_blight(seek_in);
+//                    push_blight_config(seek_in);
                 }
             }
 
@@ -298,9 +299,9 @@ public class LightActivity extends BaseMqttActivity {
                 }
                 seek_in1=seek_in;
                 if(seek_in==100){
-                    push_alight_config(99);
+                    push_alight(99);
                 }else{
-                    push_alight_config(seek_in);
+                    push_alight(seek_in);
                 }
             }
 
@@ -502,23 +503,23 @@ public class LightActivity extends BaseMqttActivity {
 
     //lightIm->blight   lightIm2->alight
     public void setStateView() {
-        if(smartBycSeekbar_zt){
-            return;
-        }
-        if(smartBycSeekbar_zt3){
-            return;
-        }
+//        if(smartBycSeekbar_zt){
+//            return;
+//        }
+//        if(smartBycSeekbar_zt3){
+//            return;
+//        }
         if(state_zt){
             lightImDeng.getBackground().setAlpha(255);
             Log.e("qqq","huan_1="+huan_1+" blight="+blight);
             if(huan_1!=-1&&huan_1!=blight){
 //                push_blight(huan_1);
-//                push_blight_config(huan_1);
+                push_blight_config(huan_1);
                 return;
             }
             if(huan_2!=-1&&huan_2!=alight){
 //                push_alight(huan_2);
-//                push_alight_config(huan_2);
+                push_alight_config(huan_2);
                 return;
             }
         }else{
@@ -601,7 +602,7 @@ public class LightActivity extends BaseMqttActivity {
                     jsonObject.put("alight", aL);
                     jsonObject.put("blight", blight);
                     String js = jsonObject.toString();
-                    publish_String3(js,myTopic);
+                    publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
@@ -631,7 +632,7 @@ public class LightActivity extends BaseMqttActivity {
                     jsonObject.put("alight", alight);
                     jsonObject.put("blight", bL);
                     String js = jsonObject.toString();
-                    publish_String3(js,myTopic);
+                    publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
@@ -722,7 +723,7 @@ public class LightActivity extends BaseMqttActivity {
                     jsonObject.put("blight", blight);
                     String js = jsonObject.toString();
 //                    publish_String3(js,myTopic);
-                    publish_String(js);
+                    publish_String4(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
@@ -784,7 +785,7 @@ public class LightActivity extends BaseMqttActivity {
                     }
 
                     String js = jsonObject.toString();
-                    publish_String4(js);
+                    publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();

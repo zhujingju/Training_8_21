@@ -194,7 +194,8 @@ public class LoginActivity extends BaseMqttActivity {
                 if(!name.equals("")&&!pw.equals("")){
                     zc_zt=true;
                     ha.sendEmptyMessage(1000);
-                    startBestServer();
+//                    startBestServer();
+                    push(name,pw);
                 }else{
                     Toast.makeText(LoginActivity.this,"不能为空",Toast.LENGTH_SHORT).show();
                 }
@@ -209,14 +210,14 @@ public class LoginActivity extends BaseMqttActivity {
     /**
      * 新接口，获取最优P2P服务器，然后连接
      */
-    void startBestServer() {
-        clientCore = ClientCore.getInstance();
-        int language = 1;
-        clientCore.setupHost(this, Constants.server, 0, Utility.getImsi(this),
-                language, Constants.CustomName, Utility.getVersionName(this),
-                "");
-        clientCore.getCurrentBestServer(this, handler);
-    }
+//    void startBestServer() {
+//        clientCore = ClientCore.getInstance();
+//        int language = 1;
+//        clientCore.setupHost(this, Constants.server, 0, Utility.getImsi(this),
+//                language, Constants.CustomName, Utility.getVersionName(this),
+//                "");
+//        clientCore.getCurrentBestServer(this, handler);
+//    }
 
     private Handler handler = new Handler() {
 

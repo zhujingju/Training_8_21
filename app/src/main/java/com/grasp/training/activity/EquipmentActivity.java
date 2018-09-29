@@ -22,6 +22,7 @@ import com.example.liangmutian.mypicker.TimePickerDialog;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -37,7 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class EquipmentActivity extends BaseMqttActivity {
+public class EquipmentActivity extends BaseTcpMqttActpvity {
 
 
     public final static String equipment1 = "Equipment_1";

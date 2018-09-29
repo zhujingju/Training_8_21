@@ -122,7 +122,7 @@
                         android:layout_centerVertical="true"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dip_5.5"
-                        android:background="@drawable/control_wendutiao"/>
+                        android:background="@drawable/control_sexiang"/>
                     <SeekBar
                         android:id="@+id/light_seekbar"
                         android:layout_centerVertical="true"
@@ -172,7 +172,7 @@
                     android:layout_centerVertical="true"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dip_5.5"
-                    android:background="@drawable/control_wendutiao"/>
+                    android:background="@drawable/control_sexiang"/>
                 <SeekBar
                     android:id="@+id/light_seekbar2"
                     android:layout_centerVertical="true"

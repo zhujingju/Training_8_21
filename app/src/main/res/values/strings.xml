@@ -146,6 +146,7 @@
     <string name="eu_tv2">软件版本</string>
     <string name="eu_tv3">硬件版本</string>
     <string name="eu_tv4">检查更新</string>
+    <string name="eu_tv5">初始化数据</string>
 
     <string name="light_a_tv1">亮度</string>
     <string name="light_a_tv2">色温</string>

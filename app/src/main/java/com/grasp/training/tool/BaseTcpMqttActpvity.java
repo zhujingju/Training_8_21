@@ -1,6 +1,5 @@
 package com.grasp.training.tool;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,9 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.grasp.training.service.MqttService;
 
@@ -22,25 +19,23 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
+import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-public abstract class BaseMqttActivity extends BaseActivity {
+public abstract class BaseTcpMqttActpvity extends BaseActivity {
+
     private ContentReceiver mReceiver;
     private MyServiceConn conn;
 
@@ -571,7 +566,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     socket.receive(packet); //阻塞式，接收发送方的 packet
                     String result = new String(packet.getData(), packet.getOffset(), packet.getLength()); //packet 转换
-                    Log.e(TAG, "UDP result: " + result);
+                             Log.e(TAG, "UDP result: " + result);
                     MyMessageArrived(result);
 //                    socket2.close(); //必须及时关闭 socket，否则会出现 error
                 } catch (Exception e) {
@@ -664,7 +659,7 @@ public abstract class BaseMqttActivity extends BaseActivity {
     }
 
 
-    private Map<String,String> getAllLocalBroadIp() {
+    private  Map<String,String> getAllLocalBroadIp() {
         Map<String,String> LocalIpAndbroadcastIp = new HashMap<>();
         try {
             Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();

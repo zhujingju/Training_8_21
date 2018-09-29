@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -34,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SwitchActivity extends BaseMqttActivity {
+public class SwitchActivity extends BaseTcpMqttActpvity {
 
     public final static String SwitchActivity1 = "SwitchActivity1";
     public final static String SwitchActivity2 = "SwitchActivity2";

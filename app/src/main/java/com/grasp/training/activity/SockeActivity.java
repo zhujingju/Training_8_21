@@ -21,12 +21,13 @@ import com.example.liangmutian.mypicker.TimePickerDialog;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.Tool;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SockeActivity extends BaseMqttActivity implements View.OnClickListener {
+public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickListener {
     public static String socket = "Main_sockets";
     public static String socket2 = "Main_sockets2";
     private String sid = "";

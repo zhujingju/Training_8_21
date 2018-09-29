@@ -185,6 +185,33 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/dip_120.0"
                     />
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/white2"
+                    android:layout_alignParentBottom="true"
+
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/eu_layout5"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/white"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dip_30.0"
+                    android:text="@string/eu_tv5"
+                    android:layout_alignParentRight="true"
+                    />
+
+
             </RelativeLayout>
 
         </LinearLayout>
