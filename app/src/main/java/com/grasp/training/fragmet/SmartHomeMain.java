@@ -2,6 +2,7 @@ package com.grasp.training.fragmet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +45,8 @@ import com.grasp.training.activity.SwitchActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseMqttFragment;
 import com.grasp.training.tool.EquipmentData;
+import com.grasp.training.tool.Goods;
+import com.grasp.training.tool.LocationUtils;
 import com.grasp.training.tool.MqttEquipment;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
@@ -55,8 +59,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -89,6 +95,7 @@ public class SmartHomeMain extends BaseMqttFragment {
     private int posi = 0;
     private boolean del_zt = false;
     private final String SmartHomeMain = "SmartHomeMain";
+    private String city="";
 
     @Override
     public int getInflate() {
@@ -99,12 +106,48 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void init(View rootView) {
         unbinder = ButterKnife.bind(this, rootView);
         context = getActivity();
-        doRegisterReceiver();
+        city= (String) SharedPreferencesUtils.getParam(context,"city_main","");
         head = (LinearLayout) rootView.findViewById(R.id.head);
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         //获取PullToRefreshGridView里面的head布局
         head.addView(gridView.getView(), p);
         initListview();
+        Log.e("tianqi","isLocationEnabled="+LocationUtils.isLocationEnabled(context)+" LocationUtils.isGpsEnabled(context)="+LocationUtils.isGpsEnabled(context));
+        if(LocationUtils.isLocationEnabled(context)){
+
+            if(LocationUtils.isGpsEnabled(context)){
+
+            }else{
+//                setGps();
+            }
+
+            LocationUtils.register(context, 60 * 1000, 1000, new LocationUtils.OnLocationChangeListener() {
+                @Override
+                public void getLastKnownLocation(Location location) {
+
+                }
+
+                @Override
+                public void onLocationChanged(Location location) {
+                    double Latitude = location.getLatitude();  //维度
+                    double Longitude = location.getLongitude();
+                    city=LocationUtils.getLocality(context ,Latitude,Longitude);
+                    SharedPreferencesUtils.setParam(context,"city_main",city);
+                    if(!city.equals("")){
+                        new Thread(tq).start();
+                    }
+                    Log.e("tianqi","Latitude="+Latitude+" city="+city);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+            });
+
+        }else{
+            city="北京";
+        }
 
     }
 
@@ -227,19 +270,15 @@ public class SmartHomeMain extends BaseMqttFragment {
 
     @Override
     public void onDestroyView() {
+        LocationUtils.unregister();
         Map_del();
-        if (mReceiver != null) {
-            context.unregisterReceiver(mReceiver);
-        }
+        tqHander.removeMessages(1000);
         handler.removeMessages(1000);
         handler.removeMessages(2000);
         handler.removeMessages(123);
         equimentHandler.removeMessages(1000);
         equimentHandler.removeMessages(2000);
         equimentHandler.removeMessages(3000);
-        image_hander.removeMessages(1000);
-        image_hander.removeMessages(1001);
-        image_hander.removeMessages(1002);
         super.onDestroyView();
 
         unbinder.unbind();
@@ -273,6 +312,9 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void onStart() {
         super.onStart();
         setEquipmentData();
+        if(!city.equals("")){
+            new Thread(tq).start();
+        }
 
         handler.sendEmptyMessageDelayed(123, 0);
     }
@@ -566,80 +608,6 @@ public class SmartHomeMain extends BaseMqttFragment {
     }
 
 
-    class Goods {
-        private String name;//名称
-        private String wz;//位置
-        private boolean dy; //是否开启
-        private boolean add_zt;
-        private String Im_url;
-        private String Sid;
-        private String type;
-        private boolean jh_zt;  //设备是否在线
-
-        public boolean isJh_zt() {
-            return jh_zt;
-        }
-
-        public void setJh_zt(boolean jh_zt) {
-            this.jh_zt = jh_zt;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getSid() {
-            return Sid;
-        }
-
-        public void setSid(String sid) {
-            Sid = sid;
-        }
-
-        public String getIm_url() {
-            return Im_url;
-        }
-
-        public void setIm_url(String im_url) {
-            Im_url = im_url;
-        }
-
-        public boolean isAdd_zt() {
-            return add_zt;
-        }
-
-        public void setAdd_zt(boolean add_zt) {
-            this.add_zt = add_zt;
-        }
-
-        public String getWz() {
-            return wz;
-        }
-
-        public void setWz(String wz) {
-            this.wz = wz;
-        }
-
-        public boolean isDy() {
-            return dy;
-        }
-
-        public void setDy(boolean dy) {
-            this.dy = dy;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
 
 
     private ArrayList<EquipmentData> elist;
@@ -850,6 +818,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
+                    e.subscribe();
                     e.publish_String(push_read(e.getType(), e.getSid()));
                     try {
                         Thread.sleep(500);
@@ -874,12 +843,12 @@ public class SmartHomeMain extends BaseMqttFragment {
             }
         }
 
-        if (manager != null) {
-            manager.cancel(0);
-        }
-        if (in_manager != null) {
-            in_manager.cancel(0);
-        }
+//        if (manager != null) {
+//            manager.cancel(0);
+//        }
+//        if (in_manager != null) {
+//            in_manager.cancel(0);
+//        }
 
     }
 
@@ -954,175 +923,96 @@ public class SmartHomeMain extends BaseMqttFragment {
                     }
                     adapter.setList(list);
                     adapter.notifyDataSetChanged();
-                    if (manager == null) {
-                        dataNotification();
-                    }
-                    sxNotification();
+//                    if (manager == null) {
+//                        dataNotification();
+//                    }
+//                    sxNotification();
                     break;
                 case 3000:
                     Log.e("qqq", "goods " + 3000);
                     equimentHandler.removeMessages(3000);
                     getJh();
-                    equimentHandler.sendEmptyMessageDelayed(3000, 2 * 60 * 1000);
+//                    equimentHandler.sendEmptyMessageDelayed(3000, 2 * 60 * 1000);
                     break;
             }
         }
     };
-    private RemoteViews contentView;
-    private Notification notification;
-    private NotificationManager manager;
 
-    public void dataNotification() {
 
-        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
-//        notification.flags|= Notification.FLAG_ONGOING_EVENT;
-        sendNotification();
-    }
 
-    /**
-     * 发送通知
-     */
-    public void sendNotification() {
-        Log.e("qqq", "dataNotification ");
-        contentView = new RemoteViews(context.getPackageName(), R.layout.data_notification);
-        notification.contentView = contentView;
-//        manager.notify(3, notification);
-    }
 
-    public static final String BT_REFRESH_ACTION = "BT_REFRESH_ACTION";
-    public static final String COLLECTION_VIEW_ACTION = "COLLECTION_VIEW_ACTION";
-    public static final String COLLECTION_VIEW_EXTRA = "COLLECTION_VIEW_EXTRA";
+    private Thread tq = new Thread() {
+        StringBuffer sb = new StringBuffer();
+        String line = null;
+        BufferedReader buffer = null;
 
-    private void sxNotification() {
-
-        if (MqttEquipmentMap != null && contentView != null && notification != null && manager != null) {
-            Log.e("qqq", "oldMap.s=" + oldMap.size());
-            if (MqttEquipmentMap.size() == 0) {
-                return;
-            }
-            int i = 0;
-            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-                MqttEquipment e = entry.getValue();
-                String type = e.getType();
-                String sid = e.getSid();
-                if (oldMap != null) {
-                    if (oldMap.get(sid) != null) {
-
-                        if (type != null && !type.equals("")) {  //添加菜单栏
-                            if (type.equals("socket") || type.equals("switch") || type.equals("light")) {
-//                    if (type.equals("switch") || type.equals("light")) {
-                                if (i == 0) {
-                                    contentView.setTextViewText(R.id.data_notification_tv1, e.getName());
-                                    setImage1(e.getIm_url());
-                                    Intent btIntent = new Intent().setAction(BT_REFRESH_ACTION);
-                                    btIntent.putExtra("sid", e.getSid());
-                                    btIntent.putExtra("type", e.getType());
-                                    btIntent.putExtra("num", 1);
-//                            if (oldState != null && oldState.get(e.getSid()) != null) {
-//                                btIntent.putExtra("state", oldState.get(e.getSid()));
-//                            }
-
-                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout1, btPendingIntent);
-                                } else if (i == 1) {
-                                    contentView.setTextViewText(R.id.data_notification_tv2, e.getName());
-                                    setImage2(e.getIm_url());
-                                    Intent btIntent = new Intent().setAction(COLLECTION_VIEW_ACTION);
-                                    btIntent.putExtra("sid", e.getSid());
-                                    btIntent.putExtra("type", e.getType());
-                                    btIntent.putExtra("num", 2);
-//                            if (oldState != null && oldState.get(e.getSid()) != null) {
-//                                btIntent.putExtra("state", oldState.get(e.getSid()));
-//                            }
-                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout2, btPendingIntent);
-                                } else if (i == 2) {
-                                    contentView.setTextViewText(R.id.data_notification_tv3, e.getName());
-                                    setImage3(e.getIm_url());
-                                    Intent btIntent = new Intent().setAction(COLLECTION_VIEW_EXTRA);
-                                    btIntent.putExtra("sid", e.getSid());
-                                    btIntent.putExtra("type", e.getType());
-                                    btIntent.putExtra("num", 3);
-//                            if (oldState != null && oldState.get(e.getSid()) != null) {
-//                                btIntent.putExtra("state", oldState.get(e.getSid()));
-//                            }
-                                    PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                    contentView.setOnClickPendingIntent(R.id.data_notification_layout3, btPendingIntent);
-                                }
-                                i++;
-                            }
-                    }
+        public void run() {
+            HttpURLConnection connection = null;
+            try {
+                sb.delete(0, sb.length());
+                String tq = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+                URL url = new URL(tq);
+                connection = (HttpURLConnection) url.openConnection();
+                // 设置请求方法，默认是GET
+                connection.setRequestMethod("GET");
+                // 设置字符集
+                connection.setRequestProperty("Charset", "UTF-8");
+                connection.setConnectTimeout(8000);
+                connection.setReadTimeout(8000);
+                buffer = new BufferedReader(new InputStreamReader(
+                        connection.getInputStream()));
+                while ((line = buffer.readLine()) != null) {
+                    sb.append(line);
                 }
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (buffer != null) {
+                        buffer.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            String result = sb.toString();
+            Log.e("tianqi",result);
+//            Message msg = Message.obtain();
+//            msg.what = 0;
+//            getHandler.sendMessage(msg);
+            Message message=new Message();
+            message.what=1000;
+            message.obj=result;
+            tqHander.sendMessage(message);
 
         }
-        notification.contentView = contentView;
-        manager.notify(3, notification);
-    }
-}
+    };
 
 
-    private Bitmap bitmap1, bitmap2, bitmap3;
-
-    private void setImage1(final String url) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap1 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1000, 0);
-            }
-        }).start();
-    }
-
-    private void setImage2(final String url) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap2 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1001, 0);
-            }
-        }).start();
-    }
-
-
-    private void setImage3(final String url) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap3 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1002, 0);
-            }
-        }).start();
-    }
-
-    Handler image_hander = new Handler() {
+    Handler tqHander=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
+            switch (msg.what){
                 case 1000:
-                    if (bitmap1 != null) {
-                        contentView.setImageViewBitmap(R.id.data_notification_im1, bitmap1);
-                        notification.contentView = contentView;
-                        manager.notify(3, notification);
-                    }
+                    try {
+                        JSONObject obj = new JSONObject(msg.obj.toString());
+                        JSONObject array = obj.getJSONObject("data");
+                        String wendu = array.getString("wendu"); //温度
+                        String ganmao = array.getString("ganmao");  //天气状况
+                        JSONArray forecast = array.getJSONArray("forecast");
+                        JSONObject for_obj = forecast.getJSONObject(0);
+                        String fengxiang = for_obj.getString("fengxiang"); //风向
+                        String fengli = for_obj.getString("fengli"); //风力
+                        String type = for_obj.getString("type");  //天气
+                        smartTvWd.setText(wendu);
+                        smartTvSd.setText(type);
 
-                    break;
-                case 1001:
-                    if (bitmap2 != null) {
-                        contentView.setImageViewBitmap(R.id.data_notification_im2, bitmap2);
-                        notification.contentView = contentView;
-                        manager.notify(3, notification);
-                    }
-                    break;
-                case 1002:
-                    if (bitmap3 != null) {
-                        contentView.setImageViewBitmap(R.id.data_notification_im3, bitmap3);
-                        notification.contentView = contentView;
-                        manager.notify(3, notification);
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.e("tianqi",e.getMessage());
                     }
                     break;
             }
@@ -1130,391 +1020,29 @@ public class SmartHomeMain extends BaseMqttFragment {
     };
 
 
-    //加载图片
-    public Bitmap getURLimage(String url1) {
-//        Log.e("qqq", "dataNotification e=" + url1);
-        try {
-            URL url = new URL(url1);
-            HttpURLConnection conn = (HttpURLConnection) url
-                    .openConnection();
-            conn.setConnectTimeout(6000);// 设置超时
-            conn.setDoInput(true);
-            conn.setUseCaches(false);// 不缓存
-            conn.connect();
-            int code = conn.getResponseCode();
-            Bitmap bitmap = null;
-            if (code == 200) {
-                InputStream is = conn.getInputStream();// 获得图片的数据流
-                bitmap = BitmapFactory.decodeStream(is);
+
+    private void setGps() {
+        city="北京";
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                context).setTitle("是否去打开Gps已获取天气信息");
+        builder.setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO Auto-generated method stub
+                LocationUtils.openGpsSettings(context);
             }
-            return bitmap;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+        });
 
-    private ContentReceiver mReceiver;
-    private MyServiceConn conn;
+        builder.setNegativeButton(
+                getString(R.string.alert_dialog_cancel),  new DialogInterface.OnClickListener() {
 
-    private void doRegisterReceiver() {
-        mReceiver = new ContentReceiver();
-        IntentFilter filter = new IntentFilter(
-                "BT_REFRESH_ACTION");
-        context.registerReceiver(mReceiver, filter);
-        IntentFilter filter2 = new IntentFilter(
-                "COLLECTION_VIEW_ACTION");
-        context.registerReceiver(mReceiver, filter2);
-        IntentFilter filter3 = new IntentFilter(
-                "COLLECTION_VIEW_EXTRA");
-        context.registerReceiver(mReceiver, filter3);
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        // TODO Auto-generated method stub
 
-        IntentFilter filter4 = new IntentFilter(
-                socketInNotification1);
-        context.registerReceiver(mReceiver, filter4);
-
-        IntentFilter filter5 = new IntentFilter(
-                socketInNotification2);
-        context.registerReceiver(mReceiver, filter5);
-
-        IntentFilter filter6 = new IntentFilter(
-                swithInNotification1);
-        context.registerReceiver(mReceiver, filter6);
-
-        IntentFilter filter7 = new IntentFilter(
-                swithInNotification2);
-        context.registerReceiver(mReceiver, filter7);
-        IntentFilter filter8 = new IntentFilter(
-                swithInNotification3);
-        context.registerReceiver(mReceiver, filter8);
-        IntentFilter filter9 = new IntentFilter(
-                swithInNotification4);
-        context.registerReceiver(mReceiver, filter9);
-
-        IntentFilter filter10 = new IntentFilter(
-                lightInNotification1);
-        context.registerReceiver(mReceiver, filter10);
-
-        IntentFilter filter11 = new IntentFilter(
-                lightInNotification2);
-        context.registerReceiver(mReceiver, filter11);
-
-        IntentFilter filter12 = new IntentFilter(
-                lightInNotification3);
-        context.registerReceiver(mReceiver, filter12);
-    }
-
-public class ContentReceiver extends BroadcastReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-        String sid = intent.getStringExtra("sid");
-        String type = intent.getStringExtra("type");
-        Log.e("qqq", "onReceive type=" + type);
-        int num = intent.getIntExtra("num", -1);
-        if (num == -10) {  //第二次
-            if (type.equals("socket")) {
-                boolean state = intent.getBooleanExtra("state", false);
-                if (MqttEquipmentMap.get(sid) != null) {
-                    MqttEquipment e = MqttEquipmentMap.get(sid);
-                    e.publish_String(push_socke(e.getType(), e.getSid(), state));
-                }
-            } else if (type.equals("switch")) {
-                boolean state = intent.getBooleanExtra("state", false);
-                int channel = intent.getIntExtra("channel", -1);
-                if (MqttEquipmentMap.get(sid) != null && channel != -1) {
-                    Log.e("qqq", "onReceive type=fa");
-                    MqttEquipment e = MqttEquipmentMap.get(sid);
-                    e.publish_String(push_switch(e.getType(), e.getSid(), state, channel));
-                }
-
-            } else if (type.equals("light")) {
-                int blight = intent.getIntExtra("blight", -1);
-                if (MqttEquipmentMap.get(sid) != null) {
-                    MqttEquipment e = MqttEquipmentMap.get(sid);
-                    Log.e("qqq", "onReceive blight=" + blight);
-                    if (blight != -1) {
-                        e.publish_String(push_light(e.getType(), e.getSid(), blight));
-                    } else {
-                        e.publish_String(push_light(e.getType(), e.getSid(), false));
                     }
-
-                }
-
-            }
-
-        } else {
-            Bitmap bitmap = null;
-            if (num == 1) {
-                bitmap = bitmap1;
-            } else if (num == 2) {
-                bitmap = bitmap2;
-            } else if (num == 3) {
-                bitmap = bitmap3;
-            }
-            if (sid != null && !sid.equals("")) {  //具体操作
-                Log.e("qqq", "sid=" + sid);
-                if (type != null) {
-                    if (type.equals("socket")) {
-                        if (in_manager == null) {
-                            inNotification();
-                        }
-                        socketInNotification(bitmap, sid, type);
-                    } else if (type.equals("switch")) {
-                        if (in_manager == null) {
-                            inNotification();
-                        }
-                        swithInNotification(bitmap, sid, type);
-
-                    } else if (type.equals("light")) {
-                        if (in_manager == null) {
-                            inNotification();
-                        }
-                        lightInNotification(bitmap, sid, type);
-                    }
-                }
-
-            }
-        }
-
-
-    }
-
-}
-
-
-    private RemoteViews in_contentView;
-    private Notification in_notification;
-    private NotificationManager in_manager;
-
-    public void inNotification() {
-
-        in_manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        in_notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
-//        notification.flags|= Notification.FLAG_ONGOING_EVENT;
-    }
-
-
-    private final static String socketInNotification1 = "socketInNotification1";
-    private final static String socketInNotification2 = "socketInNotification2";
-    private final static String swithInNotification1 = "swithInNotification1";
-    private final static String swithInNotification2 = "swithInNotification2";
-    private final static String swithInNotification3 = "swithInNotification3";
-    private final static String swithInNotification4 = "swithInNotification4";
-    private final static String lightInNotification1 = "swithInNotification1";
-    private final static String lightInNotification2 = "swithInNotification2";
-    private final static String lightInNotification3 = "swithInNotification3";
-
-    /**
-     * 发送通知
-     */
-    public void socketInNotification(Bitmap bitmap, String sid, String type) {  //插座
-        Log.e("qqq", "dataInNotification ");
-        in_contentView = new RemoteViews(context.getPackageName(), R.layout.socket_in_notification);
-        in_notification.contentView = in_contentView;
-        in_manager.notify(6, in_notification);
-        if (bitmap != null) {
-            in_contentView.setImageViewBitmap(R.id.socket_in_notification_im1, bitmap);
-
-            Intent btIntent = new Intent().setAction(socketInNotification1);
-            btIntent.putExtra("sid", sid);
-            btIntent.putExtra("type", type);
-            btIntent.putExtra("num", -10);
-            btIntent.putExtra("state", true);
-            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im2, btPendingIntent);
-
-            Intent btIntent2 = new Intent().setAction(socketInNotification2);
-            btIntent2.putExtra("sid", sid);
-            btIntent2.putExtra("type", type);
-            btIntent2.putExtra("num", -10);
-            btIntent2.putExtra("state", false);
-            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im3, btPendingIntent2);
-
-            in_notification.contentView = in_contentView;
-            in_manager.notify(6, in_notification);
-        }
-
-    }
-
-
-    public String push_socke(String type, String sid, boolean state) {  //获取状态
-
-        try {
-
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_" + type);
-            if (state) {
-                jsonObject.put("state", "on");
-            } else {
-                jsonObject.put("state", "off");
-            }
-
-            jsonObject.put("sid", sid);
-            return jsonObject.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-            return "";
-        }
-    }
-
-
-    public void swithInNotification(Bitmap bitmap, String sid, String type) {  //开关
-        Log.e("qqq", "swithInNotification ");
-        in_contentView = new RemoteViews(context.getPackageName(), R.layout.swith_in_notification);
-        in_notification.contentView = in_contentView;
-        in_manager.notify(6, in_notification);
-        if (bitmap != null) {
-            in_contentView.setImageViewBitmap(R.id.switch_in_notification_im1, bitmap);
-
-            Intent btIntent = new Intent().setAction(swithInNotification1);
-            btIntent.putExtra("sid", sid);
-            btIntent.putExtra("type", type);
-            btIntent.putExtra("num", -10);
-            btIntent.putExtra("state", true);
-            btIntent.putExtra("channel", 1);
-            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im2, btPendingIntent);
-
-            Intent btIntent2 = new Intent().setAction(swithInNotification2);
-            btIntent2.putExtra("sid", sid);
-            btIntent2.putExtra("type", type);
-            btIntent2.putExtra("num", -10);
-            btIntent2.putExtra("state", false);
-            btIntent2.putExtra("channel", 1);
-            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im3, btPendingIntent2);
-
-            Intent btIntent3 = new Intent().setAction(swithInNotification3);
-            btIntent3.putExtra("sid", sid);
-            btIntent3.putExtra("type", type);
-            btIntent3.putExtra("num", -10);
-            btIntent3.putExtra("state", true);
-            btIntent3.putExtra("channel", 2);
-            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(context, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im4, btPendingIntent3);
-
-            Intent btIntent4 = new Intent().setAction(swithInNotification4);
-            btIntent4.putExtra("sid", sid);
-            btIntent4.putExtra("type", type);
-            btIntent4.putExtra("num", -10);
-            btIntent4.putExtra("state", false);
-            btIntent4.putExtra("channel", 2);
-            PendingIntent btPendingIntent4 = PendingIntent.getBroadcast(context, 0, btIntent4, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im5, btPendingIntent4);
-            in_notification.contentView = in_contentView;
-            in_manager.notify(6, in_notification);
-        }
-
-    }
-
-
-    public String push_switch(String type, String sid, boolean state, int channel) {
-
-        try {
-
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_" + type);
-            if (state) {
-                jsonObject.put("state", "on");
-            } else {
-                jsonObject.put("state", "off");
-            }
-            jsonObject.put("channel", channel);
-            jsonObject.put("sid", sid);
-            return jsonObject.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-            return "";
-        }
-    }
-
-
-    public void lightInNotification(Bitmap bitmap, String sid, String type) {  //灯
-        Log.e("qqq", "dataInNotification ");
-        in_contentView = new RemoteViews(context.getPackageName(), R.layout.light_in_notification);
-        in_notification.contentView = in_contentView;
-        in_manager.notify(6, in_notification);
-        if (bitmap != null) {
-            in_contentView.setImageViewBitmap(R.id.light_in_notification_im1, bitmap);
-
-            Intent btIntent = new Intent().setAction(lightInNotification1);
-            btIntent.putExtra("sid", sid);
-            btIntent.putExtra("type", type);
-            btIntent.putExtra("num", -10);
-            btIntent.putExtra("blight", 80);
-            PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im2, btPendingIntent);
-
-            Intent btIntent2 = new Intent().setAction(lightInNotification2);
-            btIntent2.putExtra("sid", sid);
-            btIntent2.putExtra("type", type);
-            btIntent2.putExtra("num", -10);
-            btIntent2.putExtra("blight", 30);
-            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(context, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im3, btPendingIntent2);
-
-
-            Intent btIntent3 = new Intent().setAction(lightInNotification3);
-            btIntent3.putExtra("sid", sid);
-            btIntent3.putExtra("type", type);
-            btIntent3.putExtra("num", -10);
-            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(context, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
-            in_contentView.setOnClickPendingIntent(R.id.light_in_notification_im4, btPendingIntent3);
-
-            in_notification.contentView = in_contentView;
-            in_manager.notify(6, in_notification);
-        }
-
-    }
-
-
-    public String push_light(String type, String sid, boolean state) {
-
-        try {
-
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_" + type);
-            if (state) {
-                jsonObject.put("state", "on");
-            } else {
-                jsonObject.put("state", "off");
-            }
-
-            jsonObject.put("sid", sid);
-            return jsonObject.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-            return "";
-        }
-    }
-
-
-    public String push_light(String type, String sid, int blight) {
-
-        try {
-
-            //发送请求所有数据消息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmd", "wifi_" + type + "_setok");
-            jsonObject.put("sid", sid);
-            jsonObject.put("blight", blight);
-            jsonObject.put("alight", 0);
-            return jsonObject.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
-            return "";
-        }
+                });
+        builder.show();
     }
 }

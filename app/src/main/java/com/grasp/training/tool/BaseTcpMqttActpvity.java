@@ -32,6 +32,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 public abstract class BaseTcpMqttActpvity extends BaseActivity {
@@ -149,6 +150,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 //        Log.e("qqq","socket.isClosed()="+socket.isClosed()+" socket.isConnected()"+socket.isConnected());
         if(result_zt){
             String ip = MqttService.sid_ip.get(getSid());
+//            ip=null;//要删
             Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
             if (ip != null) {
 
@@ -218,6 +220,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
         if(result_zt){
             String ip = MqttService.sid_ip.get(getSid());
             Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
+//            ip=null;//要删
             if (ip != null) {
 
                 Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
@@ -291,6 +294,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
         if(result_zt){
             String ip = MqttService.sid_ip.get(getSid());
             Log.e("tcp", "ip =" + ip + " getSid()=" + getSid());
+//            ip=null;//要删
             if (ip != null) {
 
                 Log.e("tcp", "ip_zt =" + MqttService.ip_zt.get(ip + getSid()));
@@ -528,7 +532,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 //                tcpClient.del();
 //                tcpClient = null;
 //            }
-            result_zt=false;
+//            result_zt=false;
 
             ha.sendEmptyMessageDelayed(1000, 0);
             Log.e("qqq", "网络状态改变");
@@ -540,7 +544,15 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
         }
     }
 
+    private int post=7777;
+    private void setPost(){
+        if(socket==null){
+            Random random = new Random();
+            post=random.nextInt(9000)+1000;
+        }
 
+
+    }
 
     //（接收线程）
     class UdpReceiveThread extends Thread {
@@ -548,11 +560,13 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 
         @Override
         public void run() {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            setPost();
+            Log.e("qqq","post"+post);
             result_zt=true;
             Log.e("UdpReceiveThread","new UdpReceiveThread");
             while (result_zt&&isAlive()) { //循环接收，isAlive() 判断防止无法预知的错误
@@ -560,7 +574,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
                     Log.e("UdpReceiveThread","+++UdpReceiveThread");
 //                    sleep(20); //让它好好休息一会儿
                     if(socket==null){
-                        socket = new DatagramSocket(7777); //建立 socket，其中 8888 为端口号
+                        socket = new DatagramSocket(post); //建立 socket，其中 8888 为端口号
                     }
                     byte data[] = new byte[1024];
                     DatagramPacket packet = new DatagramPacket(data, data.length);
@@ -576,11 +590,16 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
                     Log.e(TAG, "UDP result: err=" + e.getMessage()+"  result_zt="+result_zt);
                     if(result_zt){
                         Log.e(TAG, "UDP result: 错误" );
-                        MqttService.ip_zt.put(myIp + getSid(), false);
-                        if (!getSid().equals("")) {
-                            if (fa_zt) {
-                                fa_zt = false;
-                                push_ping(getSid());
+                        if (e.getMessage().equals("bind failed: EADDRINUSE (Address already in use)")) {
+                            Random random = new Random();
+                            post = random.nextInt(9000) + 1000;
+                        } else {
+                            MqttService.ip_zt.put(myIp + getSid(), false);
+                            if (!getSid().equals("")) {
+                                if (fa_zt) {
+                                    fa_zt = false;
+                                    push_ping(getSid());
+                                }
                             }
                         }
                     }else{
@@ -600,7 +619,10 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 
     private void setDel(){
         result_zt=false;
-        socket.close();
+        if(socket!=null){
+            socket.close();
+        }
+
     }
 
     public class UdpSendThread extends Thread {
@@ -628,7 +650,7 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 
 
                 if(socket==null){
-                    socket = new DatagramSocket(7777); //自定端口号
+                    socket = new DatagramSocket(post); //自定端口号
 //                    socket.setReuseAddress(true);
 //                    socket.bind(new InetSocketAddress(8888));
                 }

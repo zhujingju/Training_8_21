@@ -34,6 +34,7 @@ import com.grasp.training.fragmet.Robot;
 import com.grasp.training.fragmet.Scenario;
 import com.grasp.training.fragmet.SmartHome;
 import com.grasp.training.fragmet.SmartHomeMain;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseFragmentActivity;
 import com.grasp.training.tool.BaseMqttFragmentActivity;
 import com.grasp.training.tool.MyApplication;
@@ -48,7 +49,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -134,6 +138,11 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
         ImageLoader.getInstance().clearDiskCache();
         ImageLoader.getInstance().clearMemoryCache();
+
+        MqttService.ip_zt = putMap(MqttService.MqttService1);
+        MqttService.sid_ip = putMap(MqttService.MqttService2);
+        Log.e("qqq", "ip.s=" + MqttService.ip_zt.size() + " " + MqttService.ip_zt);
+        Log.e("qqq", "sid_ip.s=" + MqttService.sid_ip.size() + "  " + MqttService.sid_ip);
     }
 
     @Override
@@ -278,6 +287,8 @@ public class MainActivity extends BaseMqttFragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeMessages(1000);
+        saveMap(MqttService.ip_zt, MqttService.MqttService1);
+        saveMap(MqttService.sid_ip, MqttService.MqttService2);
 
     }
 
@@ -519,4 +530,38 @@ public class MainActivity extends BaseMqttFragmentActivity {
         }
 
     };
+
+    public <Srring, V> HashMap<String, V> putMap(String mz) {
+        HashMap hashMap = new HashMap();
+        String s = SharedPreferencesUtils.getParam(this, mz, "").toString();
+        if (!s.equals("")) {
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                Iterator keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    V var = (V) jsonObject.opt(key);
+                    hashMap.put(key, var);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return hashMap;
+
+    }
+
+    public <Srring, V> void saveMap(HashMap<String, V> map, String mz) {
+        JSONObject jsonObject = new JSONObject();
+        for (Map.Entry<String, V> entry : map.entrySet()) {
+            try {
+                jsonObject.put(entry.getKey(), entry.getValue());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        SharedPreferencesUtils.setParam(this, mz, jsonObject.toString());
+    }
 }

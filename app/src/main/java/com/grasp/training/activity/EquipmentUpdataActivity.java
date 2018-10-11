@@ -226,6 +226,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
                         if (!name.equals("")) {
                             String sys = name + "-v" + version;
                             updata_ver = sys;
+                            Log.e("qqq",name+" queryhardwareversion "+updata_ver);
                             if (!updata_ver.equals(sys_ver)) {
                                 updata_zt = true;
                                 handler.sendEmptyMessageDelayed(1000, 500);

@@ -34,11 +34,11 @@ public abstract class BaseActivity extends Activity {
 	        // 优化输入法模式  
 	        int inputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
 	        getWindow().setSoftInputMode(inputMode);  
-	        if (null != savedInstanceState) {  
-	            //activity由系统加载的时候savedInstanceState不为空  
-	            finish();
-	            return;
-	        }  
+//	        if (null != savedInstanceState) {
+//	            //activity由系统加载的时候savedInstanceState不为空
+//	            finish();
+//	            return;
+//	        }
 	        setContentView(setLayoutId());
 	        setContext(this);
 	        initData();

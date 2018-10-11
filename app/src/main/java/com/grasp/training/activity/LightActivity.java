@@ -410,7 +410,7 @@ public class LightActivity extends BaseTcpMqttActpvity {
                                 state_zt=true;
                             }
                         }
-                        handler.sendEmptyMessageDelayed(1000, 500);
+                        handler.sendEmptyMessageDelayed(1000, 200);
                     } else if (cmd.equals("updatedevicename_ok")) {
                         String uname = jsonObject.optString("uname", "");  //
                         if (!uname.equals(MainActivity.NameUser)) {
@@ -421,7 +421,7 @@ public class LightActivity extends BaseTcpMqttActpvity {
                             return;
                         }
                         dname = jsonObject.optString("dname", "");
-                        handler.sendEmptyMessageDelayed(233, 500);
+                        handler.sendEmptyMessageDelayed(233, 200);
                     }
 
                 } catch (JSONException e) {

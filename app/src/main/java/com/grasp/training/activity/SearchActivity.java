@@ -35,7 +35,9 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.BaseMqttToActivity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -49,14 +51,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
-public class SearchActivity extends BaseMqttActivity {
+public class SearchActivity extends BaseMqttToActivity {
 
     private String myTopicding = "iotbroad/iot/device";
     private String myTopic = "iotbroad/iot/device";
@@ -84,10 +90,11 @@ public class SearchActivity extends BaseMqttActivity {
 
         listview = (ListView) findViewById(R.id.search_list);
         lin = (LinearLayout) findViewById(R.id.search_lin);
-        dong_im= (ImageView) findViewById(R.id.search_dong);
-        dong_rel=(RelativeLayout) findViewById(R.id.search_rel)  ;
+        dong_im = (ImageView) findViewById(R.id.search_dong);
+        dong_rel = (RelativeLayout) findViewById(R.id.search_rel);
         takePhotoPopWin = new PopwinDialog(context);
         initListview();
+//        new UdpReceiveThread().start();  //启动udp接收
     }
 
     @Override
@@ -110,7 +117,7 @@ public class SearchActivity extends BaseMqttActivity {
 
     @Override
     public void init() {
-        handler.sendEmptyMessageDelayed(99,1000);
+        handler.sendEmptyMessageDelayed(99, 1000);
 
     }
 
@@ -235,6 +242,7 @@ public class SearchActivity extends BaseMqttActivity {
                     adapter.notifyDataSetChanged();
                     break;
                 case 200:
+                    Log.e("qqq", "200");
                     good_zt = false;
                     if (dialog == null) {
                         showPro();
@@ -242,8 +250,18 @@ public class SearchActivity extends BaseMqttActivity {
                     if (!dialog.isShowing()) {
                         showPro();
                     }
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                Thread.sleep(4000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }).start();
+                    handler.sendEmptyMessageDelayed(202, 0); //判断是否连上
 
-                    push_move(l_ssid, l_pw, l_pw.length());//
                     break;
                 case 201:
 
@@ -251,6 +269,72 @@ public class SearchActivity extends BaseMqttActivity {
                     if (dialog != null) {
                         dialog.cancel();
                     }
+                    break;
+                case 202:
+                    Log.e("qqq", "202");
+                    if (showPro_zt1) {  //取消连接
+                        return;
+                    }
+
+                    if (isWifiConnect()) {  //判断联网
+                        WifiInfo wifi = wifiadmin.getCurrentWifiInfo();
+                        Log.e("qqq", "202 " + wifi.getSSID() + "  ssid= " + ssid);
+                        if (wifi.getSSID().equals("\"" + ssid + "\"")) {
+
+                            if (!result_zt) {
+                                new UdpReceiveThread().start();  //启动udp接收
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            Thread.sleep(2000);
+                                            push_move(l_ssid, l_pw, l_pw.length());//
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        handler.sendEmptyMessageDelayed(204, 3000); //发送没收到
+                                    }
+                                }).start();
+                            } else {
+                                push_move(l_ssid, l_pw, l_pw.length());//
+                                handler.sendEmptyMessageDelayed(204, 3000); //发送没收到
+                            }
+
+
+                        } else {
+                            handler.sendEmptyMessageDelayed(203, 0); //判断是否连上
+                        }
+                    } else {
+                        handler.sendEmptyMessageDelayed(202, 1000); //判断是否连上
+                    }
+
+
+                    break;
+                case 203: //连接指定网络
+                    Log.e("qqq", "203");
+                    if (showPro_zt1) {  //取消连接
+                        return;
+                    }
+                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+//                    if(zt){
+                    handler.sendEmptyMessageDelayed(202, 2000); //判断是否连上
+//                    }else{
+//                        handler.sendEmptyMessageDelayed(203,2000); //判断是否连上
+//                    }
+
+                    break;
+
+                case 204:
+                    if (!showPro_zt1) {
+                        showPro_zt1=true;
+                        if(dialog!=null){
+                            dialog.cancel();
+                        }
+                        Toast.makeText(context,"发送失败请复位设备后重试",Toast.LENGTH_LONG).show();
+                    }
+
+
+
                     break;
 
                 case 300:
@@ -356,14 +440,14 @@ public class SearchActivity extends BaseMqttActivity {
                 l_pw = pw;
                 oldNetworkId = wifiadmin.GetCurrentNetwordId();
 //                if (isWifiConnect()) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-                            handler.sendEmptyMessageDelayed(200, 0);
-                            Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
-                        }
-                    }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+                        handler.sendEmptyMessageDelayed(200, 0);
+                        Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
+                    }
+                }).start();
 
 //                } else {
 //                    Toast.makeText(context, "请打开wifi后重试", Toast.LENGTH_LONG).show();
@@ -406,7 +490,7 @@ public class SearchActivity extends BaseMqttActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+                            boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //
                             handler.sendEmptyMessageDelayed(200, 0);
                             Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
                         }
@@ -449,7 +533,8 @@ public class SearchActivity extends BaseMqttActivity {
             jsonObject.put("password", pw);
             jsonObject.put("password_len", pw_len);
             String js = jsonObject.toString();
-            new MyThread(js, "192.168.5.1").start();
+//            new MyThread(js, "192.168.5.1").start();
+            new UdpSendThread(js, "192.168.5.1").start();
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
@@ -488,7 +573,9 @@ public class SearchActivity extends BaseMqttActivity {
 
     @Override
     protected void onDestroy() {
+        setDel();
         super.onDestroy();
+        handler.removeMessages(204);
         handler.removeMessages(99);
         handler.removeMessages(1000);
         handler.removeMessages(100);
@@ -501,6 +588,7 @@ public class SearchActivity extends BaseMqttActivity {
         handler.removeMessages(800);
         handler.removeMessages(900);
         handler.removeMessages(201);
+        handler.removeMessages(202);
     }
 
     private WifiAdmin wifiadmin;
@@ -519,7 +607,8 @@ public class SearchActivity extends BaseMqttActivity {
         list = new ArrayList<>();
 //        listb = wifiManager.getScanResults();
         listb = wifiadmin.getWifiList();
-        if(listb==null){
+
+        if (listb == null) {
             return;
         }
         //数组初始化要注意
@@ -550,7 +639,7 @@ public class SearchActivity extends BaseMqttActivity {
                     }
 
                     list.add(goods);
-                        Log.e("qqq", scanResult.SSID);
+                    Log.e("qqq", scanResult.SSID);
 //                    }
 
                 }
@@ -693,183 +782,302 @@ public class SearchActivity extends BaseMqttActivity {
     }
 
 
-    class MyThread extends Thread {
+//    class MyThread extends Thread {
+//
+//        public String content;
+//        public String ip;
+//
+//        public MyThread(String str, String ip) {
+//            Log.e("MyThread", str);
+//            content = str;
+//            this.ip = ip;
+//        }
+//
+//        @Override
+//        public void run() {
+//            //定义消息
+//            Message msg = new Message();
+//            msg.what = 1;
+//            try {
+//                Thread.sleep(5000);
+//                if(showPro_zt1){
+//                    return;
+//                }
+//
+//                Log.e("MyThread", "ip=" + getIp(context));
+//                //连接服务器 并设置连接超时为60秒
+//                Socket socket = new Socket();
+//                socket.connect(new InetSocketAddress(ip, 8888), 60000);
+//
+//                InputStream mInStream = null;
+//                if (socket != null) {
+//                    //获取输出流、输入流
+//                    mInStream = socket.getInputStream();
+//                }
+//                //                //获取输入输出流
+//                OutputStream ou = socket.getOutputStream();
+////                //向服务器发送信息
+//                ou.write(content.getBytes("utf-8"));
+//                ou.flush();
+//
+//                byte b[] = new byte[1024];        // 所有的内容都读到此数组之中
+//
+//
+//                int len = mInStream.read(b);        // 读取内容
+//                // 关闭输出流\
+//                if (len < 0) {
+//                    msg.what = 3;
+//                    msg.obj = "len=-1";
+//                    //发送消息 修改UI线程中的组件
+//                    myHandler.sendMessage(msg);
+//                    mInStream.close();
+//                    ou.close();
+//                    socket.close();
+//                    return;
+//                }
+//                //读取发来服务器信息
+//                String result = "";
+//                result = new String(b, 0, len);
+//                msg.obj = result.toString();
+////                //发送消息 修改UI线程中的组件
+//                myHandler.sendMessage(msg);
+//                //关闭各种输入输出流
+////                bff.close();
+//                mInStream.close();
+//                ou.close();
+//                socket.close();
+//                Log.e("MyThread", "good");
+//            } catch (SocketTimeoutException aa) {
+//                //连接超时 在UI界面显示消息
+//                msg.what = 2;
+//                msg.obj = "服务器连接失败！请检查网络是否打开";
+//                //发送消息 修改UI线程中的组件
+//                myHandler.sendMessage(msg);
+//                Log.e("MyThread", "err1=" + aa.getMessage());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Log.e("MyThread", "err2=" + e.getMessage());
+//                msg.what = 2;
+//                msg.obj = e.getMessage();
+//                //发送消息 修改UI线程中的组件
+//                myHandler.sendMessage(msg);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//                msg.what = 2;
+//                msg.obj = e.getMessage();
+//                //发送消息 修改UI线程中的组件
+//                myHandler.sendMessage(msg);
+//            }
+//        }
 
-        public String content;
-        public String ip;
 
-        public MyThread(String str, String ip) {
-            Log.e("MyThread", str);
-            content = str;
+    private int post = 7777;
+
+    private void setPost() {
+        if (socket == null) {
+            Random random = new Random();
+            post = random.nextInt(9000) + 1000;
+        }
+
+
+    }
+
+    //（接收线程）
+    class UdpReceiveThread extends Thread {
+        private final String TAG = "UdpReceiveThread";
+
+        @Override
+        public void run() {
+            setPost();
+            result_zt = true;
+            Log.e("UdpReceiveThread", "new UdpReceiveThread");
+            while (!showPro_zt1 && result_zt && isAlive()) { //循环接收，isAlive() 判断防止无法预知的错误
+                try {
+                    Log.e("UdpReceiveThread", "+++UdpReceiveThread");
+//                    sleep(20); //让它好好休息一会儿
+                    if (socket == null) {
+                        socket = new DatagramSocket(post); //建立 socket，其中 8888 为端口号
+                    }
+                    byte data[] = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    socket.receive(packet); //阻塞式，接收发送方的 packet
+                    String result = new String(packet.getData(), packet.getOffset(), packet.getLength()); //packet 转换
+                    Log.e(TAG, "UDP result: " + result);
+//                    MyMessageArrived(result);
+                    Message msg = new Message();
+                    msg.obj = result.toString();
+                    msg.what = 1;
+////                //发送消息 修改UI线程中的组件
+                    myHandler.sendMessage(msg);
+                    Log.e("UdpReceiveThread", " UdpReceiveThread close");
+//                    socket2.close(); //必须及时关闭 socket，否则会出现 error
+                } catch (Exception e) {
+                    e.printStackTrace();
+//                    new UdpReceiveThread().start();
+//                    break; //当 catch 到错误时，跳出循环
+                    Log.e(TAG, "UDP result: err=" + e.getMessage() + "  result_zt=" + result_zt);
+                    if (result_zt) {
+                        Log.e(TAG, "UDP result: 错误");
+//                        Message msg = new Message();
+//                        msg.obj = e.getMessage();
+//                        msg.what = 2;
+//////                //发送消息 修改UI线程中的组件
+//                        myHandler.sendMessage(msg);
+                    } else {
+
+                    }
+
+                    result_zt = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean result_zt = true;
+
+    private DatagramSocket socket;
+
+    private void setDel() {
+        result_zt = false;
+        if (socket != null) {
+            socket.close();
+        }
+    }
+
+    public class UdpSendThread extends Thread {
+
+        public static final String TAG = "UdpSendThread";
+        private int i = 0; //静态变量，记录发送消息的次数
+        private String data;
+        private String ip;
+
+        public UdpSendThread(String data, String ip) {
+            this.data = data;
             this.ip = ip;
         }
 
         @Override
         public void run() {
-            //定义消息
-            Message msg = new Message();
-            msg.what = 1;
             try {
-                Thread.sleep(5000);
-                if(showPro_zt1){
+                if (showPro_zt1) {
                     return;
                 }
 
-                Log.e("MyThread", "ip=" + getIp(context));
-                //连接服务器 并设置连接超时为60秒
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(ip, 8888), 60000);
-
-                InputStream mInStream = null;
-                if (socket != null) {
-                    //获取输出流、输入流
-                    mInStream = socket.getInputStream();
+                if (socket == null) {
+                    socket = new DatagramSocket(post); //自定端口号
+//                    socket.setReuseAddress(true);
+//                    socket.bind(new InetSocketAddress(8888));
                 }
-                //                //获取输入输出流
-                OutputStream ou = socket.getOutputStream();
-//                //向服务器发送信息
-                ou.write(content.getBytes("utf-8"));
-                ou.flush();
-
-                byte b[] = new byte[1024];        // 所有的内容都读到此数组之中
 
 
-                int len = mInStream.read(b);        // 读取内容
-                // 关闭输出流\
-                if (len < 0) {
-                    msg.what = 3;
-                    msg.obj = "len=-1";
-                    //发送消息 修改UI线程中的组件
-                    myHandler.sendMessage(msg);
-                    mInStream.close();
-                    ou.close();
-                    socket.close();
-                    return;
-                }
-                //读取发来服务器信息
-                String result = "";
-                result = new String(b, 0, len);
-                msg.obj = result.toString();
-//                //发送消息 修改UI线程中的组件
-                myHandler.sendMessage(msg);
-                //关闭各种输入输出流
-//                bff.close();
-                mInStream.close();
-                ou.close();
-                socket.close();
-                Log.e("MyThread", "good");
-            } catch (SocketTimeoutException aa) {
-                //连接超时 在UI界面显示消息
-                msg.what = 2;
-                msg.obj = "服务器连接失败！请检查网络是否打开";
-                //发送消息 修改UI线程中的组件
-                myHandler.sendMessage(msg);
-                Log.e("MyThread", "err1=" + aa.getMessage());
-            } catch (IOException e) {
+                InetAddress address = InetAddress.getByName(ip); //通过当前 IP 建立相应的 InetAddress
+//                String data = "I love you" + "( " + i++ + " )";
+                byte dataByte[] = data.getBytes(); //建立数据
+                DatagramPacket packet = new DatagramPacket(dataByte, dataByte.length, address, 8888); //通过该数据建包
+                socket.send(packet); //开始发送该包
+//                socket.close(); //其实对于发送方来说没必要关闭 socket，但为了防止无法预知的意外，建议关闭
+                Log.e(TAG, "send done，data: " + data);
+
+            } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("MyThread", "err2=" + e.getMessage());
-                msg.what = 2;
-                msg.obj = e.getMessage();
-                //发送消息 修改UI线程中的组件
-                myHandler.sendMessage(msg);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                msg.what = 2;
-                msg.obj = e.getMessage();
-                //发送消息 修改UI线程中的组件
-                myHandler.sendMessage(msg);
+                Log.e(TAG, "fa err= " + e.getMessage());
             }
+
         }
 
-        public Handler myHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
+    }
 
-                if (msg.what == 1) {
+    public Handler myHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            if (msg.what == 1) {
 //                result.append("server:" + msg.obj + "\n");
-                    try {
-                        Log.e("MyThread", "good=" + msg.obj);
-                        JSONObject jsonObject = new JSONObject(msg.obj.toString());
-                        String cmd = jsonObject.optString("cmd", "");
-                        if (cmd.equals("wifi_config_ok")) {
-                            sid = jsonObject.optString("sid", "");
-                            int connect_sta = jsonObject.optInt("connect_sta", 3);
-                            if (connect_sta == 1) {//连接成功
-                                Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
-                                wifiadmin.EnableNetwork(oldNetworkId); //回来
-                                if (dialog != null) {
-                                    dialog.cancel();
-                                }
-
-                                Log.e("MyThread", "sid=" + sid);
-//                                SharedPreferencesUtils.setParam(context, MainActivity.socket,sid);
-                                handler.sendEmptyMessageDelayed(600, 0);
-//                                di_zt=true;
-                            } else if (connect_sta == 2) {//密码错误
-                                if (dialog != null) {
-                                    dialog.cancel();
-                                }
-                                showPopWinHasReser2();
-                                Toast.makeText(context, "密码错误", Toast.LENGTH_LONG).show();
-                            } else if (connect_sta == 3) {//连接错误
-                                if (dialog != null) {
-                                    dialog.cancel();
-                                }
-                                showPopWinHasReser2();
-                                Toast.makeText(context, "连接错误", Toast.LENGTH_LONG).show();
+                try {
+                    showPro_zt1 = true;
+                    Log.e("MyThread", "good=" + msg.obj);
+                    JSONObject jsonObject = new JSONObject(msg.obj.toString());
+                    String cmd = jsonObject.optString("cmd", "");
+                    if (cmd.equals("wifi_config_ok")) {
+                        sid = jsonObject.optString("sid", "");
+                        int connect_sta = jsonObject.optInt("connect_sta", 3);
+                        if (connect_sta == 1) {//连接成功
+                            Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
+                            wifiadmin.EnableNetwork(oldNetworkId); //回来
+                            if (dialog != null) {
+                                dialog.cancel();
                             }
 
-
-                        } else {
-                            Toast.makeText(context, "发送失败", Toast.LENGTH_LONG).show();
+                            Log.e("MyThread", "sid=" + sid);
+//                                SharedPreferencesUtils.setParam(context, MainActivity.socket,sid);
+                            handler.sendEmptyMessageDelayed(600, 0);
+//                                di_zt=true;
+                        } else if (connect_sta == 2) {//密码错误
                             if (dialog != null) {
                                 dialog.cancel();
                             }
                             showPopWinHasReser2();
+                            Toast.makeText(context, "密码错误", Toast.LENGTH_LONG).show();
+                        } else if (connect_sta == 3) {//连接错误
+                            if (dialog != null) {
+                                dialog.cancel();
+                            }
+                            showPopWinHasReser2();
+                            Toast.makeText(context, "连接错误", Toast.LENGTH_LONG).show();
                         }
 
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } else {
+                        Toast.makeText(context, "发送失败", Toast.LENGTH_LONG).show();
                         if (dialog != null) {
                             dialog.cancel();
                         }
-                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                        showPopWinHasReser2();
                     }
 
 
-                } else { //失败
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (dialog != null) {
+                        dialog.cancel();
+                    }
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+
+            } else { //失败
 //                    Toast.makeText(context, "发送失败", Toast.LENGTH_LONG).show();
 //                    if (dialog != null) {
 //                        dialog.cancel();
 //                    }
-                    if(showPro_zt1){
-                        handler.removeMessages(200);
-                        return;
-                    }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-
-                            for (int i = 0; i < list.size(); i++) {
-                                if (list.get(i).getScanResult().SSID.equals(ssid)) {
-                                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-                                    handler.sendEmptyMessageDelayed(200, 0);
-                                    Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
-                                    return;
-                                }
-                            }
-                            handler.sendEmptyMessageDelayed(201,0);
-
-                        }
-                    }).start();
-                    Log.e("MyThread", "err=");
+                if (showPro_zt1) {
+                    handler.removeMessages(200);
+                    return;
                 }
-            }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
 
-        };
-    }
+
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getScanResult().SSID.equals(ssid)) {
+                                boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+                                handler.sendEmptyMessageDelayed(200, 0);
+                                Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
+                                return;
+                            }
+                        }
+                        handler.sendEmptyMessageDelayed(201, 0);
+
+                    }
+                }).start();
+                Log.e("MyThread", "err=");
+            }
+        }
+
+    };
+//    }
 
     @Override
     public String getSid() {
@@ -881,9 +1089,10 @@ public class SearchActivity extends BaseMqttActivity {
     private ProgressDialog dialog;
 
 
-    private boolean showPro_zt1=false;
+    private boolean showPro_zt1 = false;
+
     public void showPro() {
-        showPro_zt1=false;
+        showPro_zt1 = false;
         dialog = new ProgressDialog(this);
         dialog.setMessage("正在连接中...");
         dialog.setCancelable(false);
@@ -891,7 +1100,7 @@ public class SearchActivity extends BaseMqttActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                showPro_zt1=true;
+                showPro_zt1 = true;
             }
         });
         dialog.show();
@@ -1012,7 +1221,7 @@ public class SearchActivity extends BaseMqttActivity {
     }
 
 
-    public void dong(){
+    public void dong() {
 //        RotateAnimation rotateAnimation=new  RotateAnimation(0,360,Animation.RELATIVE_TO_PARENT,0.5f,Animation.RELATIVE_TO_PARENT,0.5f);
 //        rotateAnimation.setRepeatCount(Animation.INFINITE);
 ////        rotateAnimation.setRepeatMode(Animation.REVERSE);

@@ -8,7 +8,7 @@
         android:orientation="vertical"
         >
         <LinearLayout
-            android:visibility="invisible"
+            android:layout_marginTop="@dimen/dip_10.0"
             android:layout_marginLeft="@dimen/dip_20.0"
             android:layout_marginRight="@dimen/dip_20.0"
             android:layout_width="match_parent"
@@ -84,10 +84,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="--"
+                        android:singleLine="true"
                         android:textColor="@color/app_color"
                         android:textSize="@dimen/dip_36.0" />
 
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/smart_tv_sd2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -102,19 +104,21 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/dip_20.0"
-                    android:text="@string/ie_sn_sd"
+                    android:text="天气"
                     android:textColor="@color/app_color"
                     android:textSize="@dimen/dip_15.0" />
 
             </LinearLayout>
 
             <ImageView
+                android:visibility="gone"
                 android:layout_width="@dimen/dip_0.5"
                 android:layout_height="@dimen/dip_22.0"
                 android:layout_marginBottom="@dimen/dip_15.0"
                 android:background="@color/app_color" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

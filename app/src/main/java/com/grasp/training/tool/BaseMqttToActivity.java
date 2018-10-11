@@ -1,6 +1,6 @@
 package com.grasp.training.tool;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.grasp.training.service.MqttService;
 
@@ -29,96 +31,37 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-public abstract class MqttEquipment {
+public abstract class BaseMqttToActivity extends BaseActivity {
 
-    public ContentReceiver mReceiver;
-    public MyServiceConn conn;
+    private ContentReceiver mReceiver;
+    private MyServiceConn conn;
 
     private IntentFilter intentFilter;
-    public NetworkChangeReceiver networkChangeReceiver;
-    private Context context;
-    private String sid;
-    private String type;
-    private String myTopic;
-    private String myTopicDing;
+    private NetworkChangeReceiver networkChangeReceiver;
 
-    public String getIm_url() {
-        return im_url;
-    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    public void setIm_url(String im_url) {
-        this.im_url = im_url;
-    }
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        networkChangeReceiver = new NetworkChangeReceiver();
 
-    private String im_url;
-    private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public MqttEquipment(Context mcontext, String sid, String type, String myTopic, String myTopicDing, String im_url) {
-
-        if(mcontext==null){
-            return;
-        }
-        this.context = mcontext;
-        this.sid = sid;
-        this.type = type;
-        this.myTopic = myTopic;
-        this.myTopicDing = myTopicDing;
-        this.im_url = im_url;
-//        intentFilter = new IntentFilter();
-//        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-//        networkChangeReceiver = new NetworkChangeReceiver();
-
-//        context.registerReceiver(networkChangeReceiver, intentFilter);
-//        conn = new MyServiceConn();
-//        context.bindService(new Intent(context, MqttService.class), conn,
-//                context.BIND_AUTO_CREATE);
+        registerReceiver(networkChangeReceiver, intentFilter);
+        conn = new MyServiceConn();
+        bindService(new Intent(this, MqttService.class), conn,
+                BIND_AUTO_CREATE);
         doRegisterReceiver();
-
-        onStart();
-
-
     }
 
-    public String getSid() {
-        return sid;
-    }
 
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
+//    private String myTopic ="iotbroad/iot";
 
-    public String getType() {
-        return type;
-    }
+    public abstract String getMyTopic();
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    public abstract String getMyTopicDing();
 
-    public String getMyTopic() {
-        return myTopic;
-    }
-
-    public void setMyTopic(String myTopic) {
-        this.myTopic = myTopic;
-    }
-
-    public String getMyTopicDing() {
-        return myTopicDing;
-    }
-
-    public void setMyTopicDing(String myTopicDing) {
-        this.myTopicDing = myTopicDing;
-    }
-
+    public abstract String getSid();
 
     /**
      * 注册广播接收者
@@ -127,19 +70,16 @@ public abstract class MqttEquipment {
         mReceiver = new ContentReceiver();
         IntentFilter filter = new IntentFilter(
                 "com.grasp.training.service.content");
-        context.registerReceiver(mReceiver, filter);
+        registerReceiver(mReceiver, filter);
     }
 
 
-    public abstract  void MyMessageArrived(String message);
+    public abstract void MyMessageArrived(String message);
 
-
-    public  class ContentReceiver extends BroadcastReceiver {
+    public class ContentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            Log.e("qqq","mssage"+message);
-//            setMessageArrived(message);
             MyMessageArrived(message);
         }
     }
@@ -158,26 +98,23 @@ public abstract class MqttEquipment {
         }
     }
 
-
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
         // TODO Auto-generated method stub
-        if(conn!=null){
-            context.unbindService(conn);
-        }
 
+        unbindService(conn);
         ha.removeMessages(1000);
         ha.removeMessages(2000);
         ha.removeMessages(3000);
         myHander.removeMessages(1);
         myHander.removeMessages(2);
         if (mReceiver != null) {
-            Log.e("qqq","onde mReceiver");
-           context.unregisterReceiver(mReceiver);
+            unregisterReceiver(mReceiver);
         }
         if(networkChangeReceiver!=null){
-
-            context.unregisterReceiver(networkChangeReceiver);
+            unregisterReceiver(networkChangeReceiver);
         }
+        super.onDestroy();
 //        canlce();
     }
 
@@ -197,6 +134,18 @@ public abstract class MqttEquipment {
 
     }
 
+
+    public void subscribe(String s) {
+        String[] topics = new String[]{s};
+        //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
+        // 0 表示只会发送一次推送消息 收到不收到都不关心
+        // 1 保证能收到消息，但不一定只收到一条
+        // 2 保证收到切只能收到一条消息
+        int[] qoss = new int[]{0};
+        MqttService.mqttService.subscribe(topics, qoss);
+
+
+    }
     /**
      * 发布消息
      */
@@ -223,12 +172,12 @@ public abstract class MqttEquipment {
                 case 1000:
                     if (isConnected()) {
                         subscribe();
-//                        if (!getSid().equals("")) {
-//                            if(MqttService.sid_ip.get(getSid())==null){
-//                                push_ping(getSid());
-//                            }
-//
-//                        }
+                        if (!getSid().equals("")) {
+                            if(MqttService.sid_ip.get(getSid())==null){
+                                push_ping(getSid());
+                            }
+
+                        }
                     } else {
 
                         ha.sendEmptyMessageDelayed(1000, 500);
@@ -244,7 +193,7 @@ public abstract class MqttEquipment {
 
                     if (isConnected()) {
                         if (!getSid().equals("")) {
-                            push_ping(getSid());
+//                            push_ping(getSid());
                             if(MqttService.sid_ip.get(getSid())==null){
                                 push_ping(getSid());
                             }else{
@@ -269,13 +218,12 @@ public abstract class MqttEquipment {
     };
 
 
-
-
+    @Override
     protected void onStart() {
 //        if (isConnected()) {
 //            subscribe();
 //        } else {
-
+        super.onStart();
         ha.sendEmptyMessageDelayed(1000, 0);
 //        }
     }
@@ -480,7 +428,7 @@ public abstract class MqttEquipment {
                     jsonObject.put("cmd", "wifi_equipment_ping");
                     jsonObject.put("sid", sid);
                     String js = jsonObject.toString();
-//                    publish_String3(js,getMyTopic());
+                    publish_String3(js,getMyTopic());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -490,11 +438,6 @@ public abstract class MqttEquipment {
 
     public void publish_String(final String set_msg) {  //发送消息
 
-
-        if(set_msg!=null){
-            publish_String3(set_msg,getMyTopic());
-            return;
-        }
         if(fs_zt){
 
             return ;
@@ -659,4 +602,3 @@ public abstract class MqttEquipment {
 
 
 }
-

@@ -226,7 +226,7 @@ public class EasyMqttService {
         try {
             // 订阅topic话题
             Log.i(TAG, "execute subscribe -- qos = " + qos.toString());
-            client.subscribe(topics, qos);
+            client.subscribe(topics, new int[]{1});
         } catch (Exception e) {
             Log.e(TAG,e.toString());
         }

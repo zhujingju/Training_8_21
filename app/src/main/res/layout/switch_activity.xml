@@ -89,7 +89,7 @@
                 android:layout_height="@dimen/dip_300.0">
                 <ImageView
                     android:layout_marginLeft="@dimen/dip_60.0"
-                    android:id="@+id/switch_im_state1"
+                    android:id="@+id/switch_im_state2"
                     android:background="@drawable/zhu_chazuoa_normalno"
                     android:layout_centerVertical="true"
                     android:layout_width="@dimen/dip_60.0"
@@ -98,7 +98,7 @@
                 <ImageView
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="@dimen/dip_60.0"
-                    android:id="@+id/switch_im_state2"
+                    android:id="@+id/switch_im_state1"
                     android:background="@drawable/zhu_chazuoa_normalno"
                     android:layout_centerVertical="true"
                     android:layout_width="@dimen/dip_60.0"
@@ -126,13 +126,13 @@
         <Button
             android:layout_marginRight="@dimen/dip_36.0"
             android:background="@drawable/yuan"
-            android:id="@+id/switch_state1"
+            android:id="@+id/switch_state2"
             android:text="开启"
             android:layout_width="@dimen/dip_68.0"
             android:layout_height="@dimen/dip_68.0" />
         <Button
             android:background="@drawable/yuan"
-            android:id="@+id/switch_state2"
+            android:id="@+id/switch_state1"
             android:text="开启"
             android:layout_width="@dimen/dip_68.0"
             android:layout_height="@dimen/dip_68.0" />
