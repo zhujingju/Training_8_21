@@ -137,9 +137,11 @@ public class LocationUtils {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+//            Log.e("tianqi","addresses="+addresses);
             if (addresses.size() > 0) return addresses.get(0);
         } catch (IOException e) {
             e.printStackTrace();
+//            Log.e("tianqi","address e="+e.getMessage());
         }
         return null;
     }
@@ -167,6 +169,7 @@ public class LocationUtils {
      */
     public static String getLocality(Context context, double latitude, double longitude) {
         Address address = getAddress(context, latitude, longitude);
+//        Log.e("tianqi","address="+address);
         return address == null ? "unknown" : address.getLocality();
     }
 

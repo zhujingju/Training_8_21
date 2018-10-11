@@ -133,10 +133,17 @@ public class SmartHomeMain extends BaseMqttFragment {
                     double Longitude = location.getLongitude();
                     city=LocationUtils.getLocality(context ,Latitude,Longitude);
                     SharedPreferencesUtils.setParam(context,"city_main",city);
-                    if(!city.equals("")){
-                        new Thread(tq).start();
+                    Log.e("tianqi","Latitude="+Latitude+" Longitude="+Longitude+" city="+city);
+                    if(city==null){
+                        city="北京";
+
+                    }else{
+                        if(city.equals("unknown")){
+                            city="北京";
+                        }
                     }
-                    Log.e("tianqi","Latitude="+Latitude+" city="+city);
+                        new Thread(tq).start();
+
                 }
 
                 @Override
@@ -360,9 +367,14 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                 if (i + 1 == list.size()) {
                     ArrayList<String> arrayList = new ArrayList();
-                    for (int j = 0; j < list.size(); j++) {
-                        arrayList.add(list.get(i).getSid());
+                    for (int j = 0; j < list.size()-1; j++) {
+                        arrayList.add(list.get(j).getSid());
                     }
+
+//                    for (String s : arrayList) {
+//
+//                        Log.e("qqq","arrayList s="+s);
+//                    }
                     add(arrayList);
                 } else {
                     if (list.get(i).getType().equals("socket")) {
@@ -818,7 +830,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    e.subscribe();
+                    e.subscribe(e.getSid());
                     e.publish_String(push_read(e.getType(), e.getSid()));
                     try {
                         Thread.sleep(500);

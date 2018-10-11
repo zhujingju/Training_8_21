@@ -783,7 +783,7 @@ public class MqttService extends Service {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    e.subscribe();
+                    e.subscribe(e.getSid());
                     e.publish_String(push_read(e.getType(), e.getSid()));
                     try {
                         Thread.sleep(500);

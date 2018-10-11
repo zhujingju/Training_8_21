@@ -87,7 +87,11 @@ public class SearchActivity extends BaseMqttToActivity {
     public void initData() {
         context = getContext();
         sid_List = getIntent().getStringArrayListExtra("sid_List");
-
+        Log.e("qqq","s="+sid_List.get(0));
+//        for (String s : sid_List) {
+//
+//            Log.e("qqq","s="+s);
+//        }
         listview = (ListView) findViewById(R.id.search_list);
         lin = (LinearLayout) findViewById(R.id.search_lin);
         dong_im = (ImageView) findViewById(R.id.search_dong);
@@ -106,6 +110,7 @@ public class SearchActivity extends BaseMqttToActivity {
     public void initObject() {
         setEquipmentData();
         Log.e("qqq", "elist.size()=" + elist.size());
+
 
         handler.sendEmptyMessageDelayed(1000, 500);
     }
@@ -281,7 +286,7 @@ public class SearchActivity extends BaseMqttToActivity {
                         Log.e("qqq", "202 " + wifi.getSSID() + "  ssid= " + ssid);
                         if (wifi.getSSID().equals("\"" + ssid + "\"")) {
 
-                            if (!result_zt) {
+//                            if (!result_zt) {
                                 new UdpReceiveThread().start();  //启动udp接收
                                 new Thread(new Runnable() {
                                     @Override
@@ -292,13 +297,13 @@ public class SearchActivity extends BaseMqttToActivity {
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
-                                        handler.sendEmptyMessageDelayed(204, 3000); //发送没收到
+                                        handler.sendEmptyMessageDelayed(204, 60*1000); //发送没收到
                                     }
                                 }).start();
-                            } else {
-                                push_move(l_ssid, l_pw, l_pw.length());//
-                                handler.sendEmptyMessageDelayed(204, 3000); //发送没收到
-                            }
+//                            } else {
+//                                push_move(l_ssid, l_pw, l_pw.length());//
+//                                handler.sendEmptyMessageDelayed(204, 10000); //发送没收到
+//                            }
 
 
                         } else {
@@ -995,6 +1000,7 @@ public class SearchActivity extends BaseMqttToActivity {
             if (msg.what == 1) {
 //                result.append("server:" + msg.obj + "\n");
                 try {
+                    handler.removeMessages(204);
                     showPro_zt1 = true;
                     Log.e("MyThread", "good=" + msg.obj);
                     JSONObject jsonObject = new JSONObject(msg.obj.toString());

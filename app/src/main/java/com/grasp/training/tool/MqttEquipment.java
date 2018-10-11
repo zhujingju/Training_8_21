@@ -197,6 +197,17 @@ public abstract class MqttEquipment {
 
     }
 
+    public void subscribe(String s) {
+        String[] topics = new String[]{s};
+        //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
+        // 0 表示只会发送一次推送消息 收到不收到都不关心
+        // 1 保证能收到消息，但不一定只收到一条
+        // 2 保证收到切只能收到一条消息
+        int[] qoss = new int[]{0};
+        MqttService.mqttService.subscribe(topics, qoss);
+
+
+    }
     /**
      * 发布消息
      */
