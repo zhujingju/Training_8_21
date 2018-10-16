@@ -953,13 +953,20 @@ public class MqttService extends Service {
 
 
     private Bitmap bitmap1, bitmap2, bitmap3;
+    private HashMap<String,Bitmap> BitmapMap=new HashMap<>();
 
     private void setImage1(final String url) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap1 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1000, 0);
+                if(BitmapMap.get(url)==null){
+                    bitmap1 = getURLimage(url);
+                    image_hander.sendEmptyMessageDelayed(1000, 0);
+                }else{
+                    bitmap1 = BitmapMap.get(url);
+                    image_hander.sendEmptyMessageDelayed(1000, 0);
+                }
+
             }
         }).start();
     }
@@ -968,8 +975,13 @@ public class MqttService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap2 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1001, 0);
+                if(BitmapMap.get(url)==null){
+                    bitmap2 = getURLimage(url);
+                    image_hander.sendEmptyMessageDelayed(1001, 0);
+                }else{
+                    bitmap2 = BitmapMap.get(url);
+                    image_hander.sendEmptyMessageDelayed(1001, 0);
+                }
             }
         }).start();
     }
@@ -979,8 +991,13 @@ public class MqttService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap3 = getURLimage(url);
-                image_hander.sendEmptyMessageDelayed(1002, 0);
+                if(BitmapMap.get(url)==null){
+                    bitmap3 = getURLimage(url);
+                    image_hander.sendEmptyMessageDelayed(1002, 0);
+                }else{
+                    bitmap3 = BitmapMap.get(url);
+                    image_hander.sendEmptyMessageDelayed(1002, 0);
+                }
             }
         }).start();
     }

@@ -42,6 +42,7 @@ import com.grasp.training.activity.LightActivity;
 import com.grasp.training.activity.SearchActivity;
 import com.grasp.training.activity.SockeActivity;
 import com.grasp.training.activity.SwitchActivity;
+import com.grasp.training.activity.WebViewActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseMqttFragment;
 import com.grasp.training.tool.EquipmentData;
@@ -237,6 +238,11 @@ public class SmartHomeMain extends BaseMqttFragment {
                                         goods.setDy(oldState.get(sid));
                                     }
                                 }
+                                if(oldswitchState!=null){
+                                    if (oldswitchState.get(sid) != null) {
+                                        goods.setSk1(oldswitchState.get(sid));
+                                    }
+                                }
 
                                 list.add(goods);
 
@@ -379,13 +385,14 @@ public class SmartHomeMain extends BaseMqttFragment {
                 } else {
                     if (list.get(i).getType().equals("socket")) {
                         SockeActivity.starstSockeActivity(context, list.get(i).getSid(), list.get(i).getName());
+//                        WebViewActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else if (list.get(i).getType().equals("switch")) {
                         SwitchActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else if (list.get(i).getType().equals("light")) {
                         LightActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else {
-                        EquipmentActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
-
+//                        EquipmentActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
+                        WebViewActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     }
                 }
             }
@@ -583,11 +590,22 @@ public class SmartHomeMain extends BaseMqttFragment {
                 too.layout2.setVisibility(View.GONE);
                 too.name.setText(camera.getName());
                 too.wz.setText(camera.getWz());
-                if (camera.isDy()) {
-                    too.dy.setText("状态：开启");
-                } else {
-                    too.dy.setText("状态：关闭");
+                if(camera.getType().equals("switch")){
+                    if( camera.getSk1()!=null){
+                        too.dy.setVisibility(View.VISIBLE);
+                        too.dy.setText("状态："+camera.getSk1());
+                    }else{
+                        too.dy.setVisibility(View.INVISIBLE);
+                    }
+
+                }else{
+                    if (camera.isDy()) {
+                        too.dy.setText("状态：开启");
+                    } else {
+                        too.dy.setText("状态：关闭");
+                    }
                 }
+
                 if (camera.isJh_zt()) {
                     too.name.setTextColor(getResources().getColor(R.color.c_000000));
                     too.wz.setTextColor(getResources().getColor(R.color.c_b32f54e9));
@@ -602,7 +620,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                 if (camera.getIm_url().equals("")) {
                     too.im.setBackgroundResource(R.color.white);
                 } else {
-                    ImageLoader.getInstance().displayImage(camera.getIm_url(), too.im, MyApplication.options2);
+                    ImageLoader.getInstance().displayImage(camera.getIm_url(), too.im, MyApplication.options);
                 }
 
             }
@@ -724,7 +742,9 @@ public class SmartHomeMain extends BaseMqttFragment {
     HashMap<String, Boolean> oldState;   //备份的map
     HashMap<String, Boolean> newState;   //使用的map
     HashMap<String, MqttEquipment> MqttEquipmentMap;  //存放MqttEquipment的map
-//    HashMap<String, MqttEquipment> oldMqttEquipmentMap;  //放菜单中的数据
+    HashMap<String, String> switchState;
+    HashMap<String, String> oldswitchState;
+    //    HashMap<String, MqttEquipment> oldMqttEquipmentMap;  //放菜单中的数据
     Goods goods;
 
     public void getJh() {
@@ -741,7 +761,11 @@ public class SmartHomeMain extends BaseMqttFragment {
 //        if(newMap==null){
         newMap = new HashMap<>();
         newState = new HashMap<>();
+        switchState=new HashMap<>();
 //        }
+        if (oldswitchState== null) {
+            oldswitchState = new HashMap<>();
+        }
         if (oldMap == null) {
             oldMap = new HashMap<>();
         }
@@ -791,6 +815,24 @@ public class SmartHomeMain extends BaseMqttFragment {
                                         }
                                         newState.put(getSid(), state_zt);
                                         oldState.put(getSid(), state_zt);
+
+                                        if(type.equals("switch")){
+                                            String switch_s="";
+                                            String channel_1 = jsonObject.optString("channel_2", "");  //
+                                            String channel_2 = jsonObject.optString("channel_1", "");  //
+                                            if(channel_1.equals("on")){
+                                                switch_s+="开启";
+                                            }else{
+                                                switch_s+="关闭";
+                                            }
+                                            if(channel_2.equals("on")){
+                                                switch_s+="，开启";
+                                            }else{
+                                                switch_s+="，关闭";
+                                            }
+                                            switchState.put(getSid(), switch_s);
+                                            oldswitchState.put(getSid(), switch_s);
+                                        }
                                         Message m = new Message();
                                         m.what = 1000;
                                         m.obj = getSid();
@@ -898,6 +940,9 @@ public class SmartHomeMain extends BaseMqttFragment {
                             if (newState.get(sid) != null) {
                                 list.get(i).setDy(newState.get(sid));
                             }
+                            if (switchState.get(sid) != null) {
+                                list.get(i).setSk1(switchState.get(sid));
+                            }
                             list.get(i).setJh_zt(true);
                             adapter.setList(list);
                             adapter.notifyDataSetChanged();
@@ -914,6 +959,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     oldMap = newMap;
                     Log.e("qqq","oldMap.size()="+oldMap.size()+" newMap.size()= "+newMap.size());
                     oldState = newState;
+                    oldswitchState=switchState;
                     for (int i = 0; i < list.size(); i++) {
 
                         String sid = list.get(i).getSid();
@@ -929,7 +975,10 @@ public class SmartHomeMain extends BaseMqttFragment {
                             list.get(i).setJh_zt(false);
                         }
                         if (oldState.get(sid) != null) {
-                            list.get(i).setDy(newState.get(sid));
+                            list.get(i).setDy(oldState.get(sid));
+                        }
+                        if (oldswitchState.get(sid) != null) {
+                            list.get(i).setSk1(oldswitchState.get(sid));
                         }
 
                     }

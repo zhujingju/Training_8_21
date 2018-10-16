@@ -138,7 +138,7 @@ public abstract class MqttEquipment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            Log.e("qqq","mssage"+message);
+//            Log.e("qqq","mssage"+message);
 //            setMessageArrived(message);
             MyMessageArrived(message);
         }

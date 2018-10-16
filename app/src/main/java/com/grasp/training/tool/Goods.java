@@ -9,6 +9,17 @@ public class Goods {
     private String Sid;
     private String type;
     private boolean jh_zt;  //设备是否在线
+    private String sk1=null;
+
+
+    public String getSk1() {
+        return sk1;
+    }
+
+    public void setSk1(String sk1) {
+        this.sk1 = sk1;
+    }
+
 
     public boolean isJh_zt() {
         return jh_zt;
