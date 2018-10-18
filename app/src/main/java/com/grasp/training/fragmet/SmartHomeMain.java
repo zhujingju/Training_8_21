@@ -872,7 +872,8 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    e.subscribe(e.getSid());
+                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                    e.subscribe(myTopicding);
                     e.publish_String(push_read(e.getType(), e.getSid()));
                     try {
                         Thread.sleep(500);
@@ -993,7 +994,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     Log.e("qqq", "goods " + 3000);
                     equimentHandler.removeMessages(3000);
                     getJh();
-//                    equimentHandler.sendEmptyMessageDelayed(3000, 2 * 60 * 1000);
+                    equimentHandler.sendEmptyMessageDelayed(3000, 5 * 60 * 1000);
                     break;
             }
         }

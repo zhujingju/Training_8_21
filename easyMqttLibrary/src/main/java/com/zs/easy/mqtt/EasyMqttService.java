@@ -298,7 +298,7 @@ public class EasyMqttService {
             Log.i(TAG, "messageArrived:" + msgContent);
             Log.i(TAG, detailLog);
             if (starMQTTCallBack != null) {
-
+//                Log.e("service", "easy messageArrived  message= " + msgContent);
                 starMQTTCallBack.messageArrived(topic, msgContent, message.getQos());
             }
         }

@@ -198,6 +198,7 @@ public abstract class MqttEquipment {
     }
 
     public void subscribe(String s) {
+//        Log.e("qqq","subscribe 订阅="+s);
         String[] topics = new String[]{s};
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心

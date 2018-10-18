@@ -57,9 +57,10 @@ import java.util.Map;
 
 public class MqttService extends Service {
 
-
+    public static boolean appZt=false;
     public final static String MqttService1 = "MqttService1";
     public final static String MqttService2 = "MqttService2";
+    private static boolean fi_zt=false;
 
     @Override
     public void onCreate() {
@@ -67,12 +68,16 @@ public class MqttService extends Service {
         // The service is being created
         // 创建服务
         Log.e("qqq", "onCreate 服务");
-
-        buildEasyMqttService();
-        initIEasyMqttCallBack();
-        connect();
+        if(!fi_zt){
+            Log.e("qqq", "onCreate 启动服务");
+            buildEasyMqttService();
+            initIEasyMqttCallBack();
+            connect();
+            fi_zt=true;
+        }
         doRegisterReceiver();
         equimentHandler.sendEmptyMessageDelayed(4000, 5000);
+
     }
 
     @Override
@@ -599,22 +604,31 @@ public class MqttService extends Service {
                     sxNotification();
                     break;
                 case 3000:
-                    Log.e("qqq", "goods " + 3000);
+                    Log.e("qqq", "goods  service" + 3000);
                     equimentHandler.removeMessages(3000);
-                    getJh();
-//                    equimentHandler.sendEmptyMessageDelayed(3000, 2 * 60 * 1000);
+//                    if(!appZt){
+                        getJh();
+//                    }
+//                    equimentHandler.sendEmptyMessageDelayed(3000, 5 * 60 * 1000);
                     break;
                 case 5000:
                     equimentHandler.removeMessages(3000);
+                    equimentHandler.removeMessages(5000);
                     equimentHandler.sendEmptyMessageDelayed(3000, 0);
 
                     break;
                 case 4000:
                     equimentHandler.removeMessages(4000);
-                    String s= (String) SharedPreferencesUtils.getParam(MqttService.this, MyApplication.NAME_USER,"");
-                    if(!s.equals("")){
-                        dataListview(s);
+                    equimentHandler.removeMessages(3000);
+                    equimentHandler.removeMessages(5000);
+                    if(!appZt){
+                        Log.e("qqq", "goods  service " + 4000);
+                        String s = (String) SharedPreferencesUtils.getParam(MqttService.this, MyApplication.NAME_USER, "");
+                        if (!s.equals("")) {
+                            dataListview(s);
+                        }
                     }
+
 
                     equimentHandler.sendEmptyMessageDelayed(4000, 60 * 1000 * 5);
                     break;
@@ -624,6 +638,7 @@ public class MqttService extends Service {
 
 
     public void dataListview(String s) {  //获取list数据
+        Log.e("qqq", "goods  service dataListview" );
         subscribe();
         push_read(s);
     }
@@ -635,7 +650,7 @@ public class MqttService extends Service {
             //发送请求所有数据消息
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("cmd", "querydevicebyuser");
-            jsonObject.put("uname",s );
+            jsonObject.put("uname", s);
             jsonObject.put("clientid", Tool.getIMEI(this));
             String js = jsonObject.toString();
 
@@ -783,7 +798,8 @@ public class MqttService extends Service {
 
                     MqttEquipment e = entry.getValue();
 //                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    e.subscribe(e.getSid());
+                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                    e.subscribe(myTopicding);
                     e.publish_String(push_read(e.getType(), e.getSid()));
                     try {
                         Thread.sleep(500);
@@ -931,19 +947,19 @@ public class MqttService extends Service {
             Log.e("qqq", "oldMap  i=" + i);
             notification.contentView = contentView;
             if (i != 0) {
-                if(i==1){
-                    contentView.setViewVisibility(R.id.data_notification_layout2, View.GONE);
-                    contentView.setViewVisibility(R.id.data_notification_layout3, View.GONE);
-                }else if(i==2){
-                    contentView.setViewVisibility(R.id.data_notification_layout3, View.GONE);
+                if (i == 1) {
+                    contentView.setViewVisibility(R.id.data_notification_layout2, View.INVISIBLE);
+                    contentView.setViewVisibility(R.id.data_notification_layout3, View.INVISIBLE);
+                } else if (i == 2) {
+                    contentView.setViewVisibility(R.id.data_notification_layout3, View.INVISIBLE);
                 }
 
                 manager.notify(3, notification);
-            }else{
-                if(manager!=null){
+            } else {
+                if (manager != null) {
                     manager.cancel(3);
                 }
-                if(in_manager!=null){
+                if (in_manager != null) {
                     in_manager.cancel(6);
                 }
             }
@@ -953,16 +969,16 @@ public class MqttService extends Service {
 
 
     private Bitmap bitmap1, bitmap2, bitmap3;
-    private HashMap<String,Bitmap> BitmapMap=new HashMap<>();
+    private HashMap<String, Bitmap> BitmapMap = new HashMap<>();
 
     private void setImage1(final String url) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(BitmapMap.get(url)==null){
+                if (BitmapMap.get(url) == null) {
                     bitmap1 = getURLimage(url);
                     image_hander.sendEmptyMessageDelayed(1000, 0);
-                }else{
+                } else {
                     bitmap1 = BitmapMap.get(url);
                     image_hander.sendEmptyMessageDelayed(1000, 0);
                 }
@@ -975,10 +991,10 @@ public class MqttService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(BitmapMap.get(url)==null){
+                if (BitmapMap.get(url) == null) {
                     bitmap2 = getURLimage(url);
                     image_hander.sendEmptyMessageDelayed(1001, 0);
-                }else{
+                } else {
                     bitmap2 = BitmapMap.get(url);
                     image_hander.sendEmptyMessageDelayed(1001, 0);
                 }
@@ -991,10 +1007,10 @@ public class MqttService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(BitmapMap.get(url)==null){
+                if (BitmapMap.get(url) == null) {
                     bitmap3 = getURLimage(url);
                     image_hander.sendEmptyMessageDelayed(1002, 0);
-                }else{
+                } else {
                     bitmap3 = BitmapMap.get(url);
                     image_hander.sendEmptyMessageDelayed(1002, 0);
                 }
@@ -1030,10 +1046,23 @@ public class MqttService extends Service {
 
                     }
                     break;
+
+                case 2000:
+//                    if (in_manager != null && in_notification != null) {
+//                        in_manager.notify(6, in_notification);
+//                    }
+                    if (in_manager == null) {
+                        inNotification();
+                    }
+                    socketInNotification(Notification_bitmap, Notification_sid, Notification_type);
+                    break;
             }
         }
     };
 
+
+    private String Notification_sid,Notification_type;
+    private Bitmap Notification_bitmap;
 
     //加载图片
     public Bitmap getURLimage(String url1) {
@@ -1174,6 +1203,11 @@ public class MqttService extends Service {
                                 inNotification();
                             }
                             socketInNotification(bitmap, sid, type);
+//                            Notification_sid=sid;
+//                            Notification_type=type;
+//                            Notification_bitmap=bitmap;
+//                            image_hander.sendEmptyMessage(2000);
+
                         } else if (type.equals("switch")) {
                             if (in_manager == null) {
                                 inNotification();
@@ -1225,6 +1259,7 @@ public class MqttService extends Service {
     public void socketInNotification(Bitmap bitmap, String sid, String type) {  //插座
         Log.e("qqq", "dataInNotification ");
         in_contentView = new RemoteViews(this.getPackageName(), R.layout.socket_in_notification);
+//        in_contentView = new RemoteViews(this.getPackageName(), R.layout.data_notification);
         in_notification.contentView = in_contentView;
         in_manager.notify(6, in_notification);
         if (bitmap != null) {
@@ -1247,7 +1282,9 @@ public class MqttService extends Service {
             in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im3, btPendingIntent2);
 
             in_notification.contentView = in_contentView;
+            in_notification.contentIntent=btPendingIntent2;
             in_manager.notify(6, in_notification);
+//            image_hander.sendEmptyMessage(2000);
         }
 
     }

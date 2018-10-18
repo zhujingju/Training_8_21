@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
   <LinearLayout
       android:layout_marginLeft="@dimen/dip_5.0"
@@ -13,9 +14,10 @@
       <LinearLayout
           android:id="@+id/data_notification_layout1"
           android:orientation="horizontal"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
+          android:layout_weight="1"
           android:layout_height="match_parent"
-          android:gravity="center_vertical"
+          android:gravity="center"
           >
           <ImageView
               android:layout_marginRight="@dimen/dip_10.0"
@@ -37,9 +39,11 @@
       <LinearLayout
           android:id="@+id/data_notification_layout2"
           android:orientation="horizontal"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:layout_gravity="center"
           android:layout_height="match_parent"
-          android:gravity="center_vertical"
+          android:gravity="center"
           >
           <ImageView
               android:layout_marginRight="@dimen/dip_10.0"
@@ -60,9 +64,11 @@
       <LinearLayout
           android:id="@+id/data_notification_layout3"
           android:orientation="horizontal"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:layout_gravity="center"
           android:layout_height="match_parent"
-          android:gravity="center_vertical"
+          android:gravity="center"
           >
           <ImageView
               android:layout_marginRight="@dimen/dip_10.0"

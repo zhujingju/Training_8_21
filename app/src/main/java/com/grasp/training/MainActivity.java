@@ -119,17 +119,23 @@ public class MainActivity extends BaseMqttFragmentActivity {
     public void initData() {
         ButterKnife.bind(this);
         activity = this;
+        MqttService.appZt=true;
     }
 
     @Override
     public void initView() {
-        handler.sendEmptyMessageDelayed(1000, 0); //获取设备类型
+        MqttService.ip_zt = putMap(MqttService.MqttService1);
+        MqttService.sid_ip = putMap(MqttService.MqttService2);
+        Log.e("qqq", "ip.s=" + MqttService.ip_zt.size() + " " + MqttService.ip_zt);
+        Log.e("qqq", "sid_ip.s=" + MqttService.sid_ip.size() + "  " + MqttService.sid_ip);
         NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
         if(NameUser.equals("")){
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
             return;
         }
+        handler.sendEmptyMessageDelayed(1000, 0); //获取设备类型
+
 
         String data = SharedPreferencesUtils.getParam(getContext(), MainData, "").toString();
         if (data.equals("")) {
@@ -139,10 +145,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         ImageLoader.getInstance().clearDiskCache();
         ImageLoader.getInstance().clearMemoryCache();
 
-        MqttService.ip_zt = putMap(MqttService.MqttService1);
-        MqttService.sid_ip = putMap(MqttService.MqttService2);
-        Log.e("qqq", "ip.s=" + MqttService.ip_zt.size() + " " + MqttService.ip_zt);
-        Log.e("qqq", "sid_ip.s=" + MqttService.sid_ip.size() + "  " + MqttService.sid_ip);
+
     }
 
     @Override
@@ -285,10 +288,12 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         handler.removeMessages(1000);
+        MqttService.appZt=false;
         saveMap(MqttService.ip_zt, MqttService.MqttService1);
         saveMap(MqttService.sid_ip, MqttService.MqttService2);
+        super.onDestroy();
+
 
     }
 

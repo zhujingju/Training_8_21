@@ -2,10 +2,13 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical"
-    android:layout_marginLeft="@dimen/dip_5.0"
-    android:layout_marginRight="@dimen/dip_5.0"
     >
+    <RelativeLayout
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/dip_5.0"
+        android:layout_marginRight="@dimen/dip_5.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ImageView
         android:layout_marginLeft="@dimen/dip_5.0"
         android:id="@+id/light_in_notification_im1"
@@ -41,5 +44,5 @@
         android:id="@+id/light_in_notification_im4"
         android:layout_width="@dimen/dip_40.0"
         android:layout_height="@dimen/dip_40.0" />
-
+    </RelativeLayout>
 </RelativeLayout>
