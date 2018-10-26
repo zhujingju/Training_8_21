@@ -263,7 +263,6 @@ public class ChangePasswordActivity extends BaseMqttActivity {
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();

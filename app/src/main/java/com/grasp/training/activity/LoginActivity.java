@@ -25,6 +25,7 @@ import com.grasp.training.Umeye_sdk.Constants;
 import com.grasp.training.Umeye_sdk.ShowProgress;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.BaseMqttActivity;
+import com.grasp.training.tool.CreateSecretKey;
 import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -81,7 +82,7 @@ public class LoginActivity extends BaseMqttActivity {
 
     @Override
     public void initView() {
-
+//        CreateSecretKey.main();
         userEditText = tilUsername.getEditText();
         pwdEditText = tilPassword.getEditText();
 
@@ -163,9 +164,12 @@ public class LoginActivity extends BaseMqttActivity {
     private String name ="";
     private String pw="";
     private boolean zc_zt=false;
-    @OnClick({R.id.login_zc, R.id.login,R.id.login_im})
+    @OnClick({R.id.login_zc, R.id.login,R.id.login_im,R.id.login_wjmm})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.login_wjmm://忘记密码
+                Toast.makeText(getContext(),"此功能未上线",Toast.LENGTH_LONG).show();
+                break;
             case R.id.login_im:
 //                ha.sendEmptyMessageDelayed(1002,0);
 
@@ -185,7 +189,7 @@ public class LoginActivity extends BaseMqttActivity {
                 login.setText("LOGIN");
                 if (!isConnected()) {
 ////                    connect();
-                    Toast.makeText(LoginActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"连接服务器失败，请重试",Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -197,7 +201,7 @@ public class LoginActivity extends BaseMqttActivity {
 //                    startBestServer();
                     push(name,pw);
                 }else{
-                    Toast.makeText(LoginActivity.this,"不能为空",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"不能为空",Toast.LENGTH_LONG).show();
                 }
 
 
@@ -285,7 +289,6 @@ public class LoginActivity extends BaseMqttActivity {
             publish_String(js);
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(LoginActivity.this, "JSONException", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -324,7 +327,7 @@ public class LoginActivity extends BaseMqttActivity {
                     ha.removeMessages(1002);
                     login.setText("LOGIN");
                     String s=msg.obj.toString();
-                    Toast.makeText(LoginActivity.this,"登录失败"+s,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"登录失败"+s,Toast.LENGTH_LONG).show();
                     break;
             }
 

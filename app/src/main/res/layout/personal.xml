@@ -171,6 +171,41 @@
                 />
         </RelativeLayout>
 
+
+        <RelativeLayout
+            android:id="@+id/per_fk"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dip_18.0"
+                android:textColor="@color/c_000000"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dip_30.0"
+                android:text="@string/pre_fk"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/dip_20.0"
+                android:layout_height="@dimen/dip_20.0"
+                android:background="@drawable/icon_jinrua"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dip_10.0"
+                />
+
+
+            <TextView
+                android:layout_marginLeft="@dimen/dip_4.0"
+                android:layout_marginRight="@dimen/dip_4.0"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_0.5"
+                android:background="@color/app_color"
+                />
+
+        </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/per_tui"
             android:layout_width="match_parent"

@@ -13,16 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.tool.BaseMqttActivity;
-import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
-import com.zs.easy.mqtt.EasyMqttService;
-import com.zs.easy.mqtt.IEasyMqttCallBack;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +40,10 @@ public class RegisteredActivity extends BaseMqttActivity {
     EditText userEditText;
     EditText pwdEditText;
     EditText phoneEditText;
+    @BindView(R.id.useryzm_ed)
+    EditText useryzmEd;
+    @BindView(R.id.useryzm_b)
+    Button useryzmB;
 
     @Override
     public int setLayoutId() {
@@ -85,7 +83,7 @@ public class RegisteredActivity extends BaseMqttActivity {
 //                } else {
 //                    tilUsername.setErrorEnabled(false);
 //                }
-                if (s.length() ==0) {
+                if (s.length() == 0) {
                     userPhone.setErrorEnabled(true);//设置是否打开错误提示
                     userPhone.setError("电话不能为空");//设置错误提示的信息
                 } else {
@@ -105,7 +103,7 @@ public class RegisteredActivity extends BaseMqttActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() ==0) {
+                if (s.length() == 0) {
                     tilUsername.setErrorEnabled(true);//设置是否打开错误提示
                     tilUsername.setError("用户名不能为空");//设置错误提示的信息
                 } else {
@@ -126,7 +124,7 @@ public class RegisteredActivity extends BaseMqttActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() ==0) {
+                if (s.length() == 0) {
                     tilPassword.setErrorEnabled(true);//设置是否打开错误提示
                     tilPassword.setError("密码不能为空");//设置错误提示的信息
                 } else {
@@ -147,14 +145,21 @@ public class RegisteredActivity extends BaseMqttActivity {
     }
 
 
+    private boolean zc_zt = false;
+    private String name = "";
+    private int num_time=0;
 
-
-
-    private boolean zc_zt=false;
-    private String name="";
-    @OnClick({R.id.reg_fh, R.id.registered})
+    @OnClick({R.id.reg_fh, R.id.registered, R.id.useryzm_b})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.useryzm_b:
+                if(num_time==0){
+                    useryzmB.setClickable(false);
+                    useryzmB.setText("60s");
+                    num_time=60;
+                    handler.sendEmptyMessageDelayed(666,1000);
+                }
+                break;
             case R.id.reg_fh:
                 finish();
                 break;
@@ -164,22 +169,22 @@ public class RegisteredActivity extends BaseMqttActivity {
                 handler.removeMessages(1000);
                 handler.removeMessages(1002);
                 handler.removeMessages(1003);
-                zc_zt=false;
+                zc_zt = false;
                 registered.setText("注册");
                 if (!isConnected()) {
-                    Toast.makeText(RegisteredActivity.this,"连接服务器失败，请重试",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisteredActivity.this, "连接服务器失败，请重试", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                String phone=phoneEditText.getText().toString();
-                name=userEditText.getText().toString();
-                String pw=pwdEditText.getText().toString();
-                if(!phone.equals("")&&!name.equals("")&&!pw.equals("")){
-                    zc_zt=true;
-                    push(name,pw,phone);
+                String phone = phoneEditText.getText().toString();
+                name = userEditText.getText().toString();
+                String pw = pwdEditText.getText().toString();
+                if (!phone.equals("") && !name.equals("") && !pw.equals("")) {
+                    zc_zt = true;
+                    push(name, pw, phone);
                     handler.sendEmptyMessage(1000);
-                }else{
-                    Toast.makeText(RegisteredActivity.this,"不能为空",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(RegisteredActivity.this, "不能为空", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -191,9 +196,9 @@ public class RegisteredActivity extends BaseMqttActivity {
     /**
      * 构建EasyMqttService对象
      */
-    private String myTopic ="iotbroad/iot/user";
+    private String myTopic = "iotbroad/iot/user";
 
-    public void push( String uname,String pwd,String phone) {
+    public void push(String uname, String pwd, String phone) {
 
         try {
 
@@ -211,18 +216,19 @@ public class RegisteredActivity extends BaseMqttActivity {
             Toast.makeText(RegisteredActivity.this, "JSONException", Toast.LENGTH_SHORT).show();
         }
     }
-    Handler handler=new Handler(){
+
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1000:
                     registered.setText("注册中..");
-                    handler.sendEmptyMessageDelayed(1001,1000);
+                    handler.sendEmptyMessageDelayed(1001, 1000);
                     break;
                 case 1001:
                     registered.setText("注册中...");
-                    handler.sendEmptyMessageDelayed(1000,1000);
+                    handler.sendEmptyMessageDelayed(1000, 1000);
                     break;
 
                 case 1002:
@@ -230,16 +236,30 @@ public class RegisteredActivity extends BaseMqttActivity {
                     handler.removeMessages(1000);
                     handler.removeMessages(1003);
                     registered.setText("注册");
-                    Toast.makeText(RegisteredActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisteredActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                     finish();
                     break;
                 case 1003:
-                    String s=msg.obj.toString();
+                    String s = msg.obj.toString();
                     handler.removeMessages(1001);
                     handler.removeMessages(1000);
                     handler.removeMessages(1002);
                     registered.setText("注册");
-                    Toast.makeText(RegisteredActivity.this,"注册失败,"+s,Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisteredActivity.this, "注册失败," + s, Toast.LENGTH_LONG).show();
+                    break;
+                case 666:
+                    num_time--;
+                    if(num_time!=0){
+
+                        useryzmB.setText(num_time+"s");
+                        handler.sendEmptyMessageDelayed(666,1000);
+                    }else{
+                        useryzmB.setClickable(true);
+                        useryzmB.setText("获取验证码");
+                    }
+
+
+
                     break;
             }
 
@@ -253,10 +273,11 @@ public class RegisteredActivity extends BaseMqttActivity {
         handler.removeMessages(1000);
         handler.removeMessages(1002);
         handler.removeMessages(1003);
+        handler.removeMessages(666);
     }
 
     @Override
-    public String  getMyTopic() {
+    public String getMyTopic() {
         return myTopic;
     }
 
@@ -272,7 +293,7 @@ public class RegisteredActivity extends BaseMqttActivity {
 
     @Override
     public void MyMessageArrived(final String message) {
-        if(!zc_zt){
+        if (!zc_zt) {
             return;
         }
         new Thread(new Runnable() {
@@ -286,7 +307,7 @@ public class RegisteredActivity extends BaseMqttActivity {
                     String channel_0 = "";
                     int var = 0;
                     JSONObject jsonObject = new JSONObject(message);
-                    String cmd = jsonObject.optString("cmd","");
+                    String cmd = jsonObject.optString("cmd", "");
                     String mName = jsonObject.optString("uname", "");
                     String clientid = jsonObject.optString("clientid", "");
 
@@ -302,15 +323,14 @@ public class RegisteredActivity extends BaseMqttActivity {
                             String err = jsonObject.optString("err", "");
 
                             int errCode = jsonObject.optInt("err", -1);
-                            Message m=new Message();
-                            m.what=1003;
-                            if(errCode==1){
-                                m.obj="用户名已存在";
-                            }
-                            else  if(errCode==2){
-                                m.obj="手机号已存在";
-                            }else{
-                                m.obj=err;
+                            Message m = new Message();
+                            m.what = 1003;
+                            if (errCode == 1) {
+                                m.obj = "用户名已存在";
+                            } else if (errCode == 2) {
+                                m.obj = "手机号已存在";
+                            } else {
+                                m.obj = err;
                             }
 
                             handler.sendMessage(m);
@@ -328,4 +348,5 @@ public class RegisteredActivity extends BaseMqttActivity {
 
 
     }
+
 }

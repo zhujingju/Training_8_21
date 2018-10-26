@@ -45,6 +45,7 @@
     <string name="smart15_no">关闭电灯</string>
 
     <string name="login_tx"><u>注册</u></string>
+    <string name="login_wjmm"><u>忘记密码</u></string>
 
     <string name="login_RadioButton">记住账号密码</string>
 
@@ -130,6 +131,7 @@
     <string name="ss_sid">正在搜索设备</string>
     <string name="pre_xgmm">修改密码</string>
     <string name="pre_tc">退出登录</string>
+    <string name="pre_fk">用户反馈</string>
 
     <string name="personal_2">更改密码</string>
     <string name="personal_1">更改昵称</string>

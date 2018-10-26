@@ -76,18 +76,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dip_20.0" />
 
-            <TextView
-                android:id="@+id/login_zc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_tx"
-                android:layout_gravity="right"
-                android:layout_marginRight="@dimen/dip_10.0"
-                android:textSize="@dimen/dip_18.0"
-                android:textColor="@color/white"
-                android:layout_marginTop="@dimen/dip_10.0"
 
-                />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/login_zc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_tx"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/dip_10.0"
+
+                    />
+
+                <TextView
+                    android:id="@+id/login_wjmm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_wjmm"
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/dip_10.0"
+
+                    />
+
+            </RelativeLayout>
 
             <Button
                 android:background="@drawable/kuang_b"

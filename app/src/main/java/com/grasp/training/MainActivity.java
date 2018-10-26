@@ -1,5 +1,6 @@
 package com.grasp.training;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -160,6 +161,9 @@ public class MainActivity extends BaseMqttFragmentActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
+    SmartHomeMain smartHomeMain;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void init() {
 //        mainSbTv.setLetterSpacing(0.2f);
@@ -172,7 +176,9 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //        SmartHome smartHome2 = new SmartHome();
         Robot robot = new Robot();
         Personal personal = new Personal();
-        fragments.add(new SmartHomeMain());
+
+        smartHomeMain=new SmartHomeMain();
+        fragments.add(smartHomeMain);
         fragments.add(new Scenario());
         fragments.add(robot);
         fragments.add(personal);
@@ -300,24 +306,29 @@ public class MainActivity extends BaseMqttFragmentActivity {
     private boolean zt_menu;
 
 
+    @SuppressLint("NewApi")
     @OnClick({R.id.main_xia_ll1, R.id.main_xia_ll2, R.id.main_xia_ll3, R.id.main_xia_ll4, R.id.main_ms, R.id.main_sb, R.id.main_yk, R.id.main_dh, R.id.main_memu, R.id.main_gl})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.main_xia_ll1:
                 viewPager.setCurrentItem(0);
                 setLin(0);
+                smartHomeMain.setHua(true);
                 break;
             case R.id.main_xia_ll2:
                 viewPager.setCurrentItem(1);
                 setLin(1);
+                smartHomeMain.setHua(false);
                 break;
             case R.id.main_xia_ll3:
                 viewPager.setCurrentItem(2);
                 setLin(2);
+                smartHomeMain.setHua(false);
                 break;
             case R.id.main_xia_ll4:
                 viewPager.setCurrentItem(3);
                 setLin(3);
+                smartHomeMain.setHua(false);
                 break;
 //            case R.id.main_ms:
 //                initFragment2(mode);

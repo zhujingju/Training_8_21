@@ -292,6 +292,9 @@ public class SmartHomeMain extends BaseMqttFragment {
         equimentHandler.removeMessages(1000);
         equimentHandler.removeMessages(2000);
         equimentHandler.removeMessages(3000);
+        equimentHandler.removeMessages(4000);
+        equimentHandler.removeMessages(5000);
+        equimentHandler.removeMessages(6000);
         super.onDestroyView();
 
         unbinder.unbind();
@@ -402,12 +405,40 @@ public class SmartHomeMain extends BaseMqttFragment {
     }
 
 
+    boolean da_zt=true;
+    public void setHua(boolean zt){
+        da_zt=zt;
+        if(da_zt){
+            if(!city.equals("")){
+                new Thread(tq).start();
+            }
+            dataListview();
+        }
+    }
+
+    boolean sx_zt=true;
     public void dataListview() {  //获取list数据
+
+        if(!sx_zt){
+            gridView.onRefreshComplete();
+            return;
+        }
+        equimentHandler.removeMessages(1000);
+        equimentHandler.removeMessages(2000);
+        equimentHandler.removeMessages(4000);
+        equimentHandler.removeMessages(5000);
         new Thread(new Runnable() {
             @Override
             public void run() {
+                sx_zt=false;
                 subscribe();
                 push_read();
+                try {
+                    Thread.sleep(1000);
+                    sx_zt=true;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -856,37 +887,8 @@ public class SmartHomeMain extends BaseMqttFragment {
 
             }
         }
-        //发送
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (MqttEquipmentMap == null) {
+        equimentHandler.sendEmptyMessageDelayed(6000, 0);
 
-                    return;
-                }
-                if (MqttEquipmentMap.size() == 0) {
-
-                    return;
-                }
-                for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-
-                    MqttEquipment e = entry.getValue();
-//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
-                    e.subscribe(myTopicding);
-                    e.publish_String(push_read(e.getType(), e.getSid()));
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-            }
-        }).start();
-
-
-        equimentHandler.sendEmptyMessageDelayed(2000, 1000 * MqttEquipmentMap.size() + 2000);
     }
 
     public void Map_del() {
@@ -931,7 +933,25 @@ public class SmartHomeMain extends BaseMqttFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1000://改变单个
-//                    Log.e("qqq","mqttEquipment message= "+1000);
+                    Message message=new Message();
+                    message.what=4000;
+                    message.obj=msg.obj;
+                    equimentHandler.sendMessageDelayed(message,1000);
+                    break;
+                case 2000:
+                    equimentHandler.sendEmptyMessageDelayed(5000,1000);
+                    break;
+                case 3000:
+                    Log.e("qqq", "goods " + 3000);
+                    equimentHandler.removeMessages(3000);
+                    getJh();
+                    equimentHandler.sendEmptyMessageDelayed(3000, 5 * 60 * 1000);
+                    break;
+                case 4000:
+                    //                    Log.e("qqq","mqttEquipment message= "+1000);
+                    if(msg.obj.toString()==null){
+                        return;
+                    }
                     for (int i = 0; i < list.size(); i++) {
                         String sid = list.get(i).getSid();
                         if (sid == null) {
@@ -945,15 +965,16 @@ public class SmartHomeMain extends BaseMqttFragment {
                                 list.get(i).setSk1(switchState.get(sid));
                             }
                             list.get(i).setJh_zt(true);
-                            adapter.setList(list);
-                            adapter.notifyDataSetChanged();
+                            if(sx_zt&&da_zt){
+                                adapter.setList(list);
+                                adapter.notifyDataSetChanged();
+                            }
+
                             return;
                         }
                     }
-
-
                     break;
-                case 2000:
+                case 5000:
 //                    if (oldMqttEquipmentMap == null) {
 //                        oldMqttEquipmentMap = new HashMap<>();
 //                    }
@@ -983,18 +1004,44 @@ public class SmartHomeMain extends BaseMqttFragment {
                         }
 
                     }
-                    adapter.setList(list);
-                    adapter.notifyDataSetChanged();
-//                    if (manager == null) {
-//                        dataNotification();
-//                    }
-//                    sxNotification();
+                    if(sx_zt&&da_zt){
+                        adapter.setList(list);
+                        adapter.notifyDataSetChanged();
+                    }
                     break;
-                case 3000:
-                    Log.e("qqq", "goods " + 3000);
-                    equimentHandler.removeMessages(3000);
-                    getJh();
-                    equimentHandler.sendEmptyMessageDelayed(3000, 5 * 60 * 1000);
+
+                case 6000:
+                    //发送
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MqttEquipmentMap == null) {
+
+                                return;
+                            }
+                            if (MqttEquipmentMap.size() == 0) {
+
+                                return;
+                            }
+                            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
+
+                                MqttEquipment e = entry.getValue();
+//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
+                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                                e.subscribe(myTopicding);
+                                e.publish_String(push_read(e.getType(), e.getSid()));
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }).start();
+
+
+                    equimentHandler.sendEmptyMessageDelayed(2000, 1000 * MqttEquipmentMap.size() + 2000);
                     break;
             }
         }

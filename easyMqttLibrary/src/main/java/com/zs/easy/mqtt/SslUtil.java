@@ -1,8 +1,18 @@
 package com.zs.easy.mqtt;
 
 import android.content.Context;
+import android.util.Log;
 
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -11,30 +21,27 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 public class SslUtil {
-    public static SSLSocketFactory createSocketFactory(Context context) {
-        SSLContext sslContext;
+    public static SSLSocketFactory getSSLSocketFactory(Context context, String password) throws MqttSecurityException {
         try {
-            KeyStore ks = KeyStore.getInstance("BKS");
-//            ks.load(context.getResources().openRawResource(R.raw.peer),
-//                    "123456".toCharArray());                           //该字符串应随机生成，保证每次session唯一；
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            //    kmf.init(ks, "passw0rd".toCharArray());
-            kmf.init(ks, "123456".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory
-                    .getInstance("X509");
-            tmf.init(ks);
-            TrustManager[] tm = tmf.getTrustManagers();
-            sslContext = SSLContext.getInstance("TLS");
+            InputStream keyStore = context.getResources().getAssets().open("client.bks");
+            KeyStore km = KeyStore.getInstance("BKS");
+            km.load(keyStore, password.toCharArray());
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+            kmf.init(km, password.toCharArray());
 
-            sslContext.init(kmf.getKeyManagers(), tm, null);
-            // SocketFactory factory= SSLSocketFactory.getDefault();
+            InputStream trustStore = context.getResources().getAssets().open("ca.bks");
+            KeyStore ts = KeyStore.getInstance("BKS");
+            ts.load(trustStore, password.toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("X509");
+            tmf.init(ts);
 
-            // Socket socket =factory.createSocket("localhost", 10000);
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            return  ssf;
-        }catch (Exception e){
-            e.printStackTrace();
-            return  null;
+//            SSLContext ctx = SSLContext.getInstance("SSLv3");
+            SSLContext ctx = SSLContext.getInstance("TLSv1.2");
+            ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            return ctx.getSocketFactory();
+        } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException e) {
+            throw new MqttSecurityException(e);
+
         }
     }
 }

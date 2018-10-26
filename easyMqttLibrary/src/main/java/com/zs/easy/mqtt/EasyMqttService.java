@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,10 +185,16 @@ public class EasyMqttService {
         conOpt.setPassword(passWord.toCharArray());
         conOpt.setAutomaticReconnect(autoReconnect);
 
-//        SSLSocketFactory socketFactory = SslUtil.createSocketFactory(context);
-//        if (socketFactory != null) {
-//            conOpt.setSocketFactory(socketFactory);
-//        }
+        SSLSocketFactory socketFactory = null;
+        try {
+            socketFactory = SslUtil.getSSLSocketFactory(context,"123456");
+        } catch (MqttSecurityException e) {
+            e.printStackTrace();
+            Log.e("qqq","e="+e.getMessage().toString());
+        }
+        if (socketFactory != null) {
+            conOpt.setSocketFactory(socketFactory);
+        }
 
     }
 
@@ -227,6 +234,7 @@ public class EasyMqttService {
             // 订阅topic话题
             Log.i(TAG, "execute subscribe -- qos = " + qos.toString());
             client.subscribe(topics, new int[]{1});
+
         } catch (Exception e) {
             Log.e(TAG,e.toString());
         }

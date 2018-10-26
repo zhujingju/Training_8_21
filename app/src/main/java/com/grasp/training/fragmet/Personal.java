@@ -42,6 +42,7 @@ import android.widget.Toast;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.activity.ChangePasswordActivity;
+import com.grasp.training.activity.FeedbackActivity;
 import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.activity.SetPersonalActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
@@ -348,9 +349,12 @@ public class Personal extends BaseMqttFragment {
     }
 
 
-    @OnClick({R.id.per_xgsj, R.id.per_xgmm, R.id.per_gx, R.id.personal_tx, R.id.personal_layout, R.id.per_tui})
+    @OnClick({R.id.per_fk,R.id.per_xgsj, R.id.per_xgmm, R.id.per_gx, R.id.personal_tx, R.id.personal_layout, R.id.per_tui})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.per_fk:
+                context.startActivity(new Intent(context, FeedbackActivity.class));
+                break;
             case R.id.per_xgsj:
                 SetPersonalActivity.stastSetPersonal(context, 1);
                 break;

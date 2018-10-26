@@ -99,5 +99,5 @@ dependencies {
     implementation files('libs/WebSocket.jar')
     implementation project(':mypicker')
     implementation 'com.squareup.okhttp3:okhttp:3.6.0'
-
+    implementation files('libs/BASE64.jar')
 }

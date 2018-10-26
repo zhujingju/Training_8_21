@@ -446,7 +446,9 @@ public class MqttService extends Service {
                 .clientId(getIMEI(this))
                 //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
 //                .serverUrl("tcp://192.168.31.60:3000")  //贤贵
-                .serverUrl("tcp://192.168.1.3:3000")  //贤贵
+//                .serverUrl("tcp://192.168.1.3:3000")  //贤贵
+                .serverUrl("ssl://192.168.1.3:3002")  //贤贵
+//                .serverUrl("ssl://192.168.31.42:1883")  //ssl
 ////                .serverUrl("tcp://broker.hivemq.com:1883")
                 //心跳包默认的发送间隔
                 .keepAliveInterval(20)
@@ -632,6 +634,40 @@ public class MqttService extends Service {
 
                     equimentHandler.sendEmptyMessageDelayed(4000, 60 * 1000 * 5);
                     break;
+
+                case 6000:
+                    //发送
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MqttEquipmentMap == null) {
+
+                                return;
+                            }
+                            if (MqttEquipmentMap.size() == 0) {
+
+                                return;
+                            }
+                            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
+
+                                MqttEquipment e = entry.getValue();
+//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
+                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                                e.subscribe(myTopicding);
+                                e.publish_String(push_read(e.getType(), e.getSid()));
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }).start();
+
+
+                    equimentHandler.sendEmptyMessageDelayed(2000, 500 * MqttEquipmentMap.size() + 2000);
+                    break;
             }
         }
     };
@@ -722,8 +758,9 @@ public class MqttService extends Service {
             if (goods.getSid() == null) {
                 break;
             }
-            Log.e("qqq", "mqttEquipment " + goods.getSid());
+//            Log.e("qqq", "mqttEquipment " + goods.getSid());
             if (MqttEquipmentMap.get(goods.getSid()) == null) {
+                Log.e("qqq","MqttEquipmentMap add sid="+goods.getSid());
                 String type = goods.getType();
                 String myTopic = "iotbroad/iot/" + type + "/" + goods.getSid();
                 String myTopicding = "iotbroad/iot/" + type + "_ack/" + goods.getSid();
@@ -740,6 +777,7 @@ public class MqttService extends Service {
                                     JSONObject jsonObject = new JSONObject(message);
                                     String cmd = jsonObject.getString("cmd");
                                     String mSid = jsonObject.optString("sid", "");  //设备号
+//                                    Log.e("qqq","oldMap add sid="+getSid());
                                     if (!mSid.equals(getSid())) {
                                         return;
                                     }
@@ -748,6 +786,7 @@ public class MqttService extends Service {
 //                                    Log.e("qqq","mqttEquipment type= "+type);
                                     if (cmd.equals("wifi_" + type + "_ack")) {
 //                                        Log.e("qqq","mqttEquipment message= "+message);
+
                                         newMap.put(getSid(), type);
                                         oldMap.put(getSid(), type);
                                         String state = jsonObject.optString("state", "");  //
@@ -782,37 +821,8 @@ public class MqttService extends Service {
 
             }
         }
-        //发送
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (MqttEquipmentMap == null) {
 
-                    return;
-                }
-                if (MqttEquipmentMap.size() == 0) {
-
-                    return;
-                }
-                for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-
-                    MqttEquipment e = entry.getValue();
-//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
-                    e.subscribe(myTopicding);
-                    e.publish_String(push_read(e.getType(), e.getSid()));
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-            }
-        }).start();
-
-
-        equimentHandler.sendEmptyMessageDelayed(2000, 500 * MqttEquipmentMap.size() + 2000);
+        equimentHandler.sendEmptyMessageDelayed(6000, 0);
     }
 
     public void Map_del() {
@@ -831,6 +841,7 @@ public class MqttService extends Service {
             in_manager.cancel(6);
         }
         equimentHandler.removeMessages(4000);
+        MqttEquipmentMap=null;
 
     }
 
