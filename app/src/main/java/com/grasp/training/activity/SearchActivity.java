@@ -1,6 +1,7 @@
 package com.grasp.training.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +40,7 @@ import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseMqttToActivity;
 import com.grasp.training.tool.EquipmentData;
+import com.grasp.training.tool.LocationUtils;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
 import com.grasp.training.tool.WifiAdmin;
@@ -87,7 +89,10 @@ public class SearchActivity extends BaseMqttToActivity {
     public void initData() {
         context = getContext();
         sid_List = getIntent().getStringArrayListExtra("sid_List");
-        Log.e("qqq","s="+sid_List.get(0));
+        if(sid_List==null){
+            sid_List=new ArrayList<>();
+        }
+//        Log.e("qqq","s="+sid_List.get(0));
 //        for (String s : sid_List) {
 //
 //            Log.e("qqq","s="+s);
@@ -104,6 +109,11 @@ public class SearchActivity extends BaseMqttToActivity {
     @Override
     public void initView() {
 
+        if(LocationUtils.isGpsEnabled(context)){
+
+        }else{
+                setGps();
+        }
     }
 
     @Override
@@ -1241,5 +1251,27 @@ public class SearchActivity extends BaseMqttToActivity {
         dong_rel.startAnimation(operatingAnim);
     }
 
+    private void setGps() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                context).setTitle("关闭Gps可能获取不到wifi列表，是否去开启");
+        builder.setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
 
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO Auto-generated method stub
+                LocationUtils.openGpsSettings(context);
+            }
+        });
+
+        builder.setNegativeButton(
+                getString(R.string.alert_dialog_cancel),  new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+        builder.show();
+    }
 }

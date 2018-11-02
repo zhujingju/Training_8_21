@@ -79,7 +79,7 @@ public class EasyMqttService {
         private Context context;
         private String serverUrl;
         private String userName = "admin";
-        private String passWord = "password";
+        private String passWord = "broad608";
         private String clientId;
         private int timeOut = 10;
         private int keepAliveInterval = 20;

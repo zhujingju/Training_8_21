@@ -45,6 +45,7 @@ import com.grasp.training.activity.ChangePasswordActivity;
 import com.grasp.training.activity.FeedbackActivity;
 import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.activity.SetPersonalActivity;
+import com.grasp.training.activity.SetPhoneActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
 import com.grasp.training.tool.AutoInstall;
 import com.grasp.training.tool.BaseMqttFragment;
@@ -356,7 +357,8 @@ public class Personal extends BaseMqttFragment {
                 context.startActivity(new Intent(context, FeedbackActivity.class));
                 break;
             case R.id.per_xgsj:
-                SetPersonalActivity.stastSetPersonal(context, 1);
+//                SetPersonalActivity.stastSetPersonal(context, 1);
+                context.startActivity(new Intent(context, SetPhoneActivity.class));
                 break;
             case R.id.personal_tx:
                 getTp();

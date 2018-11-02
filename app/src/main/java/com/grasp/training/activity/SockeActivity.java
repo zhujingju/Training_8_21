@@ -119,7 +119,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
 
     @Override
     public void MyMessageArrived(final String message) {
-        Log.e("qqq", "message=" + message);
+        Log.e("qqq", "socke message=" + message);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -135,12 +135,14 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     JSONObject jsonObject = new JSONObject(message);
                     String cmd = jsonObject.getString("cmd");
                     String mSid = jsonObject.optString("sid", "");  //设备号
+//                    Log.e("qqq", "socke 222222222 sid="+sid );
                     if (!mSid.equals(sid)) {
 
                         return;
                     }
                     switch (cmd) {
                         case "wifi_socket_ack":
+                            Log.e("qqq", "socke  wifi_socket_ack" + message);
                             handler.removeMessages(3000);
                             handler.removeMessages(5000);
                             state = jsonObject.optString("state");

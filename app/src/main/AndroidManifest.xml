@@ -134,7 +134,16 @@
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:name=".activity.FeedbackActivity"
+        android:name=".activity.FeedbackActivity"
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="adjustPan"></activity>
+        <activity
+            android:name=".activity.RetrievePasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"></activity>
+
+        <activity
+            android:name=".activity.SetPhoneActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 

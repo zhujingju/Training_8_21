@@ -169,6 +169,7 @@ public class LoginActivity extends BaseMqttActivity {
         switch (view.getId()) {
             case R.id.login_wjmm://忘记密码
                 Toast.makeText(getContext(),"此功能未上线",Toast.LENGTH_LONG).show();
+//                startActivity(new Intent(LoginActivity.this, RetrievePasswordActivity.class));
                 break;
             case R.id.login_im:
 //                ha.sendEmptyMessageDelayed(1002,0);

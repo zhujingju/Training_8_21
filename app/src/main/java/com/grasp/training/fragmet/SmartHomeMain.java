@@ -175,7 +175,7 @@ public class SmartHomeMain extends BaseMqttFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.e("qqq", "home messs=" + message);
+//                Log.e("qqq", "home messs=" + message);
                 try {
                     JSONObject jsonObject = new JSONObject(message);
                     String cmd = jsonObject.getString("cmd");
@@ -189,7 +189,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     }
                     switch (cmd) {
                         case "querydevicebyuser_ok":
-                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+//                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
                             SharedPreferencesUtils.setParam(context, SmartHomeMain, message);
                             list = new ArrayList<>();
                             JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -1023,19 +1023,37 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                                 return;
                             }
+                            ArrayList<String> MqttEquipmentList=new ArrayList();
                             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-
-                                MqttEquipment e = entry.getValue();
-//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
-                                e.subscribe(myTopicding);
-                                e.publish_String(push_read(e.getType(), e.getSid()));
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                }
+                                MqttEquipmentList.add(entry.getKey());
                             }
+                            for(String s:MqttEquipmentList){
+                                if(MqttEquipmentMap.get(s)!=null){
+                                    MqttEquipment e = MqttEquipmentMap.get(s);
+                                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                                    e.subscribe(myTopicding);
+                                    e.publish_String(push_read(e.getType(), e.getSid()));
+                                    try {
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+
+                            }
+//                            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
+//
+//                                MqttEquipment e = entry.getValue();
+////                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
+//                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+//                                e.subscribe(myTopicding);
+//                                e.publish_String(push_read(e.getType(), e.getSid()));
+//                                try {
+//                                    Thread.sleep(500);
+//                                } catch (InterruptedException e1) {
+//                                    e1.printStackTrace();
+//                                }
+//                            }
 
                         }
                     }).start();

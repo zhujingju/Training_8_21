@@ -213,7 +213,6 @@ public class RegisteredActivity extends BaseMqttActivity {
             publish_String(js);
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(RegisteredActivity.this, "JSONException", Toast.LENGTH_SHORT).show();
         }
     }
 

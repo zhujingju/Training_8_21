@@ -34,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class EquipmentUpdataActivity extends BaseMqttActivity {
+public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新页
 
     public final static String EquipmentUpdataActivity1 = "EquipmentUpdataActivity1";
     public final static String EquipmentUpdataActivity2 = "EquipmentUpdataActivity2";
@@ -301,7 +301,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {
 
     public void showPro4() {
         dialog = new ProgressDialog(context);
-        dialog.setMessage("初始化中...");
+        dialog.setMessage("数据初始化中，请稍等...");
         dialog.setCancelable(true);
         dialog.show();
     }

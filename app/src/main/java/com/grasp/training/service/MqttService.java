@@ -176,7 +176,7 @@ public class MqttService extends Service {
                                     break;
 
                                 case "querydevicebyuser_ok":
-                                    Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+//                                    Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
 //                                    SharedPreferencesUtils.setParam(this, "SmartHomeMain", message);
                                     list = new ArrayList<>();
                                     JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -445,9 +445,10 @@ public class MqttService extends Service {
                 //唯一标示 保证每个设备都唯一就可以 建议 imei
                 .clientId(getIMEI(this))
                 //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
-//                .serverUrl("tcp://192.168.31.60:3000")  //贤贵
+//                .serverUrl("ssl://192.168.31.60:3002")  //贤贵
 //                .serverUrl("tcp://192.168.1.3:3000")  //贤贵
-                .serverUrl("ssl://192.168.1.3:3002")  //贤贵
+                .serverUrl("ssl://iot.iotbroad.com:8883")
+//                .serverUrl("ssl://192.168.1.3:3002")  //贤贵
 //                .serverUrl("ssl://192.168.31.42:1883")  //ssl
 ////                .serverUrl("tcp://broker.hivemq.com:1883")
                 //心跳包默认的发送间隔
@@ -648,19 +649,37 @@ public class MqttService extends Service {
 
                                 return;
                             }
+                            ArrayList<String> MqttEquipmentList=new ArrayList();
                             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
-
-                                MqttEquipment e = entry.getValue();
-//                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
-                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
-                                e.subscribe(myTopicding);
-                                e.publish_String(push_read(e.getType(), e.getSid()));
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                }
+                                MqttEquipmentList.add(entry.getKey());
                             }
+                            for(String s:MqttEquipmentList){
+                                if(MqttEquipmentMap.get(s)!=null){
+                                    MqttEquipment e = MqttEquipmentMap.get(s);
+                                    String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+                                    e.subscribe(myTopicding);
+                                    e.publish_String(push_read(e.getType(), e.getSid()));
+                                    try {
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+
+                            }
+//                            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
+//
+//                                MqttEquipment e = entry.getValue();
+////                    Log.e("qqq","goods fa "+e.getSid()+" "+e.getType());
+//                                String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
+//                                e.subscribe(myTopicding);
+//                                e.publish_String(push_read(e.getType(), e.getSid()));
+//                                try {
+//                                    Thread.sleep(500);
+//                                } catch (InterruptedException e1) {
+//                                    e1.printStackTrace();
+//                                }
+//                            }
 
                         }
                     }).start();

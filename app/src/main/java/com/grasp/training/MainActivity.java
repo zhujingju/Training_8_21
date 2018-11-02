@@ -257,7 +257,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
     @Override
     public void MyMessageArrived(final String message) {
-        Log.e("qqq", "main messageArrived  message= " + message);
+//        Log.e("qqq", "main messageArrived  message= " + message);
         new Thread(new Runnable() {
             @Override
             public void run() {
