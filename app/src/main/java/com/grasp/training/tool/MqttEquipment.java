@@ -205,7 +205,7 @@ public abstract class MqttEquipment {
         // 1 保证能收到消息，但不一定只收到一条
         // 2 保证收到切只能收到一条消息
         int[] qoss = new int[]{0};
-        MqttService.mqttService.subscribe(topics, qoss);
+//        MqttService.mqttService.subscribe(topics, qoss);
 
 
     }

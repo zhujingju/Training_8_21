@@ -38,6 +38,7 @@
 
 
 
+
         <android.support.design.widget.TextInputLayout
             android:layout_marginTop="@dimen/dip_10.0"
             android:layout_marginLeft="@dimen/dip_7.5"
@@ -57,7 +58,7 @@
                 android:textSize="@dimen/dip_20.0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone" />
+                android:hint="新手机" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout

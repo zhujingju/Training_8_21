@@ -18,9 +18,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:textColor="#fff"
-            android:textSize="@dimen/dip_25.0"
+            android:textSize="@dimen/dip_18.0"
             android:text="设备设置"
-            android:layout_marginTop="@dimen/dip_20.0"
+            android:layout_marginTop="@dimen/dip_25.0"
             />
 
         <Button
@@ -37,6 +37,44 @@
             android:layout_marginTop="@dimen/dip_70.0"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/eu_fj"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/white"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/eu_tv"
+                    />
+
+                <TextView
+                    android:id="@+id/eu_fj_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_1eac94"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dip_30.0"
+                    android:layout_alignParentRight="true"
+                    />
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/white2"
+                    android:layout_alignParentBottom="true"
+
+                    />
+            </RelativeLayout>
+
+
+
             <RelativeLayout
                 android:id="@+id/eu_layout1"
                 android:layout_width="match_parent"
@@ -184,6 +222,40 @@
                     android:background="@drawable/yuan_hong"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/dip_120.0"
+                    />
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/white2"
+                    android:layout_alignParentBottom="true"
+
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/eu_gd"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/white"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/eu_gd"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_1eac94"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dip_30.0"
+                    android:layout_alignParentRight="true"
                     />
                 <TextView
                     android:layout_marginLeft="@dimen/dip_10.0"

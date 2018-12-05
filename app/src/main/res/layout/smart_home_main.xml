@@ -7,12 +7,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
+
+        <RelativeLayout
+
+            android:background="@color/app_color"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+
+
+            <TextView
+                android:textColor="@color/white"
+                android:textSize="@dimen/dip_18.0"
+                android:text="智能家居"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
         <LinearLayout
             android:layout_marginTop="@dimen/dip_10.0"
             android:layout_marginLeft="@dimen/dip_20.0"
             android:layout_marginRight="@dimen/dip_20.0"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dip_133.5"
+            android:layout_height="@dimen/dip_100.5"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="horizontal">

@@ -4,12 +4,16 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.grasp.training"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 21
-        versionCode 1
-        versionName "app-smarthome-1"
+        versionCode 5
+        versionName "app-smarthome-5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "release"
+        ndk {
+//          此处可指定ABI，显著减小APK体积。不指定则默认编译所有平台so库
+            abiFilters "armeabi"
+        }
     }
 
     productFlavors {
@@ -100,4 +104,6 @@ dependencies {
     implementation project(':mypicker')
     implementation 'com.squareup.okhttp3:okhttp:3.6.0'
     implementation files('libs/BASE64.jar')
+    implementation 'cn.simonlee.xcodescanner:zbar:1.1.10'
+    implementation 'cn.simonlee.widget:swipeback:1.0.13'
 }

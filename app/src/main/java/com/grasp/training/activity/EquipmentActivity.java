@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.liangmutian.mypicker.TimePickerDialog;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.EquipmentData;
@@ -635,8 +636,13 @@ public class EquipmentActivity extends BaseTcpMqttActpvity {
 
         }
 
-
-        builder.setText_sj(h, m,s,search_zt);
+        String ss="";
+        if(search_zt){
+            ss="开";
+        }else{
+            ss="关";
+        }
+        builder.setText_sj(h, m,s,ss);
         timeDialog.show();
 
     }
@@ -708,8 +714,8 @@ public class EquipmentActivity extends BaseTcpMqttActpvity {
 
     public void push_name() { //修改名称
 
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too =  MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -1,11 +1,13 @@
 package com.grasp.training.fragmet;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -32,12 +35,15 @@ import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.Umeye_sdk.AcSearchDevice;
 import com.grasp.training.activity.ControlActivity;
+import com.grasp.training.activity.ScanActivity;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.swipemenulistview.SwipeMenu;
 import com.grasp.training.swipemenulistview.SwipeMenuCreator;
 import com.grasp.training.swipemenulistview.SwipeMenuItem;
 import com.grasp.training.swipemenulistview.SwipeMenuListView;
 import com.grasp.training.tool.AddSQLiteHelper;
 import com.grasp.training.tool.BaseMqttFragment;
+import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
 import com.zs.easy.mqtt.IEasyMqttCallBack;
 
@@ -97,7 +103,7 @@ public class Robot extends BaseMqttFragment {
                 Log.e("qqq","Robote_add messs="+message);
                 try {
                     JSONObject jsonObject = new JSONObject(message);
-                    String cmd = jsonObject.getString("cmd");
+                    String cmd = jsonObject.optString("cmd");
                     String uname = jsonObject.optString("uname", "");  //
                     if (!uname.equals(MainActivity.NameUser)) {
                         return;
@@ -145,14 +151,21 @@ public class Robot extends BaseMqttFragment {
             publish_String(js);
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-    @OnClick({R.id.jqr, R.id.robot_add})
+    private final int API_OLD = 0;
+    private final int API_NEW = 1;
+    @OnClick({R.id.control_sm,R.id.jqr, R.id.robot_add})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.control_sm: //扫码登录
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    startScan(API_OLD);
+                } else {
+                    startScan(API_NEW);
+                }
+                break;
             case R.id.jqr:
                 context.startActivity(new Intent(context, ControlActivity.class));
                 break;
@@ -162,6 +175,18 @@ public class Robot extends BaseMqttFragment {
         }
     }
 
+    private void startScan(int api) {
+        int permissionState = ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
+        if (permissionState == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(context, ScanActivity.class);
+            intent.putExtra("newAPI", api == API_NEW);
+//            intent.putExtra("codeType", getCodeType());
+//            startActivity(intent);
+            startActivityForResult(intent, 1);
+        } else {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, api);
+        }
+    }
 
     private void initlistView() {
         toulistView.setCacheColorHint(0);
@@ -394,7 +419,6 @@ public class Robot extends BaseMqttFragment {
                     publish_String(js);  //主题
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -543,5 +567,93 @@ public class Robot extends BaseMqttFragment {
         public void setNum(int num) {
             this.num = num;
         }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1&&resultCode == 2) {
+//Intent intent = getIntent();   // data 本身就是一个 Inten  所以不需要再new了 直接调用里面的方法就行了
+            String s = data.getStringExtra("mResult");
+            Log.e("qqq","mResult="+s);
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(s);
+                String cmd = jsonObject.optString("cmd");
+                String parameter = jsonObject.optString("parameter");
+                if(cmd.equals("qr_code_robot")){
+                    if(!parameter.equals("")){
+                        clientidRobot=parameter;
+                        denl();
+                    }
+                }else{
+                    Toast.makeText(context,"扫码到："+s,Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(context,"扫码到："+s,Toast.LENGTH_LONG).show();
+            }
+
+
+
+        }
+    }
+
+
+    private void denl() {   //删除
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                context).setTitle("机器人是否登录改账号");
+        builder.setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO Auto-generated method stub
+                push_denl();
+            }
+        });
+
+        builder.setNegativeButton(
+                getString(R.string.alert_dialog_cancel), null);
+        builder.show();
+    }
+
+
+
+
+
+
+    public void showPro2() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("登录中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+
+    private String clientidRobot="";
+    public void push_denl() {  //删除机器人
+//        Log.e("qqq","消息 push_read");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "qr_code_login");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid",clientidRobot);
+                    String pass = (String) SharedPreferencesUtils.getParam(context, "Login_pw", "");
+                    jsonObject.put("pwd", Tool.MD5(pass));
+                    String js = jsonObject.toString();
+                    publish_String2(js,MqttService.myTopicUser);  //主题
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+
     }
 }

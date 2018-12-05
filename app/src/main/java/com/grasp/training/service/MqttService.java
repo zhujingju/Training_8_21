@@ -22,14 +22,10 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
-import com.grasp.training.fragmet.SmartHomeMain;
 import com.grasp.training.receiver.MyReceiver;
-import com.grasp.training.tool.BaseMqttFragment;
-import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.Goods;
 import com.grasp.training.tool.MqttEquipment;
 import com.grasp.training.tool.MyApplication;
@@ -57,10 +53,15 @@ import java.util.Map;
 
 public class MqttService extends Service {
 
-    public static boolean appZt=false;
+    public static boolean appZt = false;
     public final static String MqttService1 = "MqttService1";
     public final static String MqttService2 = "MqttService2";
-    private static boolean fi_zt=false;
+    private static boolean fi_zt = false;
+
+    public static String myTopicDevice = "iotbroad/iot/device";
+    public static String myTopicUser = "iotbroad/iot/user";
+    public static String myTopicSoftware = "iotbroad/iot/software";
+    public static String myTopicRobot = "iotbroad/iot/robot";
 
     @Override
     public void onCreate() {
@@ -68,12 +69,16 @@ public class MqttService extends Service {
         // The service is being created
         // 创建服务
         Log.e("qqq", "onCreate 服务");
-        if(!fi_zt){
+        if (!fi_zt) {
             Log.e("qqq", "onCreate 启动服务");
+            MqttService.ip_zt = putMap(MqttService.MqttService1);
+            MqttService.sid_ip = putMap(MqttService.MqttService2);
+            Log.e("qqq", "ip.s=" + MqttService.ip_zt.size() + " " + MqttService.ip_zt);
+            Log.e("qqq", "sid_ip.s=" + MqttService.sid_ip.size() + "  " + MqttService.sid_ip);
             buildEasyMqttService();
             initIEasyMqttCallBack();
             connect();
-            fi_zt=true;
+            fi_zt = true;
         }
         doRegisterReceiver();
         equimentHandler.sendEmptyMessageDelayed(4000, 5000);
@@ -157,7 +162,17 @@ public class MqttService extends Service {
                             JSONObject jsonObject = new JSONObject(message);
                             String cmd = jsonObject.getString("cmd");
                             switch (cmd) {
+                                case "fhhhh":  //收到推送
+                                    Message ms = new Message();
+                                    ms.obj = "fff";
+                                    ms.what = 6666;
+                                    handler.sendMessage(ms);
+
+                                    break;
                                 case "wifi_equipment_ping_ack":
+                                    if (sid_ip == null) {
+                                        return;
+                                    }
                                     String f_ip = jsonObject.optString("ip", "");
                                     String f_sid = jsonObject.optString("sid", "");
                                     Log.e("qqq", "wifi_equipment_ping_ack " + f_ip + "  " + f_sid);
@@ -166,7 +181,11 @@ public class MqttService extends Service {
                                         String ip = getIp(MqttService.this);
                                         if (ip != null && !ip.equals("")) {
                                             ping_go(f_ip, f_sid);
+                                        } else {
+                                            ip_zt.put(f_ip + f_sid, false);
                                         }
+                                    } else {
+                                        sid_ip.put(f_sid, "");
                                     }
 
 
@@ -176,8 +195,18 @@ public class MqttService extends Service {
                                     break;
 
                                 case "querydevicebyuser_ok":
-//                                    Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+
 //                                    SharedPreferencesUtils.setParam(this, "SmartHomeMain", message);
+                                    String uname = jsonObject.optString("uname", "");  //
+                                    if (!uname.equals(MainActivity.NameUser)) {
+                                        Log.e("qqq", "xxxxxxxxxxxhome messs=" + "querydevicebyuser_ok");
+                                        return;
+                                    }
+                                    String clientid = jsonObject.optString("clientid", "");
+                                    if (!clientid.equals(Tool.getIMEI(MqttService.this))) {
+                                        Log.e("qqq", "home clientid=" + clientid);
+                                        return;
+                                    }
                                     list = new ArrayList<>();
                                     JSONArray jsonArray = jsonObject.getJSONArray("data");
                                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -421,7 +450,7 @@ public class MqttService extends Service {
      * 订阅主题 这里订阅三个主题分别是"a", "b", "c"
      */
     public void subscribe() {
-        String[] topics = new String[]{myTopic};
+        String[] topics = new String[]{myTopicDevice};
         //主题对应的推送策略 分别是0, 1, 2 建议服务端和客户端配置的主题一致
         // 0 表示只会发送一次推送消息 收到不收到都不关心
         // 1 保证能收到消息，但不一定只收到一条
@@ -502,14 +531,13 @@ public class MqttService extends Service {
 //        close();
     }
 
-    private String myTopic = "iotbroad/iot/device";
 
     public String getMyTopic() {
-        return myTopic;
+        return myTopicDevice;
     }
 
     public void setMyTopic(String myTopic) {
-        this.myTopic = myTopic;
+        this.myTopicDevice = myTopic;
     }
 
 
@@ -610,7 +638,7 @@ public class MqttService extends Service {
                     Log.e("qqq", "goods  service" + 3000);
                     equimentHandler.removeMessages(3000);
 //                    if(!appZt){
-                        getJh();
+                    getJh();
 //                    }
 //                    equimentHandler.sendEmptyMessageDelayed(3000, 5 * 60 * 1000);
                     break;
@@ -624,7 +652,7 @@ public class MqttService extends Service {
                     equimentHandler.removeMessages(4000);
                     equimentHandler.removeMessages(3000);
                     equimentHandler.removeMessages(5000);
-                    if(!appZt){
+                    if (!appZt) {
                         Log.e("qqq", "goods  service " + 4000);
                         String s = (String) SharedPreferencesUtils.getParam(MqttService.this, MyApplication.NAME_USER, "");
                         if (!s.equals("")) {
@@ -649,12 +677,19 @@ public class MqttService extends Service {
 
                                 return;
                             }
-                            ArrayList<String> MqttEquipmentList=new ArrayList();
+                            if (appZt) {
+                                return;
+                            }
+                            ArrayList<String> MqttEquipmentList = new ArrayList();
                             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
                                 MqttEquipmentList.add(entry.getKey());
                             }
-                            for(String s:MqttEquipmentList){
-                                if(MqttEquipmentMap.get(s)!=null){
+
+                            for (String s : MqttEquipmentList) {
+                                if (MqttEquipmentMap == null) {
+                                    return;
+                                }
+                                if (MqttEquipmentMap.get(s) != null) {
                                     MqttEquipment e = MqttEquipmentMap.get(s);
                                     String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
                                     e.subscribe(myTopicding);
@@ -693,8 +728,8 @@ public class MqttService extends Service {
 
 
     public void dataListview(String s) {  //获取list数据
-        Log.e("qqq", "goods  service dataListview" );
-        subscribe();
+        Log.e("qqq", "goods  service dataListview");
+//        subscribe();
         push_read(s);
     }
 
@@ -779,7 +814,7 @@ public class MqttService extends Service {
             }
 //            Log.e("qqq", "mqttEquipment " + goods.getSid());
             if (MqttEquipmentMap.get(goods.getSid()) == null) {
-                Log.e("qqq","MqttEquipmentMap add sid="+goods.getSid());
+                Log.e("qqq", "MqttEquipmentMap add sid=" + goods.getSid());
                 String type = goods.getType();
                 String myTopic = "iotbroad/iot/" + type + "/" + goods.getSid();
                 String myTopicding = "iotbroad/iot/" + type + "_ack/" + goods.getSid();
@@ -860,7 +895,7 @@ public class MqttService extends Service {
             in_manager.cancel(6);
         }
         equimentHandler.removeMessages(4000);
-        MqttEquipmentMap=null;
+        MqttEquipmentMap = null;
 
     }
 
@@ -926,8 +961,8 @@ public class MqttService extends Service {
                     if (oldMap.get(sid) != null) {
 
                         if (type != null && !type.equals("")) {  //添加菜单栏
-                            if (type.equals("socket") || type.equals("switch") || type.equals("light")) {
-//                    if (type.equals("switch") || type.equals("light")) {
+                            if (type.equals("socket") || type.equals("switch") || type.equals("light") || type.equals("switchdh") || type.equals("switchsl")) {
+//                    if ( type.equals("switchdh")|| type.equals("switchsl")) {
                                 if (i == 0) {
                                     contentView.setTextViewText(R.id.data_notification_tv1, e.getName());
                                     setImage1(e.getIm_url());
@@ -1091,7 +1126,7 @@ public class MqttService extends Service {
     };
 
 
-    private String Notification_sid,Notification_type;
+    private String Notification_sid, Notification_type;
     private Bitmap Notification_bitmap;
 
     //加载图片
@@ -1169,6 +1204,47 @@ public class MqttService extends Service {
         IntentFilter filter12 = new IntentFilter(
                 lightInNotification3);
         registerReceiver(mReceiver, filter12);
+
+        IntentFilter filter13 = new IntentFilter(
+                swithdhInNotification1);
+        registerReceiver(mReceiver, filter13);
+
+        IntentFilter filter14 = new IntentFilter(
+                swithdhInNotification2);
+        registerReceiver(mReceiver, filter14);
+
+        IntentFilter filter15 = new IntentFilter(
+                swithdhInNotification3);
+        registerReceiver(mReceiver, filter15);
+
+        IntentFilter filter16 = new IntentFilter(
+                swithdhInNotification4);
+        registerReceiver(mReceiver, filter16);
+
+        IntentFilter filter17 = new IntentFilter(
+                swithslInNotification1);
+        registerReceiver(mReceiver, filter17);
+
+        IntentFilter filter18 = new IntentFilter(
+                swithslInNotification2);
+        registerReceiver(mReceiver, filter18);
+
+        IntentFilter filter19 = new IntentFilter(
+                swithslInNotification3);
+        registerReceiver(mReceiver, filter19);
+
+        IntentFilter filter20 = new IntentFilter(
+                swithslInNotification4);
+        registerReceiver(mReceiver, filter20);
+
+        IntentFilter filter21 = new IntentFilter(
+                swithslInNotification5);
+        registerReceiver(mReceiver, filter21);
+
+        IntentFilter filter22 = new IntentFilter(
+                swithslInNotification6);
+        registerReceiver(mReceiver, filter22);
+
     }
 
     public class ContentReceiver extends BroadcastReceiver {
@@ -1210,6 +1286,24 @@ public class MqttService extends Service {
 
                     }
 
+                } else if (type.equals("switchdh")) {
+                    boolean state = intent.getBooleanExtra("state", false);
+                    int channel = intent.getIntExtra("channel", -1);
+                    if (MqttEquipmentMap.get(sid) != null && channel != -1) {
+                        Log.e("qqq", "onReceive type=fa");
+                        MqttEquipment e = MqttEquipmentMap.get(sid);
+                        e.publish_String(push_switchdh(e.getType(), e.getSid(), state, channel));
+                    }
+
+                } else if (type.equals("switchsl")) {
+                    boolean state = intent.getBooleanExtra("state", false);
+                    int channel = intent.getIntExtra("channel", -1);
+                    if (MqttEquipmentMap.get(sid) != null && channel != -1) {
+                        Log.e("qqq", "onReceive type=fa");
+                        MqttEquipment e = MqttEquipmentMap.get(sid);
+                        e.publish_String(push_switchsl(e.getType(), e.getSid(), state, channel));
+                    }
+
                 }
 
             } else {
@@ -1249,6 +1343,16 @@ public class MqttService extends Service {
                                 inNotification();
                             }
                             lightInNotification(bitmap, sid, type);
+                        } else if (type.equals("switchdh")) {
+                            if (in_manager == null) {
+                                inNotification();
+                            }
+                            switchdhInNotification(bitmap, sid, type);
+                        } else if (type.equals("switchsl")) {
+                            if (in_manager == null) {
+                                inNotification();
+                            }
+                            switchslInNotification(bitmap, sid, type);
                         }
                     }
 
@@ -1269,7 +1373,8 @@ public class MqttService extends Service {
 
         in_manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         in_notification = new Notification.Builder(this).setSmallIcon(R.drawable.icon).build();
-//        notification.flags|= Notification.FLAG_ONGOING_EVENT;
+
+
     }
 
 
@@ -1282,6 +1387,18 @@ public class MqttService extends Service {
     private final static String lightInNotification1 = "swithInNotification1";
     private final static String lightInNotification2 = "swithInNotification2";
     private final static String lightInNotification3 = "swithInNotification3";
+
+    private final static String swithdhInNotification1 = "swithdhInNotification1";
+    private final static String swithdhInNotification2 = "swithdhInNotification2";
+    private final static String swithdhInNotification3 = "swithdhInNotification3";
+    private final static String swithdhInNotification4 = "swithdhInNotification4";
+
+    private final static String swithslInNotification1 = "swithslInNotification1";
+    private final static String swithslInNotification2 = "swithslInNotification2";
+    private final static String swithslInNotification3 = "swithslInNotification3";
+    private final static String swithslInNotification4 = "swithslInNotification4";
+    private final static String swithslInNotification5 = "swithslInNotification5";
+    private final static String swithslInNotification6 = "swithslInNotification6";
 
     /**
      * 发送通知
@@ -1312,7 +1429,7 @@ public class MqttService extends Service {
             in_contentView.setOnClickPendingIntent(R.id.socket_in_notification_im3, btPendingIntent2);
 
             in_notification.contentView = in_contentView;
-            in_notification.contentIntent=btPendingIntent2;
+            in_notification.contentIntent = btPendingIntent2;
             in_manager.notify(6, in_notification);
 //            image_hander.sendEmptyMessage(2000);
         }
@@ -1491,4 +1608,199 @@ public class MqttService extends Service {
             return "";
         }
     }
+
+
+    public void switchdhInNotification(Bitmap bitmap, String sid, String type) {  //开关
+        Log.e("qqq", "swithInNotification ");
+        in_contentView = new RemoteViews(this.getPackageName(), R.layout.swith_in_notification);
+        in_notification.contentView = in_contentView;
+        in_manager.notify(6, in_notification);
+        if (bitmap != null) {
+            in_contentView.setImageViewBitmap(R.id.switch_in_notification_im1, bitmap);
+
+            Intent btIntent = new Intent().setAction(swithdhInNotification1);
+            btIntent.putExtra("sid", sid);
+            btIntent.putExtra("type", type);
+            btIntent.putExtra("num", -10);
+            btIntent.putExtra("state", true);
+            btIntent.putExtra("channel", 2);
+            PendingIntent btPendingIntent = PendingIntent.getBroadcast(this, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im2, btPendingIntent);
+
+            Intent btIntent2 = new Intent().setAction(swithdhInNotification2);
+            btIntent2.putExtra("sid", sid);
+            btIntent2.putExtra("type", type);
+            btIntent2.putExtra("num", -10);
+            btIntent2.putExtra("state", false);
+            btIntent2.putExtra("channel", 2);
+            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(this, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im3, btPendingIntent2);
+
+            Intent btIntent3 = new Intent().setAction(swithdhInNotification3);
+            btIntent3.putExtra("sid", sid);
+            btIntent3.putExtra("type", type);
+            btIntent3.putExtra("num", -10);
+            btIntent3.putExtra("state", true);
+            btIntent3.putExtra("channel", 1);
+            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(this, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im4, btPendingIntent3);
+
+            Intent btIntent4 = new Intent().setAction(swithdhInNotification4);
+            btIntent4.putExtra("sid", sid);
+            btIntent4.putExtra("type", type);
+            btIntent4.putExtra("num", -10);
+            btIntent4.putExtra("state", false);
+            btIntent4.putExtra("channel", 1);
+            PendingIntent btPendingIntent4 = PendingIntent.getBroadcast(this, 0, btIntent4, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im5, btPendingIntent4);
+            in_notification.contentView = in_contentView;
+            in_manager.notify(6, in_notification);
+        }
+
+    }
+
+
+    public String push_switchdh(String type, String sid, boolean state, int channel) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type);
+            if (state) {
+                jsonObject.put("state", "on");
+            } else {
+                jsonObject.put("state", "off");
+            }
+            jsonObject.put("channel", channel);
+            jsonObject.put("sid", sid);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public void switchslInNotification(Bitmap bitmap, String sid, String type) {  //开关
+        Log.e("qqq", "swithInNotification ");
+        in_contentView = new RemoteViews(this.getPackageName(), R.layout.swithsl_in_notification);
+        in_notification.contentView = in_contentView;
+        in_manager.notify(6, in_notification);
+        if (bitmap != null) {
+            in_contentView.setImageViewBitmap(R.id.switch_in_notification_im1, bitmap);
+
+            Intent btIntent = new Intent().setAction(swithslInNotification1);
+            btIntent.putExtra("sid", sid);
+            btIntent.putExtra("type", type);
+            btIntent.putExtra("num", -10);
+            btIntent.putExtra("state", true);
+            btIntent.putExtra("channel", 1);
+            PendingIntent btPendingIntent = PendingIntent.getBroadcast(this, 0, btIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im2, btPendingIntent);
+
+            Intent btIntent2 = new Intent().setAction(swithslInNotification2);
+            btIntent2.putExtra("sid", sid);
+            btIntent2.putExtra("type", type);
+            btIntent2.putExtra("num", -10);
+            btIntent2.putExtra("state", false);
+            btIntent2.putExtra("channel", 1);
+            PendingIntent btPendingIntent2 = PendingIntent.getBroadcast(this, 0, btIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im3, btPendingIntent2);
+
+            Intent btIntent3 = new Intent().setAction(swithslInNotification3);
+            btIntent3.putExtra("sid", sid);
+            btIntent3.putExtra("type", type);
+            btIntent3.putExtra("num", -10);
+            btIntent3.putExtra("state", true);
+            btIntent3.putExtra("channel", 2);
+            PendingIntent btPendingIntent3 = PendingIntent.getBroadcast(this, 0, btIntent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im4, btPendingIntent3);
+
+            Intent btIntent4 = new Intent().setAction(swithslInNotification4);
+            btIntent4.putExtra("sid", sid);
+            btIntent4.putExtra("type", type);
+            btIntent4.putExtra("num", -10);
+            btIntent4.putExtra("state", false);
+            btIntent4.putExtra("channel", 2);
+            PendingIntent btPendingIntent4 = PendingIntent.getBroadcast(this, 0, btIntent4, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im5, btPendingIntent4);
+
+            Intent btIntent5 = new Intent().setAction(swithslInNotification5);
+            btIntent5.putExtra("sid", sid);
+            btIntent5.putExtra("type", type);
+            btIntent5.putExtra("num", -10);
+            btIntent5.putExtra("state", true);
+            btIntent5.putExtra("channel", 3);
+            PendingIntent btPendingIntent5 = PendingIntent.getBroadcast(this, 0, btIntent5, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im6, btPendingIntent5);
+
+
+            Intent btIntent6 = new Intent().setAction(swithslInNotification6);
+            btIntent6.putExtra("sid", sid);
+            btIntent6.putExtra("type", type);
+            btIntent6.putExtra("num", -10);
+            btIntent6.putExtra("state", false);
+            btIntent6.putExtra("channel", 3);
+            PendingIntent btPendingIntent6 = PendingIntent.getBroadcast(this, 0, btIntent6, PendingIntent.FLAG_UPDATE_CURRENT);
+            in_contentView.setOnClickPendingIntent(R.id.switch_in_notification_im7, btPendingIntent6);
+
+
+            in_notification.contentView = in_contentView;
+            in_manager.notify(6, in_notification);
+        }
+
+    }
+
+
+    public String push_switchsl(String type, String sid, boolean state, int channel) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_" + type);
+            if (state) {
+                jsonObject.put("state", "on");
+            } else {
+                jsonObject.put("state", "off");
+            }
+            jsonObject.put("channel", channel);
+            jsonObject.put("sid", sid);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 6666:
+                    tsNotification(msg.obj.toString());
+
+                    break;
+            }
+        }
+    };
+
+
+    public void tsNotification(String str) {  //灯
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder1 = new Notification.Builder(this);
+        builder1.setSmallIcon(R.drawable.icon); //设置图标
+        builder1.setTicker("通知");
+        builder1.setContentTitle("应用场景"); //设置标题
+        builder1.setContentText(str); //消息内容
+        builder1.setWhen(System.currentTimeMillis()); //发送时间
+        builder1.setDefaults(Notification.DEFAULT_ALL); //设置默认的提示音，振动方式，灯光
+//        builder1.setAutoCancel(true);//打开程序后图标消失
+        Notification notification1 = builder1.build();
+        notificationManager.notify(124, notification1); // 通过通知管理器发送通知
+    }
+
 }

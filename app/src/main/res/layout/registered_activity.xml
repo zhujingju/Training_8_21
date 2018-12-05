@@ -93,7 +93,6 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dip_50.0"

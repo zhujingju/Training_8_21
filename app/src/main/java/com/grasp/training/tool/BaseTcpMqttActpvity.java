@@ -617,6 +617,10 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
 
     private   DatagramSocket socket;
 
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
     private void setDel(){
         result_zt=false;
         if(socket!=null){

@@ -14,19 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Mqtt服务
@@ -233,7 +221,7 @@ public class EasyMqttService {
         try {
             // 订阅topic话题
             Log.i(TAG, "execute subscribe -- qos = " + qos.toString());
-            client.subscribe(topics, new int[]{1});
+            client.subscribe(topics, new int[]{0});
 
         } catch (Exception e) {
             Log.e(TAG,e.toString());

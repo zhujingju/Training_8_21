@@ -43,6 +43,7 @@ import com.grasp.training.activity.SearchActivity;
 import com.grasp.training.activity.SockeActivity;
 import com.grasp.training.activity.SwitchActivity;
 import com.grasp.training.activity.WebViewActivity;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseMqttFragment;
 import com.grasp.training.tool.EquipmentData;
@@ -89,14 +90,14 @@ public class SmartHomeMain extends BaseMqttFragment {
     @BindView(R.id.smart_home_MyGridView)
     MyGridView gridView;
     Unbinder unbinder1;
-    private String myTopic = "iotbroad/iot/device";
+    private String myTopic = MqttService.myTopicDevice;
     private Context context;
     private List<Goods> list;
     private myListViewAdapter adapter;
     private int posi = 0;
     private boolean del_zt = false;
     private final String SmartHomeMain = "SmartHomeMain";
-    private String city="";
+    private String city = "";
 
     @Override
     public int getInflate() {
@@ -107,54 +108,67 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void init(View rootView) {
         unbinder = ButterKnife.bind(this, rootView);
         context = getActivity();
-        city= (String) SharedPreferencesUtils.getParam(context,"city_main","");
+        city = (String) SharedPreferencesUtils.getParam(context, "city_main", "");
         head = (LinearLayout) rootView.findViewById(R.id.head);
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         //获取PullToRefreshGridView里面的head布局
         head.addView(gridView.getView(), p);
         initListview();
-        Log.e("tianqi","isLocationEnabled="+LocationUtils.isLocationEnabled(context)+" LocationUtils.isGpsEnabled(context)="+LocationUtils.isGpsEnabled(context));
-        if(LocationUtils.isLocationEnabled(context)){
+        Log.e("tianqi", "isLocationEnabled=" + LocationUtils.isLocationEnabled(context) + " LocationUtils.isGpsEnabled(context)=" + LocationUtils.isGpsEnabled(context));
+        if (LocationUtils.isLocationEnabled(context)) {
 
-            if(LocationUtils.isGpsEnabled(context)){
+            if (LocationUtils.isGpsEnabled(context)) {
 
-            }else{
+            } else {
 //                setGps();
             }
 
             LocationUtils.register(context, 60 * 1000, 1000, new LocationUtils.OnLocationChangeListener() {
                 @Override
                 public void getLastKnownLocation(Location location) {
+                    Log.e("tianqi", "getLastKnownLocation");
+                    double Latitude = location.getLatitude();  //维度
+                    double Longitude = location.getLongitude();
+                    city = LocationUtils.getLocality(context, Latitude, Longitude);
+                    SharedPreferencesUtils.setParam(context, "city_main", city);
+                    Log.e("tianqi", "Latitude=" + Latitude + " Longitude=" + Longitude + " city=" + city);
+                    if (city == null) {
+                        city = "北京";
 
+                    } else {
+                        if (city.equals("unknown")) {
+                            city = "北京";
+                        }
+                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(3000);
+                                LocationUtils.unregister();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+//
+                    new Thread(tq).start();
                 }
 
                 @Override
                 public void onLocationChanged(Location location) {
-                    double Latitude = location.getLatitude();  //维度
-                    double Longitude = location.getLongitude();
-                    city=LocationUtils.getLocality(context ,Latitude,Longitude);
-                    SharedPreferencesUtils.setParam(context,"city_main",city);
-                    Log.e("tianqi","Latitude="+Latitude+" Longitude="+Longitude+" city="+city);
-                    if(city==null){
-                        city="北京";
 
-                    }else{
-                        if(city.equals("unknown")){
-                            city="北京";
-                        }
-                    }
-                        new Thread(tq).start();
 
                 }
 
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {
-
+                    Log.e("tianqi", "onStatusChanged");
                 }
             });
 
-        }else{
-            city="北京";
+        } else {
+            city = "北京";
         }
 
     }
@@ -185,72 +199,14 @@ public class SmartHomeMain extends BaseMqttFragment {
                     }
                     String clientid = jsonObject.optString("clientid", "");
                     if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                        Log.e("qqq", "home clientid=" + clientid);
                         return;
                     }
                     switch (cmd) {
                         case "querydevicebyuser_ok":
 //                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
-                            SharedPreferencesUtils.setParam(context, SmartHomeMain, message);
-                            list = new ArrayList<>();
-                            JSONArray jsonArray = jsonObject.getJSONArray("data");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                                String sid = jsonObject1.optString("sid", "");//名称
-                                String type = jsonObject1.optString("type", "");//类型
-                                String thumbnail = jsonObject1.optString("thumbnail", ""); //预览图
-                                String state = jsonObject1.optString("state", "");
-                                String roomid = jsonObject1.optString("roomid", "");
-                                String alive = jsonObject1.optString("alive", "0");
-                                String dname = jsonObject1.optString("dname", "");
-                                if (roomid.equals("null")) {
-                                    roomid = "";
-                                }
-                                if (thumbnail.equals("null")) {
-                                    thumbnail = "";
-                                }
-                                if (state.equals("null")) {
-                                    state = "";
-                                }
-
-                                Goods goods = new Goods();
-                                goods.setSid(sid);
-                                goods.setWz(roomid);
-                                goods.setIm_url(thumbnail);
-                                goods.setAdd_zt(false);
-                                goods.setType(type);
-                                if (state.equals("on")) {
-                                    goods.setDy(true);
-                                } else {
-                                    goods.setDy(false);
-                                }
-
-                                goods.setName(dname);
-//                                Log.e("qqq","oldMap="+newMap);
-                                if (oldMap != null) {
-                                    if (oldMap.get(sid) != null) {
-                                        goods.setJh_zt(true);
-                                    } else {
-                                        goods.setJh_zt(false);
-                                    }
-                                }
-                                if (oldState != null) {
-                                    if (oldState.get(sid) != null) {
-                                        goods.setDy(oldState.get(sid));
-                                    }
-                                }
-                                if(oldswitchState!=null){
-                                    if (oldswitchState.get(sid) != null) {
-                                        goods.setSk1(oldswitchState.get(sid));
-                                    }
-                                }
-
-                                list.add(goods);
-
-                            }
-                            Goods goods = new Goods();
-                            goods.setAdd_zt(true);
-                            list.add(goods);
-                            handler.sendEmptyMessageDelayed(1000, 0);
+                            SharedPreferencesUtils.setParam(context, MainActivity.NameUser, message);
+                            setJson(message);
                             break;
 
                         case "deletedevice_ok":
@@ -278,7 +234,6 @@ public class SmartHomeMain extends BaseMqttFragment {
         in.putStringArrayListExtra("sid_List", slist);
         context.startActivity(in);
     }
-
 
 
     @Override
@@ -319,7 +274,6 @@ public class SmartHomeMain extends BaseMqttFragment {
             publish_String(js);
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -328,7 +282,10 @@ public class SmartHomeMain extends BaseMqttFragment {
     public void onStart() {
         super.onStart();
         setEquipmentData();
-        if(!city.equals("")){
+        if (!city.equals("")) {
+            new Thread(tq).start();
+        } else {
+            city = "北京";
             new Thread(tq).start();
         }
 
@@ -376,7 +333,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                 if (i + 1 == list.size()) {
                     ArrayList<String> arrayList = new ArrayList();
-                    for (int j = 0; j < list.size()-1; j++) {
+                    for (int j = 0; j < list.size() - 1; j++) {
                         arrayList.add(list.get(j).getSid());
                     }
 
@@ -390,12 +347,18 @@ public class SmartHomeMain extends BaseMqttFragment {
                         SockeActivity.starstSockeActivity(context, list.get(i).getSid(), list.get(i).getName());
 //                        WebViewActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else if (list.get(i).getType().equals("switch")) {
+
                         SwitchActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else if (list.get(i).getType().equals("light")) {
                         LightActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
                     } else {
 //                        EquipmentActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
-                        WebViewActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName());
+                        if (list != null && list.get(i).getWeburl() != null && !list.get(i).getWeburl().equals("")) {
+                            WebViewActivity.starstEquipmentActivity(context, list.get(i).getSid(), list.get(i).getType(), list.get(i).getName(), list.get(i).getWeburl());
+                        } else {
+                            Toast.makeText(context, "获取数据不正确，请稍后再试", Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 }
             }
@@ -405,21 +368,23 @@ public class SmartHomeMain extends BaseMqttFragment {
     }
 
 
-    boolean da_zt=true;
-    public void setHua(boolean zt){
-        da_zt=zt;
-        if(da_zt){
-            if(!city.equals("")){
+    boolean da_zt = true;
+
+    public void setHua(boolean zt) {
+        da_zt = zt;
+        if (da_zt) {
+            if (!city.equals("")) {
                 new Thread(tq).start();
             }
             dataListview();
         }
     }
 
-    boolean sx_zt=true;
+    boolean sx_zt = true;
+
     public void dataListview() {  //获取list数据
 
-        if(!sx_zt){
+        if (!sx_zt) {
             gridView.onRefreshComplete();
             return;
         }
@@ -430,12 +395,12 @@ public class SmartHomeMain extends BaseMqttFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sx_zt=false;
-                subscribe();
+                sx_zt = false;
+//                subscribe();
                 push_read();
                 try {
                     Thread.sleep(1000);
-                    sx_zt=true;
+                    sx_zt = true;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -621,15 +586,16 @@ public class SmartHomeMain extends BaseMqttFragment {
                 too.layout2.setVisibility(View.GONE);
                 too.name.setText(camera.getName());
                 too.wz.setText(camera.getWz());
-                if(camera.getType().equals("switch")){
-                    if( camera.getSk1()!=null){
+                if (camera.getType().equals("switchsl") || camera.getType().equals("switch") || camera.getType().equals("switchdh")) {
+                    if (camera.getSk1() != null) {
                         too.dy.setVisibility(View.VISIBLE);
-                        too.dy.setText("状态："+camera.getSk1());
-                    }else{
+                        too.dy.setText("状态：" + camera.getSk1());
+                    } else {
                         too.dy.setVisibility(View.INVISIBLE);
                     }
 
-                }else{
+                } else {
+                    too.dy.setVisibility(View.VISIBLE);
                     if (camera.isDy()) {
                         too.dy.setText("状态：开启");
                     } else {
@@ -669,8 +635,6 @@ public class SmartHomeMain extends BaseMqttFragment {
     }
 
 
-
-
     private ArrayList<EquipmentData> elist;
     private HashMap<String, String> eMap;
 
@@ -689,6 +653,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     String type = jsonObject1.optString("type", "");//类型
                     String thumbnail = jsonObject1.optString("dname", ""); //预览图
                     String stateall = jsonObject1.optString("stateall", "");
+
                     EquipmentData equipmentData = new EquipmentData();
                     equipmentData.setDname(dname);
                     equipmentData.setType(type);
@@ -709,61 +674,82 @@ public class SmartHomeMain extends BaseMqttFragment {
 
 
     private void dataL() {
-        String message = SharedPreferencesUtils.getParam(context, SmartHomeMain, "").toString();
-        list = new ArrayList<>();
-        if (!message.equals("")) {
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(message);
-                JSONArray jsonArray = jsonObject.getJSONArray("data");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    String sid = jsonObject1.optString("sid", "");//名称
-                    String type = jsonObject1.optString("type", "");//类型
-                    String thumbnail = jsonObject1.optString("thumbnail", ""); //预览图
-                    String state = jsonObject1.optString("state", "");
-                    String roomid = jsonObject1.optString("roomid", "");
-                    String alive = jsonObject1.optString("alive", "0");
-                    String dname = jsonObject1.optString("dname", "");
-                    if (roomid.equals("null")) {
-                        roomid = "";
-                    }
-                    if (thumbnail.equals("null")) {
-                        thumbnail = "";
-                    }
-                    if (state.equals("null")) {
-                        state = "";
-                    }
+        String message = SharedPreferencesUtils.getParam(context, MainActivity.NameUser, "").toString();
+        setJson(message);
 
-                    Goods goods = new Goods();
-                    goods.setSid(sid);
-                    goods.setWz(roomid);
-                    goods.setIm_url(thumbnail);
-                    goods.setAdd_zt(false);
-                    goods.setType(type);
-                    if (state.equals("on")) {
-                        goods.setDy(true);
-                    } else {
-                        goods.setDy(false);
-                    }
 
-                    goods.setName(dname);
+    }
 
-                    goods.setJh_zt(false);
-                    list.add(goods);
-
+    private void setJson(String json) {
+        try {
+            list = new ArrayList<>();
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray jsonArray = jsonObject.getJSONArray("data");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                String sid = jsonObject1.optString("sid", "");//名称
+                String type = jsonObject1.optString("type", "");//类型
+                String thumbnail = jsonObject1.optString("thumbnail", ""); //预览图
+                String state = jsonObject1.optString("state", "");
+                String roomid = jsonObject1.optString("roomid", "");
+                String alive = jsonObject1.optString("alive", "0");
+                String dname = jsonObject1.optString("dname", "");
+                String weburl = jsonObject1.optString("weburl", "");
+                String roomname=jsonObject1.optString("roomname", "");
+                if (roomid.equals("null")) {
+                    roomid = "";
+                }
+                if (thumbnail.equals("null")) {
+                    thumbnail = "";
+                }
+                if (state.equals("null")) {
+                    state = "";
                 }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                Goods goods = new Goods();
+                goods.setRoom(roomname);
+                goods.setSid(sid);
+                goods.setWz(roomid);
+                goods.setIm_url(thumbnail);
+                goods.setAdd_zt(false);
+                goods.setType(type);
+                goods.setWeburl(weburl);
+                if (state.equals("on")) {
+                    goods.setDy(true);
+                } else {
+                    goods.setDy(false);
+                }
+
+                goods.setName(dname);
+//                                Log.e("qqq","oldMap="+newMap);
+                if (oldMap != null) {
+                    if (oldMap.get(sid) != null) {
+                        goods.setJh_zt(true);
+                    } else {
+                        goods.setJh_zt(false);
+                    }
+                }
+                if (oldState != null) {
+                    if (oldState.get(sid) != null) {
+                        goods.setDy(oldState.get(sid));
+                    }
+                }
+                if (oldswitchState != null) {
+                    if (oldswitchState.get(sid) != null) {
+                        goods.setSk1(oldswitchState.get(sid));
+                    }
+                }
+
+                list.add(goods);
+
             }
+            Goods goods = new Goods();
+            goods.setAdd_zt(true);
+            list.add(goods);
+            handler.sendEmptyMessageDelayed(1000, 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        Goods goods = new Goods();
-        goods.setAdd_zt(true);
-        list.add(goods);
-        handler.sendEmptyMessageDelayed(1000, 0);
-
 
     }
 
@@ -786,15 +772,15 @@ public class SmartHomeMain extends BaseMqttFragment {
 
 
         if (MqttEquipmentMap == null) {
-        MqttEquipmentMap = new HashMap<>();
+            MqttEquipmentMap = new HashMap<>();
         }
 
 //        if(newMap==null){
         newMap = new HashMap<>();
         newState = new HashMap<>();
-        switchState=new HashMap<>();
+        switchState = new HashMap<>();
 //        }
-        if (oldswitchState== null) {
+        if (oldswitchState == null) {
             oldswitchState = new HashMap<>();
         }
         if (oldMap == null) {
@@ -809,7 +795,7 @@ public class SmartHomeMain extends BaseMqttFragment {
             if (goods.getSid() == null) {
                 break;
             }
-            Log.e("qqq","mqttEquipment "+goods.getSid());
+            Log.e("qqq", "mqttEquipment " + goods.getSid());
             if (MqttEquipmentMap.get(goods.getSid()) == null) {
                 String type = goods.getType();
                 String myTopic = "iotbroad/iot/" + type + "/" + goods.getSid();
@@ -847,23 +833,67 @@ public class SmartHomeMain extends BaseMqttFragment {
                                         newState.put(getSid(), state_zt);
                                         oldState.put(getSid(), state_zt);
 
-                                        if(type.equals("switch")){
-                                            String switch_s="";
+                                        if (type.equals("switch")) {
+                                            String switch_s = "";
                                             String channel_1 = jsonObject.optString("channel_2", "");  //
                                             String channel_2 = jsonObject.optString("channel_1", "");  //
-                                            if(channel_1.equals("on")){
-                                                switch_s+="开启";
-                                            }else{
-                                                switch_s+="关闭";
+                                            if (channel_1.equals("on")) {
+                                                switch_s += "开启";
+                                            } else {
+                                                switch_s += "关闭";
                                             }
-                                            if(channel_2.equals("on")){
-                                                switch_s+="，开启";
-                                            }else{
-                                                switch_s+="，关闭";
+                                            if (channel_2.equals("on")) {
+                                                switch_s += "，开启";
+                                            } else {
+                                                switch_s += "，关闭";
                                             }
                                             switchState.put(getSid(), switch_s);
                                             oldswitchState.put(getSid(), switch_s);
                                         }
+
+                                        if (type.equals("switchdh")) {
+                                            String switch_s = "";
+                                            String channel_1 = jsonObject.optString("channel_2", "");  //
+                                            String channel_2 = jsonObject.optString("channel_1", "");  //
+                                            if (channel_1.equals("on")) {
+                                                switch_s += "开启";
+                                            } else {
+                                                switch_s += "关闭";
+                                            }
+                                            if (channel_2.equals("on")) {
+                                                switch_s += "，开启";
+                                            } else {
+                                                switch_s += "，关闭";
+                                            }
+                                            switchState.put(getSid(), switch_s);
+                                            oldswitchState.put(getSid(), switch_s);
+                                        }
+
+                                        if (type.equals("switchsl")) {
+                                            String switch_s = "";
+                                            String channel_1 = jsonObject.optString("channel_1", "");  //
+                                            String channel_2 = jsonObject.optString("channel_2", "");  //
+                                            String channel_3 = jsonObject.optString("channel_3", "");  //
+                                            if (channel_1.equals("on")) {
+                                                switch_s += "开";
+                                            } else {
+                                                switch_s += "关";
+                                            }
+                                            if (channel_2.equals("on")) {
+                                                switch_s += "，开";
+                                            } else {
+                                                switch_s += "，关";
+                                            }
+
+                                            if (channel_3.equals("on")) {
+                                                switch_s += "，开";
+                                            } else {
+                                                switch_s += "，关";
+                                            }
+                                            switchState.put(getSid(), switch_s);
+                                            oldswitchState.put(getSid(), switch_s);
+                                        }
+
                                         Message m = new Message();
                                         m.what = 1000;
                                         m.obj = getSid();
@@ -933,13 +963,13 @@ public class SmartHomeMain extends BaseMqttFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1000://改变单个
-                    Message message=new Message();
-                    message.what=4000;
-                    message.obj=msg.obj;
-                    equimentHandler.sendMessageDelayed(message,1000);
+                    Message message = new Message();
+                    message.what = 4000;
+                    message.obj = msg.obj;
+                    equimentHandler.sendMessageDelayed(message, 1000);
                     break;
                 case 2000:
-                    equimentHandler.sendEmptyMessageDelayed(5000,1000);
+                    equimentHandler.sendEmptyMessageDelayed(5000, 1000);
                     break;
                 case 3000:
                     Log.e("qqq", "goods " + 3000);
@@ -949,7 +979,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     break;
                 case 4000:
                     //                    Log.e("qqq","mqttEquipment message= "+1000);
-                    if(msg.obj.toString()==null){
+                    if (msg.obj.toString() == null) {
                         return;
                     }
                     for (int i = 0; i < list.size(); i++) {
@@ -965,7 +995,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                                 list.get(i).setSk1(switchState.get(sid));
                             }
                             list.get(i).setJh_zt(true);
-                            if(sx_zt&&da_zt){
+                            if (sx_zt && da_zt) {
                                 adapter.setList(list);
                                 adapter.notifyDataSetChanged();
                             }
@@ -979,9 +1009,9 @@ public class SmartHomeMain extends BaseMqttFragment {
 //                        oldMqttEquipmentMap = new HashMap<>();
 //                    }
                     oldMap = newMap;
-                    Log.e("qqq","oldMap.size()="+oldMap.size()+" newMap.size()= "+newMap.size());
+                    Log.e("qqq", "oldMap.size()=" + oldMap.size() + " newMap.size()= " + newMap.size());
                     oldState = newState;
-                    oldswitchState=switchState;
+                    oldswitchState = switchState;
                     for (int i = 0; i < list.size(); i++) {
 
                         String sid = list.get(i).getSid();
@@ -993,7 +1023,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 //                            if (MqttEquipmentMap.get(sid) != null) {
 //                                oldMqttEquipmentMap.put(sid, MqttEquipmentMap.get(sid));
 //                            }
-                        }else{
+                        } else {
                             list.get(i).setJh_zt(false);
                         }
                         if (oldState.get(sid) != null) {
@@ -1004,7 +1034,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                         }
 
                     }
-                    if(sx_zt&&da_zt){
+                    if (sx_zt && da_zt) {
                         adapter.setList(list);
                         adapter.notifyDataSetChanged();
                     }
@@ -1023,12 +1053,12 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                                 return;
                             }
-                            ArrayList<String> MqttEquipmentList=new ArrayList();
+                            ArrayList<String> MqttEquipmentList = new ArrayList();
                             for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
                                 MqttEquipmentList.add(entry.getKey());
                             }
-                            for(String s:MqttEquipmentList){
-                                if(MqttEquipmentMap.get(s)!=null){
+                            for (String s : MqttEquipmentList) {
+                                if (MqttEquipmentMap.get(s) != null) {
                                     MqttEquipment e = MqttEquipmentMap.get(s);
                                     String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
                                     e.subscribe(myTopicding);
@@ -1066,14 +1096,14 @@ public class SmartHomeMain extends BaseMqttFragment {
     };
 
 
-
-
     private Thread tq = new Thread() {
+
         StringBuffer sb = new StringBuffer();
         String line = null;
         BufferedReader buffer = null;
 
         public void run() {
+            Log.e("tianqi", "tianqi");
             HttpURLConnection connection = null;
             try {
                 sb.delete(0, sb.length());
@@ -1104,24 +1134,24 @@ public class SmartHomeMain extends BaseMqttFragment {
                 }
             }
             String result = sb.toString();
-            Log.e("tianqi",result);
+            Log.e("tianqi", result);
 //            Message msg = Message.obtain();
 //            msg.what = 0;
 //            getHandler.sendMessage(msg);
-            Message message=new Message();
-            message.what=1000;
-            message.obj=result;
+            Message message = new Message();
+            message.what = 1000;
+            message.obj = result;
             tqHander.sendMessage(message);
 
         }
     };
 
 
-    Handler tqHander=new Handler(){
+    Handler tqHander = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1000:
                     try {
                         JSONObject obj = new JSONObject(msg.obj.toString());
@@ -1139,7 +1169,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Log.e("tianqi",e.getMessage());
+                        Log.e("tianqi", e.getMessage());
                     }
                     break;
             }
@@ -1147,9 +1177,8 @@ public class SmartHomeMain extends BaseMqttFragment {
     };
 
 
-
     private void setGps() {
-        city="北京";
+        city = "北京";
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 context).setTitle("是否去打开Gps已获取天气信息");
         builder.setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
@@ -1162,7 +1191,7 @@ public class SmartHomeMain extends BaseMqttFragment {
         });
 
         builder.setNegativeButton(
-                getString(R.string.alert_dialog_cancel),  new DialogInterface.OnClickListener() {
+                getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {

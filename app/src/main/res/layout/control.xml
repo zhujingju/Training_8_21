@@ -30,6 +30,17 @@
             android:layout_height="@dimen/dip_33.0"
             android:background="@drawable/fh"
             />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/control_sm"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:layout_centerVertical="true"
+            android:layout_width="@dimen/dip_25.0"
+            android:layout_height="@dimen/dip_25.0"
+            android:background="@drawable/scan_1080"
+            />
     </RelativeLayout>
     <RelativeLayout
 

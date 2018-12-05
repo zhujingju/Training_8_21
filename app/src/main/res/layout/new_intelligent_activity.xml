@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/app_bg"
+        >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0">
+        <ImageView
+            android:id="@+id/new_intelligent_fh"
+            android:background="@drawable/fh"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:layout_width="@dimen/dip_40.0"
+            android:layout_height="@dimen/dip_40.0" />
+
+        <TextView
+            android:id="@+id/new_intelligent_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:textSize="@dimen/dip_18.0"
+            android:text="@string/new_intelligent1"
+            />
+
+
+        <TextView
+            android:enabled="false"
+            android:id="@+id/new_intelligent_save"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dip_40.0"
+            android:textColor="@drawable/b_wc"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:textSize="@dimen/dip_20.0"
+            android:text="保存"
+            />
+
+    </RelativeLayout>
+
+        <ScrollView
+            android:layout_marginTop="@dimen/dip_10.0"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+
+            >
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/new_intelligent_if"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/tab_title_normal_color"
+                    android:textSize="@dimen/dip_18.0"
+                    android:text="@string/new_intelligent2"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:layout_marginBottom="@dimen/dip_20.0"
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#f0f0f0"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#f0f0f0"
+                    />
+                <com.grasp.training.swipemenulistview.SwipeMenuListView
+                    android:id="@+id/new_intelligent_condition_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cacheColorHint="#00000000"
+                    android:scrollbars="none"
+                    android:divider="#0000"
+                    android:background="#0000"
+                    android:listSelector="#00000000">
+
+                </com.grasp.training.swipemenulistview.SwipeMenuListView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#f0f0f0"
+                    />
+                <TextView
+                    android:id="@+id/new_intelligent_condition_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c_1eac94"
+                    android:textSize="@dimen/dip_20.0"
+                    android:text="@string/new_intelligent3"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:layout_marginBottom="@dimen/dip_20.0"
+                    android:layout_marginLeft="@dimen/dip_20.0"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/tab_title_normal_color"
+                    android:textSize="@dimen/dip_18.0"
+                    android:text="@string/new_intelligent4"
+                    android:layout_marginTop="@dimen/dip_40.0"
+                    android:layout_marginBottom="@dimen/dip_20.0"
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#f0f0f0"
+                    />
+
+                <com.grasp.training.swipemenulistview.SwipeMenuListView
+                    android:id="@+id/new_intelligent_carried_out_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cacheColorHint="#00000000"
+                    android:scrollbars="none"
+                    android:divider="#0000"
+                    android:background="#0000"
+                    android:listSelector="#00000000">
+
+                </com.grasp.training.swipemenulistview.SwipeMenuListView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#f0f0f0"
+                    />
+
+                <TextView
+                    android:id="@+id/new_intelligent_carried_out_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c_1eac94"
+                    android:textSize="@dimen/dip_20.0"
+                    android:text="@string/new_intelligent3"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:layout_marginBottom="@dimen/dip_20.0"
+                    android:layout_marginLeft="@dimen/dip_20.0"
+                    />
+
+
+
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+        <RelativeLayout
+            android:id="@+id/new_intelligent_time_layout"
+            android:layout_marginRight="@dimen/dip_10.0"
+            android:layout_marginLeft="@dimen/dip_20.0"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+            <TextView
+                android:id="@+id/new_intelligent_time_layout_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dip_18.0"
+                android:text="@string/new_intelligent5"
+                android:layout_centerVertical="true"
+                />
+
+            <LinearLayout
+
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/new_intelligent_time_layout_tv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dip_18.0"
+                    android:text="@string/new_intelligent6"
+                    android:layout_centerVertical="true"
+                    />
+                <ImageView
+                    android:id="@+id/new_intelligent_time_layout_im"
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/gengduo"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+   </LinearLayout>
+</android.support.constraint.ConstraintLayout>

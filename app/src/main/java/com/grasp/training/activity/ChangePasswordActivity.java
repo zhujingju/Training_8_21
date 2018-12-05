@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -51,7 +53,7 @@ public class ChangePasswordActivity extends BaseMqttActivity {
     LinearLayout personalLin3;
     @BindView(R.id.personal_xian3)
     TextView personalXian3;
-    private String myTopic = "iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
     private Context context;
 
     private String newPw;
@@ -89,8 +91,9 @@ public class ChangePasswordActivity extends BaseMqttActivity {
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     String pass = (String) SharedPreferencesUtils.getParam(context, "Login_pw", "");
                     oldPw=pass;
+
                     String input=personalEd2.getText().toString();
-//                    Log.d("qqq","setOnEditorActionListener");
+//                    Log.d("qqq","oldPw="+oldPw);
                     if (input.equals(pass) ) {
                         personalLin1.setVisibility(View.GONE);
                         personalLin2.setVisibility(View.VISIBLE);
@@ -257,8 +260,8 @@ public class ChangePasswordActivity extends BaseMqttActivity {
                     jsonObject.put("cmd", "updatepwd");
                     jsonObject.put("uname", MainActivity.NameUser);
                     jsonObject.put("clientid", Tool.getIMEI(getContext()));
-                    jsonObject.put("pwd",oldPw);
-                    jsonObject.put("newpwd",newPw);
+                    jsonObject.put("pwd",Tool.MD5(oldPw));
+                    jsonObject.put("newpwd",Tool.MD5(newPw));
                     String js = jsonObject.toString();
                     publish_String(js);
                 } catch (JSONException e) {

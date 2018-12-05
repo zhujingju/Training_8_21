@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.SharedPreferencesUtils;
@@ -62,11 +63,14 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
     ImageView euSysIm;
     @BindView(R.id.eu_layout4)
     RelativeLayout euLayout4;
+    @BindView(R.id.eu_fj_tv)
+    TextView fj_tv;
     private Context context;
     private String sid = "";
     private String type = "";
     private String myTopicding, myTopic;
     private String sys_ver = "", hard_ver = "";
+    private String room="";
 
     public static void starstEquipmentActivity(Context context, String sid, String type, String s_v, String h_v) {
         if (s_v.equals("") || h_v.equals("")) {
@@ -123,6 +127,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
             finish();
             return;
         }
+        push_room();
     }
 
     @Override
@@ -239,6 +244,21 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
 
                         }
 
+                    } else if (cmd.equals("queryroomname_ok")) {
+
+                        String uname = jsonObject.optString("uname", "");  //
+                        if (!uname.equals(MainActivity.NameUser)) {
+                            return;
+                        }
+                        String clientid = jsonObject.optString("clientid", "");
+                        if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                            return;
+                        }
+
+                        room = jsonObject.optString("roomname", "");  //
+                        handler.sendEmptyMessageDelayed(666, 500);
+
+
                     }
 
                 } catch (JSONException e) {
@@ -251,7 +271,7 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
 
     private boolean dian_layout4;
 
-    @OnClick({R.id.equipment_fh, R.id.eu_layout4, R.id.eu_layout5})
+    @OnClick({R.id.equipment_fh, R.id.eu_layout4, R.id.eu_layout5, R.id.eu_fj, R.id.eu_gd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.equipment_fh:
@@ -271,6 +291,12 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
                 bon=2;
                 showPro4();
                 putInitdata();
+                break;
+            case  R.id.eu_fj:
+                RoomActivity.startActivity(context,sid,room);
+                break;
+            case  R.id.eu_gd:
+
                 break;
         }
     }
@@ -338,8 +364,8 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
     private String updata_ver = "";
 
     public void isUpdata() {  //判断版本是否要更新
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too =  MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -356,7 +382,6 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
                     publish_String3(js, myTopicding_too);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -378,7 +403,6 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -399,7 +423,6 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -495,6 +518,9 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
                     }
                     Toast.makeText(context, "初始化成功", Toast.LENGTH_LONG).show();
                     break;
+                case 666:
+                    fj_tv.setText(room);
+                    break;
             }
         }
     };
@@ -533,4 +559,47 @@ public class EquipmentUpdataActivity extends BaseMqttActivity {  //版本更新�
         }
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if(resultCode==RESULT_OK){
+                    String name=data.getStringExtra("name");
+                    fj_tv.setText(name);
+                }
+                break;
+        }
+
+    }
+
+
+
+
+
+    public void push_room() {
+        final String myTopicding_too =  MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "queryroomname");
+                    jsonObject.put("sid", sid);
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("type",type);
+                    String js = jsonObject.toString();
+                    publish_String3(js, myTopicding_too);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
 }

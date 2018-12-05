@@ -796,7 +796,7 @@ public class SmartHome extends BaseMqttFragment {
                 case setONE:
                     Log.e("qqq", "isConnected()= " + isConnected());
                     if (isConnected()) {
-                        subscribe();
+//                        subscribe();
                         try {
 
                             //发送请求所有数据消息

@@ -46,7 +46,9 @@ import com.grasp.training.activity.FeedbackActivity;
 import com.grasp.training.activity.LoginActivity;
 import com.grasp.training.activity.SetPersonalActivity;
 import com.grasp.training.activity.SetPhoneActivity;
+import com.grasp.training.activity.VerifyPhoneActivity;
 import com.grasp.training.dialog.Dialog_touxiao_layout;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.AutoInstall;
 import com.grasp.training.tool.BaseMqttFragment;
 import com.grasp.training.tool.MyApplication;
@@ -126,7 +128,7 @@ public class Personal extends BaseMqttFragment {
         }
     }
 
-    private String myTopic = "iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
 
     @Override
     public String getMyTopic() {
@@ -358,7 +360,7 @@ public class Personal extends BaseMqttFragment {
                 break;
             case R.id.per_xgsj:
 //                SetPersonalActivity.stastSetPersonal(context, 1);
-                context.startActivity(new Intent(context, SetPhoneActivity.class));
+                context.startActivity(new Intent(context, VerifyPhoneActivity.class));
                 break;
             case R.id.personal_tx:
                 getTp();
@@ -539,7 +541,6 @@ public class Personal extends BaseMqttFragment {
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -561,7 +562,6 @@ public class Personal extends BaseMqttFragment {
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -572,7 +572,7 @@ public class Personal extends BaseMqttFragment {
     private String updata_url = "";
 
     public void push_val() { //检查版本更新
-        final String fs = "iotbroad/iot/software";
+        final String fs = MqttService.myTopicSoftware;
         subscribe(fs);
         new Thread(new Runnable() {
             @Override
@@ -589,7 +589,6 @@ public class Personal extends BaseMqttFragment {
                     publish_String2(js, fs);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();

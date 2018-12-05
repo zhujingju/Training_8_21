@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
@@ -39,7 +40,7 @@ public class SetPersonalActivity extends BaseMqttActivity {
     EditText spEd;
     @BindView(R.id.personal_lin1)
     LinearLayout personalLin1;  //修改昵称
-    private String myTopic = "iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
 
     private Context context;
     private String nc;

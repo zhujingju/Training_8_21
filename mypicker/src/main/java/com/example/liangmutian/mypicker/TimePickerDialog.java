@@ -61,15 +61,12 @@ public class TimePickerDialog extends Dialog {
 
         LoopView loopMin ,loopHour,loopS;
         TextView tv;
-        public void setText_sj(int h,int m,int s,boolean z_zt){
+        public void setText_sj(int h,int m,int s,String z_zt){
             loopHour.setCurrentItem(h);
             loopMin.setCurrentItem(m);
             loopS.setCurrentItem(s);
-            if(z_zt){
-                tv.setText("关");
-            }else{
-                tv.setText("开");
-            }
+                    tv.setText(z_zt);
+
 
         }
         public TimePickerDialog create() {

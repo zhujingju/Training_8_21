@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/app_bg"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_48.0">
+            <ImageView
+                android:id="@+id/device_status_fh"
+                android:background="@drawable/fh"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dip_10.0"
+                android:layout_width="@dimen/dip_40.0"
+                android:layout_height="@dimen/dip_40.0" />
+
+            <TextView
+                android:id="@+id/device_status_tv"
+                android:singleLine="true"
+                android:gravity="center"
+                android:layout_width="@dimen/dip_120.0"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:layout_centerInParent="true"
+                android:textSize="@dimen/dip_18.0"
+                />
+
+
+
+        </RelativeLayout>
+
+        <ListView
+            android:layout_margin="@dimen/dip_20.0"
+            android:id="@+id/device_status_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="#00000000"
+            android:scrollbars="none"
+            android:divider="#0000"
+            android:background="#0000"
+            android:listSelector="#00000000"></ListView>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

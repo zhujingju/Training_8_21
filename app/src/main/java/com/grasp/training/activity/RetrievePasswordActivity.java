@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.Tool;
 
@@ -39,7 +40,7 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
     TextInputLayout tilPassword;
     @BindView(R.id.rpa_b)
     Button rpaB;
-    private String myTopic = "iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
     private Context context;
     EditText pwdEditText;
     EditText phoneEditText;
@@ -85,8 +86,13 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
 //                }
                 if (s.length() == 0) {
                     userPhone.setErrorEnabled(true);//设置是否打开错误提示
-                    userPhone.setError("电话不能为空");//设置错误提示的信息
-                } else {
+                    userPhone.setError("手机号不能为空");//设置错误提示的信息
+                }
+                else if(s.length() != 11) {
+                    userPhone.setErrorEnabled(true);//设置是否打开错误提示
+                    userPhone.setError("手机号不正确");//设置错误提示的信息
+                }
+                else {
                     userPhone.setErrorEnabled(false);
                 }
             }
@@ -133,6 +139,8 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
         handler.removeMessages(1002);
         handler.removeMessages(1003);
         handler.removeMessages(666);
+        handler.removeMessages(2000);
+        handler.removeMessages(2001);
     }
 
     @Override
@@ -171,26 +179,44 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
                         return;
                     }
                     switch (cmd) {
-                        case "registered_ok":
-//                            handler.sendEmptyMessage(1002);
+                        case "retrievepwd_ok":
+                            handler.sendEmptyMessage(1002);
                             break;
 
-                        case "registered_failed":
-//                            String err = jsonObject.optString("err", "");
-//
-//                            int errCode = jsonObject.optInt("err", -1);
-//                            Message m = new Message();
-//                            m.what = 1003;
-//                            if (errCode == 1) {
-//                                m.obj = "用户名已存在";
-//                            } else if (errCode == 2) {
-//                                m.obj = "手机号已存在";
-//                            } else {
-//                                m.obj = err;
-//                            }
-//
-//                            handler.sendMessage(m);
+                        case "retrievepwd_failed":
+                            String err = jsonObject.optString("err", "");
 
+                            int errCode = jsonObject.optInt("errCode", -1);
+                            Message m = new Message();
+                            m.what = 1003;
+                            if (errCode == 6) {
+                                m.obj = "验证码错误";
+                            } else if (errCode == 7) {
+                                m.obj = "验证码超时";
+                            } else {
+                                m.obj = err;
+                            }
+
+                            handler.sendMessage(m);
+
+                            break;
+
+                        case "code_ok":
+                            handler.sendEmptyMessage(2000);
+                            break;
+                        case "code_failed":
+                            String err2 = jsonObject.optString("err", "");
+
+                            int errCode2 = jsonObject.optInt("errCode", -1);
+                            Message m2 = new Message();
+                            m2.what = 2001;
+                            if (errCode2 == 10) {
+                                m2.obj = "这个手机号未注册";
+                            } else {
+                                m2.obj = err2;
+                            }
+
+                            handler.sendMessage(m2);
                             break;
 
                     }
@@ -205,7 +231,7 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
 
     }
 
-    private int num_time=0;
+    private int num_time = 0;
 
     @OnClick({R.id.rpa_fh, R.id.useryzm_b, R.id.rpa_b})
     public void onViewClicked(View view) {
@@ -214,30 +240,48 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
                 finish();
                 break;
             case R.id.useryzm_b:
-                if(num_time==0){
+                if (num_time == 0) {
+                    String phone = phoneEditText.getText().toString();
+                    if (!phone.equals("")) {
+                        if (phone.length() == 11) {
+                            push_yzm(phone);
+                        } else {
+                            Toast.makeText(getContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "手机号不能为空", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     useryzmB.setClickable(false);
                     useryzmB.setText("60s");
-                    num_time=60;
-                    handler.sendEmptyMessageDelayed(666,1000);
+                    num_time = 60;
+                    handler.sendEmptyMessageDelayed(666, 1000);
                 }
                 break;
             case R.id.rpa_b:
 
-                String phone=phoneEditText.getText().toString();
-                String yzm=useryzmEd.getText().toString();
-                String newPw=pwdEditText.getText().toString();
+                String phone = phoneEditText.getText().toString();
+                String yzm = useryzmEd.getText().toString();
+                String newPw = pwdEditText.getText().toString();
 
-                if(phone.equals("")){
-                    Toast.makeText(context,"手机号不能为空",Toast.LENGTH_LONG).show();
-                }else{
-                    if(yzm.equals("")){
-                        Toast.makeText(context,"验证码不能为空",Toast.LENGTH_LONG).show();
-                    }else{
-                        if(newPw.equals("")){
-                            Toast.makeText(context,"新密码不能为空",Toast.LENGTH_LONG).show();
-                        }else{
+                if (phone.equals("")) {
+                    Toast.makeText(context, "手机号不能为空", Toast.LENGTH_LONG).show();
+                } else {
+                    if (yzm.equals("")) {
+                        Toast.makeText(context, "验证码不能为空", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (newPw.equals("")) {
+                            Toast.makeText(context, "新密码不能为空", Toast.LENGTH_LONG).show();
+                        } else {
                             //要改
-                            push_name(phone,yzm,newPw);
+                            if (phone.length() == 11) {
+                            } else {
+                                Toast.makeText(getContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            push_name(phone, yzm, newPw);
+                            sowPhro();
                         }
                     }
                 }
@@ -245,9 +289,24 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
         }
     }
 
+    public void push_yzm(String phone) {
 
+        try {
 
-    public void push_name(final String phone,final String yzm,final String newPw) { //修改名称
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "code");
+            jsonObject.put("phone", phone);
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
+            jsonObject.put("codeflag", 1);
+            String js = jsonObject.toString();
+            publish_String(js);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void push_name(final String phone, final String yzm, final String newPw) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -255,14 +314,11 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
 
                     //发送请求所有数据消息
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("cmd", "updateuser");
-                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("cmd", "retrievepwd");
                     jsonObject.put("clientid", Tool.getIMEI(getContext()));
-                    JSONObject jsonObjects = new JSONObject();
-                    jsonObjects.put("phone", phone);
-
-                    jsonObject.put("modify", jsonObjects);
-
+                    jsonObject.put("phone", phone);
+                    jsonObject.put("code", yzm);
+                    jsonObject.put("newpwd", Tool.MD5(newPw));
 
                     String js = jsonObject.toString();
                     publish_String(js);
@@ -273,11 +329,12 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
         }).start();
 
     }
+
     private ProgressDialog dialog;
 
-    public void showPro() {
+    public void sowPhro() {
         dialog = new ProgressDialog(context);
-        dialog.setMessage("更改中...");
+        dialog.setMessage("修改中...");
         dialog.setCancelable(true);
         dialog.show();
     }
@@ -288,14 +345,14 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 1000:
+                case 1002:
                     if (dialog != null) {
                         dialog.dismiss();
                     }
                     Toast.makeText(context, "修改成功！", Toast.LENGTH_LONG).show();
                     finish();
                     break;
-                case 1001:
+                case 1003:
                     if (dialog != null) {
                         dialog.dismiss();
                     }
@@ -304,17 +361,27 @@ public class RetrievePasswordActivity extends BaseMqttActivity {
 
                 case 666:
                     num_time--;
-                    if(num_time!=0){
+                    if (num_time != 0) {
 
-                        useryzmB.setText(num_time+"s");
-                        handler.sendEmptyMessageDelayed(666,1000);
-                    }else{
+                        useryzmB.setText(num_time + "s");
+                        handler.sendEmptyMessageDelayed(666, 1000);
+                    } else {
                         useryzmB.setClickable(true);
                         useryzmB.setText("获取验证码");
                     }
 
 
+                    break;
 
+                case 2000:
+                    Toast.makeText(context, "获取验证码成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2001:
+                    handler.removeMessages(666);
+                    num_time=0;
+                    useryzmB.setClickable(true);
+                    useryzmB.setText("获取验证码");
+                    Toast.makeText(context, "获取验证码失败，" + msg.obj.toString(), Toast.LENGTH_SHORT).show();
                     break;
             }
         }

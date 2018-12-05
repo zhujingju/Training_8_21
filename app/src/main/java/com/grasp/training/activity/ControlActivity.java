@@ -1,23 +1,28 @@
 package com.grasp.training.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +34,7 @@ import com.Player.Source.TAlarmFrame;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.Umeye_sdk.Constants;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.MyApplication;
@@ -101,7 +107,7 @@ public class ControlActivity extends BaseMqttActivity {
     private PlayerCore pc;
     private Context context;
     private String Uid="";
-    private String myTopic = "iotbroad/iot/robot";
+    private String myTopic = MqttService.myTopicRobot;
     private IntentFilter intentFilter;
     private NetworkChangeReceiver networkChangeReceiver;
     @Override
@@ -158,10 +164,18 @@ public class ControlActivity extends BaseMqttActivity {
 
     }
 
-
-    @OnClick({R.id.control_fh,R.id.control_sx, R.id.control_stop})
+    private final int API_OLD = 0;
+    private final int API_NEW = 1;
+    @OnClick({R.id.control_sm,R.id.control_fh,R.id.control_sx, R.id.control_stop})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.control_sm: //扫码登录
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    startScan(API_OLD);
+                } else {
+                    startScan(API_NEW);
+                }
+                break;
             case R.id.control_fh:
                 finish();
                 break;
@@ -189,6 +203,21 @@ public class ControlActivity extends BaseMqttActivity {
                 break;
         }
     }
+
+
+    private void startScan(int api) {
+        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (permissionState == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(this, ScanActivity.class);
+            intent.putExtra("newAPI", api == API_NEW);
+//            intent.putExtra("codeType", getCodeType());
+            startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, api);
+        }
+    }
+
+
     private boolean ping_zt=false;
     private String mIp="";
 //    private Process process;

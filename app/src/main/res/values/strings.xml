@@ -137,13 +137,17 @@
     <string name="personal_1">更改昵称</string>
     <string name="personal_3">请输入旧密码：</string>
     <string name="personal_4">输入新密码：</string>
-    <string name="personal_5">确认旧密码：</string>
+    <string name="personal_5">确认新密码：</string>
     <string name="personal_6">退出登录</string>
     <string name="personal_7">昵称:</string>
     <string name="personal_8">请点击软键盘的确认</string>
     <string name="personal_9">检查更新</string>
     <string name="personal_10">修改手机号</string>
+    <string name="personal_11">验证信息</string>
+    <string name="personal_12">机器人扫码登录</string>
 
+    <string name="eu_gd">更多设置</string>
+    <string name="eu_tv">所属房间</string>
     <string name="eu_tv1">设备类型</string>
     <string name="eu_tv2">软件版本</string>
     <string name="eu_tv3">硬件版本</string>
@@ -152,4 +156,50 @@
 
     <string name="light_a_tv1">亮度</string>
     <string name="light_a_tv2">色温</string>
+    <string name="tips_scan">将二维码/条码放入框内，即可自动扫描</string>
+    <string name="tips_scan_debug">解析图像每秒%1$d帧，平均耗时%2$dms</string>
+    <string name="scan">扫码</string>
+    <string name="scan_debug">扫码(DEBUG)</string>
+    <string name="flash_open">开启闪光灯</string>
+    <string name="flash_close">关闭闪光灯</string>
+
+    <string name="condition">选择条件</string>
+    <string name="condition1">如果满足某个条件时</string>
+    <string name="condition2">比如：有人移动时</string>
+    <string name="condition3">通用</string>
+    <string name="condition4">手动执行</string>
+    <string name="condition5">室外天气发生变化时</string>
+    <string name="condition6">智能设备</string>
+    <string name="condition7">筛选</string>
+    <string name="condition8">定时</string>
+
+
+    <string name="carride_out1">选择执行结果</string>
+    <string name="carride_out2">如果条件满足时就做什么</string>
+    <string name="carride_out3">比如：打开主卧灯</string>
+    <string name="carride_out4">执行某条智能</string>
+    <string name="carride_out5">向手机发送通知</string>
+    <string name="carride_out6">延时</string>
+
+
+    <string name="new_intelligent1">新建智能</string>
+    <string name="new_intelligent2">☰ 如果</string>
+    <string name="new_intelligent3">继续添加</string>
+    <string name="new_intelligent4">→ 就执行</string>
+    <string name="new_intelligent5">生效时间段</string>
+    <string name="new_intelligent6">全天</string>
+
+    <string name="outdoor_weather">室外天气</string>
+    <string name="outdoor_weather1">日出/日落</string>
+    <string name="outdoor_weather2">室外温度</string>
+    <string name="outdoor_weather3">室外湿度</string>
+    <string name="outdoor_weather4">室外PM2.5</string>
+    <string name="outdoor_weather7">日出时</string>
+    <string name="outdoor_weather8">日落时</string>
+    <string name="outdoor_weather9">高于指定温度</string>
+    <string name="outdoor_weather10">低于指定温度</string>
+    <string name="outdoor_weather11">高于指定湿度</string>
+    <string name="outdoor_weather12">低于指定湿度</string>
+    <string name="outdoor_weather13">高于指定浓度</string>
+    <string name="outdoor_weather14">低于指定浓度</string>
 </resources>

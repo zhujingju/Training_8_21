@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.Tool;
 
@@ -41,7 +42,7 @@ public class SetPhoneActivity extends BaseMqttActivity {
     @BindView(R.id.rpa_b)
     Button rpaB;//更改手机号
 
-    private String myTopic = "iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
 
     private Context context;
     EditText phoneEditText;
@@ -85,8 +86,13 @@ public class SetPhoneActivity extends BaseMqttActivity {
 //                }
                 if (s.length() == 0) {
                     userPhone.setErrorEnabled(true);//设置是否打开错误提示
-                    userPhone.setError("电话不能为空");//设置错误提示的信息
-                } else {
+                    userPhone.setError("手机号不能为空");//设置错误提示的信息
+                }
+                else if(s.length() != 11) {
+                    userPhone.setErrorEnabled(true);//设置是否打开错误提示
+                    userPhone.setError("手机号不正确");//设置错误提示的信息
+                }
+                else {
                     userPhone.setErrorEnabled(false);
                 }
             }
@@ -95,6 +101,8 @@ public class SetPhoneActivity extends BaseMqttActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+
+
 
     }
 
@@ -136,18 +144,49 @@ public class SetPhoneActivity extends BaseMqttActivity {
                         return;
                     }
                     switch (cmd) {
-                        case "updateuser_ok":
+                        case "updatephone_ok":
 
                             handler.sendEmptyMessageDelayed(1000, 500);
 
                             break;
-                        case "updateuser_failed":
+                        case "updatephone_failed":
                             String err = jsonObject.getString("err");
+                            int errCode = jsonObject.optInt("errCode", -1);
+
                             Message m = new Message();
                             m.what = 1001;
-                            m.obj = err;
+                            if (errCode == 6) {
+                                m.obj = "验证码错误";
+                            } else  if (errCode == 7) {
+                                m.obj = "验证码超时";
+                            }
+                            else  if (errCode == 8) {
+                                m.obj = "这个手机号已注册";
+                            }
+                            else{
+                                m.obj = err;
+                            }
                             handler.sendMessageDelayed(m, 500);
 
+                            break;
+                        case "codechangephoneconfirmnewphone_ok":
+                            handler.sendEmptyMessage(2000);
+                            break;
+                        case "codechangephoneconfirmnewphone_failed":
+                            String err2 = jsonObject.optString("err", "");
+
+                            int errCode2 = jsonObject.optInt("errCode", -1);
+                            Message m2 = new Message();
+                            m2.what = 2001;
+                            if (errCode2 == 10) {
+                                m2.obj = "这个手机号未注册";
+                            } else  if (errCode2 == 8) {
+                                m2.obj = "这个手机号已注册";
+                            }else{
+                                m2.obj=err2;
+                            }
+
+                            handler.sendMessage(m2);
                             break;
                     }
                 } catch (JSONException e) {
@@ -187,10 +226,19 @@ public class SetPhoneActivity extends BaseMqttActivity {
                         useryzmB.setClickable(true);
                         useryzmB.setText("获取验证码");
                     }
-
-
-
                     break;
+                case 2000:
+                    Toast.makeText(context, "获取验证码成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2001:
+                    handler.removeMessages(666);
+                    num_time=0;
+                    useryzmB.setClickable(true);
+                    useryzmB.setText("获取验证码");
+                    Toast.makeText(context, "获取验证码失败，" + msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                    break;
+
+
             }
         }
     };
@@ -201,10 +249,12 @@ public class SetPhoneActivity extends BaseMqttActivity {
         handler.removeMessages(1000);
         handler.removeMessages(1001);
         handler.removeMessages(666);
+        handler.removeMessages(2000);
+        handler.removeMessages(2001);
     }
 
 
-    public void push_name(final String phone,final String yzm) { //修改名称
+    public void push_name(final String phone,final String yzm) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -212,13 +262,11 @@ public class SetPhoneActivity extends BaseMqttActivity {
 
                     //发送请求所有数据消息
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("cmd", "updateuser");
+                    jsonObject.put("cmd", "updatephone");
                     jsonObject.put("uname", MainActivity.NameUser);
                     jsonObject.put("clientid", Tool.getIMEI(getContext()));
-                    JSONObject jsonObjects = new JSONObject();
-                    jsonObjects.put("phone", phone);
-
-                    jsonObject.put("modify", jsonObjects);
+                    jsonObject.put("phone", phone);
+                    jsonObject.put("code", yzm);
 
 
                     String js = jsonObject.toString();
@@ -250,6 +298,18 @@ public class SetPhoneActivity extends BaseMqttActivity {
                 break;
             case R.id.useryzm_b:
                 if(num_time==0){
+                    String phone = phoneEditText.getText().toString();
+                    if (!phone.equals("")) {
+                        if (phone.length() == 11) {
+                            push_yzm(phone);
+                        } else {
+                            Toast.makeText(getContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "手机号不能为空", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     useryzmB.setClickable(false);
                     useryzmB.setText("60s");
                     num_time=60;
@@ -262,15 +322,40 @@ public class SetPhoneActivity extends BaseMqttActivity {
                 if(phone.equals("")){
                     Toast.makeText(context,"手机号不能为空",Toast.LENGTH_LONG).show();
                 }else{
-                    if(yzm.equals("")){
-                        Toast.makeText(context,"验证码不能为空",Toast.LENGTH_LONG).show();
-                    }else{
-                        showPro();
-                        push_name(phone,yzm);
-                    }
+                        if(yzm.equals("")){
+                            Toast.makeText(context,"验证码不能为空",Toast.LENGTH_LONG).show();
+                        }else{
+                            if (phone.length() == 11) {
+                            } else {
+                                Toast.makeText(getContext(), "请输入正确的手机号", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            showPro();
+                            push_name(phone,yzm);
+                        }
+
+
                 }
 
                 break;
         }
     }
+
+    public void push_yzm(String phone) {
+
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "codechangephoneconfirmnewphone");
+            jsonObject.put("newphone", phone);
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
+            jsonObject.put("uname", MainActivity.NameUser);
+            String js = jsonObject.toString();
+            publish_String(js);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

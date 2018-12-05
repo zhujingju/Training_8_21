@@ -11,9 +11,12 @@
     <color name="hui">#6793e4</color>
     <color name="hu2">#4cffffff</color>
 
-    <color name="app_color">#2f54e9</color>
+    <color name="app_color">#005bea</color>
     <color name="c_b32f54e9">#b32f54e9</color>
 
+    <color name="colorWindowBackground">#F4F4F4</color>
+    <color name="gray_translucent">#80888888</color>
+    <color name="gray_light_lv5">#DADADA</color>
     <color name="main_hui">#3f000000</color>
 
     <color name="app1">#000000</color>
@@ -37,9 +40,15 @@
     <drawable name="c1">#ff5913</drawable>
 
 
+    <drawable name="b2">#ffffff</drawable>
+    <drawable name="b3">#99ffffff</drawable>
+    <drawable name="b1">#66ffffff</drawable>
+
+
     <color name="tab_title_normal_color">#a2a2a2</color>
     <color name="tab_title_pressed_color">#2b2b2b</color>
 
     <color name="c_dfdfdf">#dfdfdf</color>
-    c_dfdfdf
+
+    <color name="c_1eac94" >#1eac94</color>
 </resources>

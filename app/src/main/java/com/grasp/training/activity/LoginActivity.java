@@ -23,6 +23,7 @@ import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.Umeye_sdk.Constants;
 import com.grasp.training.Umeye_sdk.ShowProgress;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseActivity;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.CreateSecretKey;
@@ -87,7 +88,7 @@ public class LoginActivity extends BaseMqttActivity {
         pwdEditText = tilPassword.getEditText();
 
         userEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_name,""));
-        pwdEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_pw,""));
+//        pwdEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_pw,""));
         checkBox.setChecked((Boolean) SharedPreferencesUtils.getParam(getContext(),c_zt,false));
         initPlay();
     }
@@ -168,8 +169,8 @@ public class LoginActivity extends BaseMqttActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_wjmm://忘记密码
-                Toast.makeText(getContext(),"此功能未上线",Toast.LENGTH_LONG).show();
-//                startActivity(new Intent(LoginActivity.this, RetrievePasswordActivity.class));
+//                Toast.makeText(getContext(),"此功能未上线",Toast.LENGTH_LONG).show();
+                startActivity(new Intent(LoginActivity.this, RetrievePasswordActivity.class));
                 break;
             case R.id.login_im:
 //                ha.sendEmptyMessageDelayed(1002,0);
@@ -273,7 +274,7 @@ public class LoginActivity extends BaseMqttActivity {
 
 
 
-    private String myTopic ="iotbroad/iot/user";
+    private String myTopic = MqttService.myTopicUser;
 
 
     public void push( String uname,String pwd) {
@@ -284,7 +285,8 @@ public class LoginActivity extends BaseMqttActivity {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("cmd", "login");
             jsonObject.put("uname", uname);
-            jsonObject.put("pwd", pwd);
+
+            jsonObject.put("pwd", Tool.MD5(pwd));
             jsonObject.put("clientid", Tool.getIMEI(getContext()));
             String js = jsonObject.toString();
             publish_String(js);
@@ -318,6 +320,7 @@ public class LoginActivity extends BaseMqttActivity {
                     ha.removeMessages(1000);
                     ha.removeMessages(1003);
                     login.setText("LOGIN");
+                    SharedPreferencesUtils.setParam(getContext(), "Login_pw", pw);
                     Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
@@ -376,14 +379,14 @@ public class LoginActivity extends BaseMqttActivity {
                         case "login_ok":
                             boolean zt= checkBox.isChecked();
                             SharedPreferencesUtils.setParam(getContext(),c_zt,zt);
-                            if(zt){
+//                            if(zt){
                                 SharedPreferencesUtils.setParam(getContext(),c_name,name);
-                                SharedPreferencesUtils.setParam(getContext(),c_pw,pw);
+//                                SharedPreferencesUtils.setParam(getContext(),c_pw,pw);
 
-                            }else{
-                                SharedPreferencesUtils.setParam(getContext(),c_name,"");
-                                SharedPreferencesUtils.setParam(getContext(),c_pw,"");
-                            }
+//                            }else{
+//                                SharedPreferencesUtils.setParam(getContext(),c_name,"");
+//                                SharedPreferencesUtils.setParam(getContext(),c_pw,"");
+//                            }
 
                             String mName = jsonObject.optString("uname", "");
                             String nickname = jsonObject.optString("nickname", "");
@@ -396,7 +399,7 @@ public class LoginActivity extends BaseMqttActivity {
                             break;
                         case "login_failed":
                             String err = jsonObject.optString("err", "");
-                            int errCode = jsonObject.optInt("err", -1);
+                            int errCode = jsonObject.optInt("errCode", -1);
                             Message m=new Message();
                             m.what=1003;
                             if(errCode==4){

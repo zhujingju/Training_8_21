@@ -42,6 +42,7 @@ import com.grasp.training.tool.MyApplication;
 import com.grasp.training.tool.SharedPreferencesUtils;
 import com.grasp.training.tool.Tool;
 import com.grasp.training.tool.Utility;
+import com.grasp.training.tool.myActivityManage;
 import com.grasp.training.view.MyViewPager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -81,7 +82,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //    @BindView(R.id.main_gl_frame)
 //    FrameLayout mainGlFrame;
 
-    public static String NameUser = "";  //Uid
+    public static String NameUser ;  //Uid
     public static String Mode_kx = "MODEKX";
     public static String Mode_fm = "MODEFM";
     public static String Mode_zdy = "MODEZDY";
@@ -119,16 +120,14 @@ public class MainActivity extends BaseMqttFragmentActivity {
     @Override
     public void initData() {
         ButterKnife.bind(this);
+        myActivityManage.removeA(this);
         activity = this;
         MqttService.appZt=true;
     }
 
     @Override
     public void initView() {
-        MqttService.ip_zt = putMap(MqttService.MqttService1);
-        MqttService.sid_ip = putMap(MqttService.MqttService2);
-        Log.e("qqq", "ip.s=" + MqttService.ip_zt.size() + " " + MqttService.ip_zt);
-        Log.e("qqq", "sid_ip.s=" + MqttService.sid_ip.size() + "  " + MqttService.sid_ip);
+
         NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
         if(NameUser.equals("")){
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -238,7 +237,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //        //提交事务
 //        transaction.commit();
 //    }
-    private String myTopic = "iotbroad/iot/device";
+    private String myTopic = MqttService.myTopicDevice;
 
     @Override
     public String getMyTopic() {

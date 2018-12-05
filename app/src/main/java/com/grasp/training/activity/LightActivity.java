@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.Tool;
@@ -823,8 +824,8 @@ public class LightActivity extends BaseTcpMqttActpvity {
 
     public void push_name() { //修改名称
 
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too = MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {

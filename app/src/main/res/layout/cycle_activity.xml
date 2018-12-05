@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_bg"
+    android:orientation="vertical"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_48.0">
+        <ImageView
+            android:onClick="fh"
+            android:id="@+id/cycle_fh"
+            android:background="@drawable/fh"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:layout_width="@dimen/dip_40.0"
+            android:layout_height="@dimen/dip_40.0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:layout_centerInParent="true"
+            android:textSize="@dimen/dip_18.0"
+            android:text="重复开关设置"
+            />
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dip_40.0"
+            android:textColor="#fff"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_20.0"
+            android:textSize="@dimen/dip_20.0"
+            android:text="保存"
+            android:id="@+id/cycle_bc"
+            />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_marginRight="@dimen/dip_10.0"
+        android:layout_marginLeft="@dimen/dip_10.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_18.0"
+                android:text="标签"
+                android:layout_centerVertical="true"
+                />
+            <LinearLayout
+                android:id="@+id/add_timing_layout1"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:id="@+id/add_timing_tv1"
+                    android:textColor="#f0f0f0"
+                    android:textSize="@dimen/dip_14.0"
+                    android:text="定时"
+                    android:gravity="right"
+                    android:layout_centerVertical="true"
+                    android:layout_width="@dimen/dip_100.0"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/gengduo"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+        <TextView
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/dip_10.0"
+            android:id="@+id/cycle_layout2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+            <TextView
+                android:id="@+id/add_timing_cf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_18.0"
+                android:text="重复"
+                android:layout_centerVertical="true"
+                />
+
+            <LinearLayout
+
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/cycle_tv2"
+                    android:textColor="#f0f0f0"
+                    android:textSize="@dimen/dip_16.0"
+                    android:text="关闭"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/gengduo"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+
+
+        <RelativeLayout
+            android:id="@+id/cycle_layout3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_18.0"
+                android:text="开启间隔"
+                android:layout_centerVertical="true"
+                />
+            <LinearLayout
+
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/cycle_tv3"
+                    android:textColor="#f0f0f0"
+                    android:textSize="@dimen/dip_16.0"
+                    android:text="1s"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/gengduo"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+
+        <RelativeLayout
+            android:id="@+id/cycle_layout4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dip_50.0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="@dimen/dip_18.0"
+                android:text="关闭间隔"
+                android:layout_centerVertical="true"
+                />
+            <LinearLayout
+
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/cycle_tv4"
+                    android:textColor="#f0f0f0"
+                    android:textSize="@dimen/dip_16.0"
+                    android:text="1s"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/gengduo"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

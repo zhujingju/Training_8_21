@@ -66,8 +66,8 @@ import java.util.Random;
 
 public class SearchActivity extends BaseMqttToActivity {
 
-    private String myTopicding = "iotbroad/iot/device";
-    private String myTopic = "iotbroad/iot/device";
+    private String myTopicding =  MqttService.myTopicDevice;
+    private String myTopic =  MqttService.myTopicDevice;
     private Context context;
     private ListView listview;
     private List<Goods> list;
@@ -330,7 +330,7 @@ public class SearchActivity extends BaseMqttToActivity {
                     if (showPro_zt1) {  //取消连接
                         return;
                     }
-                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+//                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
 //                    if(zt){
                     handler.sendEmptyMessageDelayed(202, 2000); //判断是否连上
 //                    }else{
@@ -399,8 +399,8 @@ public class SearchActivity extends BaseMqttToActivity {
                                 }
                             }
                             if (isConnected()) {
-                                myTopicding = "iotbroad/iot/device";
-                                myTopic = "iotbroad/iot/device";
+                                myTopicding =  MqttService.myTopicDevice;
+                                myTopic =  MqttService.myTopicDevice;
                                 subscribe();
                                 push_add(sid, type);
                             } else {

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.liangmutian.mypicker.TimePickerDialog;
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.Tool;
@@ -39,8 +40,13 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     private LinearLayout dsLayout;
     private ImageView ds_del;
     private TextView ds_tv,mc_tv,tv_sys;
-    private ImageView im,tv_sys_im;
+    private ImageView im,tv_sys_im,im_sx;
     private String sys_ver="",hard_ver = "";
+
+    private TextView tv_ip;
+    private TextView tv_gl;
+    private double w=0;
+    private int power=0;
 
     public static void starstSockeActivity(Context context, String sid,String dname) {
         Intent in = new Intent(context, SockeActivity.class);
@@ -77,6 +83,9 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
         mc_tv=(TextView) findViewById(R.id.socke_tv);
         tv_sys=(TextView) findViewById(R.id.socke_sys);
         tv_sys_im = (ImageView) findViewById(R.id.socke_sys_im);
+        tv_ip=(TextView) findViewById(R.id.socke_ip);
+        im_sx = (ImageView) findViewById(R.id.socke_xh);
+        tv_gl=(TextView) findViewById(R.id.socke_gl);
     }
 
     @Override
@@ -95,6 +104,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
         im.setOnClickListener(this);
         mc_tv.setOnClickListener(this);
         tv_sys.setOnClickListener(this);
+        im_sx.setOnClickListener(this);
     }
 
     @Override
@@ -176,7 +186,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                             me.obj = data;
                             handler.removeMessages(2000);
                             handler.removeMessages(2001);
-                            handler.sendMessage(me);
+                            handler.sendMessageDelayed(me,500);
                             break;
 
                         case "wifi_socket_count_down_act":
@@ -186,6 +196,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                             me.obj = data;
                             handler.removeMessages(2000);
                             handler.removeMessages(2001);
+
                             handler.sendMessage(me);
                             break;
 //                        case "wifi_socket_read_ack":
@@ -227,6 +238,21 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                             dname= jsonObject.optString("dname", "");
                             handler.sendEmptyMessageDelayed(233,500);
 
+                            break;
+                        case "wifi_equipment_ping_ack":
+                            String ip = jsonObject.optString("ip", "");  //
+                            Message me2=new Message();
+                            me2.what=1666;
+                            me2.obj=ip;
+                            handler.sendMessage(me2);
+                            break;
+                        case "wifi_socket_power_check":
+                            power = jsonObject.optInt("power", -1);  //
+                            w=jsonObject.optInt("w", -1);
+                            Message me3=new Message();
+                            me3.what=1667;
+                            me3.obj="功率："+power+"w   用电量:"+(w/1000)+"kwh";
+                            handler.sendMessage(me3);
                             break;
 
 
@@ -343,6 +369,9 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     break;
 
                 case 2000:
+                    if(dialog!=null){
+                        dialog.dismiss();
+                    }
                     String time[] = msg.obj.toString().split(",");
                     num = Integer.valueOf(time[0]) * 60 * 60 + Integer.valueOf(time[1]) * 60 + Integer.valueOf(time[2]);
                     Log.e("qqq", "time=" + num);
@@ -449,6 +478,13 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     } else {
                     }
                     break;
+
+                case 1666:
+                    tv_ip.setText(msg.obj.toString());
+                    break;
+                case 1667:
+                    tv_gl.setText(msg.obj.toString());
+                    break;
             }
         }
     };
@@ -457,6 +493,8 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
 
     @Override
     protected void onDestroy() {
+        handler.removeMessages(1666);
+        handler.removeMessages(1667);
         handler.removeMessages(1000);
         handler.removeMessages(2000);
         handler.removeMessages(2001);
@@ -502,6 +540,10 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.socke_xh://循环
+                CycleActivity.strateCycleActivity(context,sid,"socket");
+
+                break;
             case R.id.socke_sys://更新检查
 //                if(!sys_ver.equals("")){
 //                    if(updata_zt){
@@ -550,6 +592,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
 
                 break;
             case R.id.search_ds_del:
+                showPro2();
                 push_djs_del();
                 break;
 
@@ -559,6 +602,17 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
         }
     }
 
+
+    private ProgressDialog dialog;
+
+    public void showPro2() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("删除倒计时中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
     public void put_sz(View v){
         EquipmentUpdataActivity.starstEquipmentActivity(context,sid,"socket",sys_ver,hard_ver);
     }
@@ -621,8 +675,13 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
 
         }
 
-
-        builder.setText_sj(h, m, s, search_zt);
+        String ss="";
+        if(search_zt){
+            ss="开";
+        }else{
+            ss="关";
+        }
+        builder.setText_sj(h, m, s, ss);
         timeDialog.show();
 
     }
@@ -714,8 +773,8 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
 
     public void push_name() { //修改名称
 
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too =  MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -740,7 +799,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     }
 
 
-    private ProgressDialog dialog;
 
     public void showPro() {
         dialog = new ProgressDialog(context);
@@ -770,8 +828,8 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     }
 
     public void isUpdata(final String sys) {  //判断版本是否要更新
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too = MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {

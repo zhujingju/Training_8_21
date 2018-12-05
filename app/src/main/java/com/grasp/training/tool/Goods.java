@@ -10,7 +10,24 @@ public class Goods {
     private String type;
     private boolean jh_zt;  //设备是否在线
     private String sk1=null;
+    private String weburl;
+    private String room;  //所属房间
 
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public String getWeburl() {
+        return weburl;
+    }
+
+    public void setWeburl(String weburl) {
+        this.weburl = weburl;
+    }
 
     public String getSk1() {
         return sk1;

@@ -2,6 +2,7 @@ package com.grasp.training.tool;
 
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,17 @@ public class myActivityManage {       //页面管理类
     	ls.clear();
     }
     public static void remove(Activity a){          //删除当前
-    	a.finish();
-    	ls.remove(a);
+		for(Activity al:ls){
+			if(a==al){
+				a.finish();
+				ls.remove(a);
+				Log.e("qqq","myActivityManage");
+				return;
+			}
+		}
     }
+
+	public static void removeA(Activity a){          //删除当前
+		ls.remove(a);
+	}
 }

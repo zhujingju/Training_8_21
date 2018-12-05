@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseTcpMqttActpvity;
 import com.grasp.training.tool.EquipmentData;
@@ -434,7 +435,6 @@ public class SwitchActivity extends BaseTcpMqttActpvity {
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -469,8 +469,8 @@ public class SwitchActivity extends BaseTcpMqttActpvity {
 
     public void push_name() { //修改名称
 
-        final String myTopicding_too = "iotbroad/iot/device";
-        subscribe(myTopicding_too);
+        final String myTopicding_too = MqttService.myTopicDevice;
+//        subscribe(myTopicding_too);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -487,7 +487,6 @@ public class SwitchActivity extends BaseTcpMqttActpvity {
                     publish_String3(js, myTopicding_too);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
