@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -72,4 +77,37 @@
 
 
     </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/smart_device_sx_lin"
+            android:paddingLeft="@dimen/dip_5.5"
+            android:paddingRight="@dimen/dip_5.5"
+            android:layout_marginTop="@dimen/dip_60.0"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dip_10.0"
+            android:gravity="center_vertical"
+            android:background="@drawable/kuang_l_2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dip_40.0"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:singleLine="true"
+                android:maxWidth="@dimen/dip_60.0"
+                android:textSize="@dimen/dip_14.0"
+                android:id="@+id/smart_device_sx_tv"
+                android:text="默认"
+                android:textColor="@color/app_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:background="@drawable/zhu_del"
+                android:layout_width="@dimen/dip_15.0"
+                android:layout_height="@dimen/dip_15.0" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

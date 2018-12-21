@@ -575,21 +575,18 @@ public class Robot extends BaseMqttFragment {
 //Intent intent = getIntent();   // data 本身就是一个 Inten  所以不需要再new了 直接调用里面的方法就行了
             String s = data.getStringExtra("mResult");
             Log.e("qqq","mResult="+s);
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(s);
-                String cmd = jsonObject.optString("cmd");
-                String parameter = jsonObject.optString("parameter");
-                if(cmd.equals("qr_code_robot")){
-                    if(!parameter.equals("")){
-                        clientidRobot=parameter;
-                        denl();
-                    }
+            String ss[]=s.split("\\?");
+            Log.e("qqq","mResult="+s +"ss="+ss.length);
+            if(ss.length==2){
+                String sss[]=ss[1].split("=");
+                if(sss.length==2){
+                    clientidRobot=sss[1];
+                    denl();
                 }else{
                     Toast.makeText(context,"扫码到："+s,Toast.LENGTH_LONG).show();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            }else{
                 Toast.makeText(context,"扫码到："+s,Toast.LENGTH_LONG).show();
             }
 

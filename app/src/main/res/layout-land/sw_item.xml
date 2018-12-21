@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dip_60.0"
+    android:gravity="center_vertical">
+    <RelativeLayout
+        android:layout_margin="@dimen/dip_5.0"
+        android:background="@drawable/kuang_bai"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_60.0">
+
+        <ImageView
+            android:background="@drawable/icon_image_jiqiren_normal"
+            android:layout_marginLeft="@dimen/dip_37.0"
+            android:layout_centerVertical="true"
+            android:layout_width="@dimen/dip_40.0"
+            android:layout_height="@dimen/dip_40.0" />
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/ybd_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/c_000000"
+            android:textSize="@dimen/dip_18.0"
+            android:text="66666"
+
+
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

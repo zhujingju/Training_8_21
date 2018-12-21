@@ -244,7 +244,7 @@ public class ScanActivity extends BaseActivity implements CameraScanner.CameraLi
     public void decodeComplete(String result, int type, int quality, int requestCode) {
         if (result == null) return;
         if (result.equals(mResult)) {
-            if (++mCount > 3) {//连续四次相同则显示结果（主要过滤脏数据，也可以根据条码类型自定义规则）
+            if (++mCount > 1) {//连续四次相同则显示结果（主要过滤脏数据，也可以根据条码类型自定义规则）
                 if (quality < 10) {
 //                    ToastHelper.showToast(this, "[类型" + type + "/精度00" + quality + "]" + result, ToastHelper.LENGTH_SHORT);
                 } else if (quality < 100) {

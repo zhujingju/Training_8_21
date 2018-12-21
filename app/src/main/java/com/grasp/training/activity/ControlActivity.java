@@ -22,7 +22,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +69,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ControlActivity extends BaseMqttActivity {
+    @BindView(R.id.control_rel)
+    RelativeLayout rel;
     @BindView(R.id.control_im)
     ImageView img;
     @BindView(R.id.control_sx)
@@ -110,6 +114,19 @@ public class ControlActivity extends BaseMqttActivity {
     private String myTopic = MqttService.myTopicRobot;
     private IntentFilter intentFilter;
     private NetworkChangeReceiver networkChangeReceiver;
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        int w=rel.getWidth();
+        int h=w/4*3;
+        LinearLayout.LayoutParams params= (LinearLayout.LayoutParams) rel.getLayoutParams();
+//获取当前控件的布局对象
+        params.height=h;//设置当前控件布局的高度
+        rel.setLayoutParams(params);
+    }
+
     @Override
     public int setLayoutId() {
         return R.layout.control;

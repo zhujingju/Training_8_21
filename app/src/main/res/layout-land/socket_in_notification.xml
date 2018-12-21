@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+    <RelativeLayout
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/dip_5.0"
+        android:layout_marginRight="@dimen/dip_5.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_marginLeft="@dimen/dip_5.0"
+            android:id="@+id/socket_in_notification_im1"
+            android:layout_width="@dimen/dip_32.0"
+            android:layout_height="@dimen/dip_32.0" />
+
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="开启"
+            android:layout_marginLeft="@dimen/dip_80.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/socket_in_notification_im2"
+            android:layout_width="@dimen/dip_40.0"
+            android:layout_height="@dimen/dip_40.0" />
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="关闭"
+            android:layout_marginLeft="@dimen/dip_150.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/socket_in_notification_im3"
+            android:layout_width="@dimen/dip_40.0"
+            android:layout_height="@dimen/dip_40.0" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

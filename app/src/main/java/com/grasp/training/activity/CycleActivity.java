@@ -160,6 +160,15 @@ public class CycleActivity extends BaseTcpMqttActpvity {
                                 m=Integer.valueOf(time[1]);
                                 h_s=Integer.valueOf(time[2]);
 
+                                if(h>23){
+                                    h=23;
+                                }
+                                if(m>59){
+                                    m=59;
+                                }
+                                if(h_s>59){
+                                    h_s=59;
+                                }
 
                             }
                             if(!off_time.equals("")){
@@ -171,7 +180,15 @@ public class CycleActivity extends BaseTcpMqttActpvity {
                                 h2=Integer.valueOf(time[0]);
                                 m2=Integer.valueOf(time[1]);
                                 h_s2=Integer.valueOf(time[2]);
-
+                                if(h2>23){
+                                    h2=23;
+                                }
+                                if(m2>59){
+                                    m2=59;
+                                }
+                                if(h_s2>59){
+                                    h_s2=59;
+                                }
                             }
                             me = new Message();
                             me.what = 1000;

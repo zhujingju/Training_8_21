@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_bg"
+    android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/socke_xh"
+                    android:layout_width="@dimen/dip_25.0"
+                    android:layout_height="@dimen/dip_25.0"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/dip_30.0"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:layout_marginTop="@dimen/dip_60.0"
+                    android:background="@drawable/monitormode_refresh" />
+
+                <TextView
+                    android:id="@+id/socke_ip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dip_15.0" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/dip_70.0">
+
+                    <ImageView
+                        android:id="@+id/search_im"
+                        android:layout_width="@dimen/dip_287.0"
+                        android:layout_height="@dimen/dip_287.0"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/zjj_chazuo_normalno" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/socke_tv"
+                    android:layout_width="@dimen/dip_150.0"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="智能插aaaaaaaaa座"
+                    android:textColor="#fff"
+                    android:textSize="@dimen/dip_25.0" />
+
+                <Button
+                    android:layout_width="@dimen/dip_33.0"
+                    android:layout_height="@dimen/dip_33.0"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_20.0"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:background="@drawable/icon_tianjiashebei_normal"
+                    android:onClick="tj"
+                    android:visibility="gone" />
+
+                <Button
+                    android:layout_width="@dimen/dip_33.0"
+                    android:layout_height="@dimen/dip_33.0"
+                    android:layout_marginLeft="@dimen/dip_20.0"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:background="@drawable/fh"
+                    android:onClick="fh" />
+
+                <Button
+                    android:id="@+id/switch_sz"
+                    android:layout_width="@dimen/dip_33.0"
+                    android:layout_height="@dimen/dip_33.0"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_20.0"
+                    android:layout_marginTop="@dimen/dip_20.0"
+                    android:background="@drawable/personalcenter_tabbar_setup_selected"
+                    android:onClick="put_sz" />
+
+                <LinearLayout
+                    android:id="@+id/search_ds_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="@dimen/dip_5.5"
+                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+
+                        android:id="@+id/search_ds_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/dip_5.0"
+                        android:text="倒计时：3:20"
+                        android:textColor="#fff"
+                        android:textSize="@dimen/dip_18.0" />
+
+                    <ImageView
+                        android:id="@+id/search_ds_del"
+                        android:layout_width="@dimen/dip_20.0"
+                        android:layout_height="@dimen/dip_20.0"
+                        android:src="@drawable/zhu_del" />
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/dip_10.0"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/socke_sys"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginRight="@dimen/dip_5.0"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="#fff"
+                        android:textSize="@dimen/dip_14.0"
+
+                        />
+
+                    <ImageView
+                        android:id="@+id/socke_sys_im"
+                        android:layout_width="@dimen/dip_5.0"
+                        android:layout_height="@dimen/dip_5.0"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/yuan_hong" />
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_134.0">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_134.0"
+                    android:background="#fff"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:textSize="@dimen/dip_12.0"
+                        android:id="@+id/search_ds"
+                        android:layout_width="@dimen/dip_60.0"
+                        android:layout_height="@dimen/dip_60.0"
+                        android:layout_marginRight="@dimen/dip_20.0"
+                        android:background="@drawable/yuan"
+                        android:text="定时" />
+
+                    <Button
+                        android:textSize="@dimen/dip_12.0"
+                        android:id="@+id/search_state"
+                        android:layout_width="@dimen/dip_60.0"
+                        android:layout_height="@dimen/dip_60.0"
+                        android:layout_marginRight="@dimen/dip_20.0"
+                        android:background="@drawable/yuan"
+                        android:text="开启" />
+
+                    <Button
+                        android:textSize="@dimen/dip_12.0"
+                        android:layout_marginRight="@dimen/dip_20.0"
+                        android:id="@+id/search_djs"
+                        android:layout_width="@dimen/dip_60.0"
+                        android:layout_height="@dimen/dip_60.0"
+                        android:background="@drawable/yuan"
+                        android:text="倒计时" />
+
+                    <Button
+                        android:background="@drawable/yuan"
+                        android:id="@+id/search_zdgb"
+                        android:text="自动关闭"
+                        android:textSize="@dimen/dip_12.0"
+                        android:layout_width="@dimen/dip_60.0"
+                        android:layout_height="@dimen/dip_60.0" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/socke_gl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c_000000"
+                    android:textSize="@dimen/dip_15.0" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+</LinearLayout>

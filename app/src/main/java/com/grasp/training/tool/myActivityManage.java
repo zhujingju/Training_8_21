@@ -25,7 +25,7 @@ public class myActivityManage {       //页面管理类
     public static void remove(Activity a){          //删除当前
 		for(Activity al:ls){
 			if(a==al){
-				a.finish();
+//				a.finish();
 				ls.remove(a);
 				Log.e("qqq","myActivityManage");
 				return;
@@ -34,6 +34,13 @@ public class myActivityManage {       //页面管理类
     }
 
 	public static void removeA(Activity a){          //删除当前
-		ls.remove(a);
+		for(Activity al:ls){
+			if(a==al){
+//				a.finish();
+				ls.remove(a);
+				Log.e("qqq","myActivityManage");
+				return;
+			}
+		}
 	}
 }

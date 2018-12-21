@@ -102,14 +102,14 @@ public class ConditionActivity extends BaseActivity {
                 if(num==-1) {
                     DataStatus dataStatus = new DataStatus();
                     dataStatus.setIf_left("手动执行");
-                    dataStatus.setIf_right("");
+                    dataStatus.setIf_right(" ");
                     dataStatus.setIf_num(1);
                     dataStatus.setIf_add(false);
                     CarriedOutActivity.startCarriedOutActivity(getContext(), dataStatus, 0, 0, 0);
                 }else{
                     DataStatus dataStatus = new DataStatus();
                     dataStatus.setIf_left("手动执行");
-                    dataStatus.setIf_right("");
+                    dataStatus.setIf_right(" ");
                     dataStatus.setIf_num(1);
                     dataStatus.setIf_add(false);
                     NewIntelligentActivity.startActivity(getContext(),dataStatus,false,num);

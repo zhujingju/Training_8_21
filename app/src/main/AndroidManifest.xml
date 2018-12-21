@@ -15,10 +15,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- zxing -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -32,6 +29,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <application
         android:name=".tool.MyApplication"
@@ -44,9 +44,11 @@
         tools:replace="android:icon, android:theme">
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,162 +58,161 @@
 
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.ControlActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.RegisteredActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".Umeye_sdk.AcSearchDevice"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.Robote_add_activity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.AddTimingActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.TimingActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SearchActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SockeActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.EquipmentActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.ChangePasswordActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SetPersonalActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SwitchActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.EquipmentUpdataActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.WebViewActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.LightActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
         android:name=".activity.FeedbackActivity"
-        android:screenOrientation="portrait"
         android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.RetrievePasswordActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SetPhoneActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.VerifyPhoneActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.CycleActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
+            android:configChanges="orientation"
         android:name=".activity.ConditionActivity"
-        android:screenOrientation="portrait"
         android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.CarriedOutActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.NewIntelligentActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
 
         </activity>
         <activity
+            android:configChanges="orientation"
             android:name=".activity.ConditionTimingActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.OutdoorWeatherActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SetOutdoorWeatherActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.RoomActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
+            android:configChanges="orientation"
             android:name=".activity.SmartDeviceActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
             android:name=".activity.DeviceStatusActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
             android:name=".activity.NewIntelligentTimeActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".activity.ScanActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustResize" />
 
         <service android:name=".service.MqttService"></service>

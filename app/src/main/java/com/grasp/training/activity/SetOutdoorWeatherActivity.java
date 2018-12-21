@@ -121,7 +121,7 @@ public class SetOutdoorWeatherActivity extends BaseActivity {
                     if(lab_num!=-1){
                         myActivityManage.removeAll();
                         DataStatus dataStatus=new DataStatus();
-                        dataStatus.setIf_left("室外天气发生变化时");
+                        dataStatus.setIf_left("室外天气");
                         dataStatus.setIf_right("日出时");
                         dataStatus.setIf_num(3);
                         dataStatus.setIf_add(true);
@@ -135,7 +135,7 @@ public class SetOutdoorWeatherActivity extends BaseActivity {
                     //第一个参数由逗号隔开，1：类型 2：上下 3：具体数值
                     myActivityManage.removeAll();
                     DataStatus dataStatus=new DataStatus();
-                    dataStatus.setIf_left("室外天气发生变化时");
+                    dataStatus.setIf_left("室外天气");
                     dataStatus.setIf_right("日出时");
                     dataStatus.setIf_num(3);
                     dataStatus.setIf_add(true);
@@ -154,7 +154,7 @@ public class SetOutdoorWeatherActivity extends BaseActivity {
                     if(lab_num!=-1){
                         myActivityManage.removeAll();
                         DataStatus dataStatus=new DataStatus();
-                        dataStatus.setIf_left("室外天气发生变化时");
+                        dataStatus.setIf_left("室外天气");
                         dataStatus.setIf_right("日落时");
                         dataStatus.setIf_num(3);
                         dataStatus.setIf_add(true);
@@ -166,7 +166,7 @@ public class SetOutdoorWeatherActivity extends BaseActivity {
                     }
                     myActivityManage.removeAll();
                     DataStatus dataStatus=new DataStatus();
-                    dataStatus.setIf_left("室外天气发生变化时");
+                    dataStatus.setIf_left("室外天气");
                     dataStatus.setIf_right("日落时");
                     dataStatus.setIf_num(3);
                     dataStatus.setIf_add(true);

@@ -377,6 +377,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         private List<Fragment> fragmentsList;
         private FragmentManager fm;
 
+
         public myPagerAdapter(FragmentManager fm) {
             super(fm);
             this.fm = fm;

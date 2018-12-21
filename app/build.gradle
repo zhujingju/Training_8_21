@@ -6,8 +6,8 @@ android {
         applicationId "com.grasp.training"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 5
-        versionName "app-smarthome-5"
+        versionCode 6
+        versionName "app-smarthome-6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "release"
         ndk {
@@ -80,6 +80,10 @@ android {
             debuggable false
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -106,4 +110,5 @@ dependencies {
     implementation files('libs/BASE64.jar')
     implementation 'cn.simonlee.xcodescanner:zbar:1.1.10'
     implementation 'cn.simonlee.widget:swipeback:1.0.13'
+    implementation 'ru.alexbykov:nopermission:1.1.2'
 }

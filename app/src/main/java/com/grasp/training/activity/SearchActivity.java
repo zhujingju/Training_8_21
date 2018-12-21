@@ -1,5 +1,6 @@
 package com.grasp.training.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -12,6 +13,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -64,6 +66,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import ru.alexbykov.nopermission.PermissionHelper;
+
 public class SearchActivity extends BaseMqttToActivity {
 
     private String myTopicding =  MqttService.myTopicDevice;
@@ -88,13 +92,6 @@ public class SearchActivity extends BaseMqttToActivity {
     @Override
     public void initData() {
         context = getContext();
-        sid_List = getIntent().getStringArrayListExtra("sid_List");
-        if(sid_List==null){
-            sid_List=new ArrayList<>();
-        }
-//        Log.e("qqq","s="+sid_List.get(0));
-//        for (String s : sid_List) {
-//
 //            Log.e("qqq","s="+s);
 //        }
         listview = (ListView) findViewById(R.id.search_list);
@@ -102,6 +99,10 @@ public class SearchActivity extends BaseMqttToActivity {
         dong_im = (ImageView) findViewById(R.id.search_dong);
         dong_rel = (RelativeLayout) findViewById(R.id.search_rel);
         takePhotoPopWin = new PopwinDialog(context);
+
+        permissionHelper = new PermissionHelper(this);
+        getWifiSSid();
+
         initListview();
 //        new UdpReceiveThread().start();  //启动udp接收
     }
@@ -135,6 +136,31 @@ public class SearchActivity extends BaseMqttToActivity {
         handler.sendEmptyMessageDelayed(99, 1000);
 
     }
+
+
+    private PermissionHelper permissionHelper;
+
+    private void getWifiSSid() {
+        permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION).onSuccess(this::onSuccess).onDenied(this::onDenied).onNeverAskAgain(this::onNeverAskAgain).run();
+    }
+    private void onSuccess() {
+
+//        mTvSSID.setText(DeviceUtil.INSTANCE.getWIFISSID(this));
+    }
+
+    private void onDenied() {
+        Toast.makeText(context,"权限被拒绝，9.0系统无法获取SSID",Toast.LENGTH_LONG).show();
+    }
+
+    private void onNeverAskAgain() {
+        Toast.makeText(context,"权限被拒绝，9.0系统无法获取SSID,下次不会在询问了",Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 
     @Override
     public String getMyTopic() {
@@ -330,12 +356,12 @@ public class SearchActivity extends BaseMqttToActivity {
                     if (showPro_zt1) {  //取消连接
                         return;
                     }
-//                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-//                    if(zt){
+                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
+                    if(zt){
                     handler.sendEmptyMessageDelayed(202, 2000); //判断是否连上
-//                    }else{
-//                        handler.sendEmptyMessageDelayed(203,2000); //判断是否连上
-//                    }
+                    }else{
+                        handler.sendEmptyMessageDelayed(203,2000); //判断是否连上
+                    }
 
                     break;
 
@@ -1249,6 +1275,8 @@ public class SearchActivity extends BaseMqttToActivity {
         LinearInterpolator lin = new LinearInterpolator();
         operatingAnim.setInterpolator(lin);
         dong_rel.startAnimation(operatingAnim);
+
+
     }
 
     private void setGps() {

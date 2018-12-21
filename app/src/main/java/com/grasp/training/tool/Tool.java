@@ -12,7 +12,7 @@ public class Tool {
     private  final static String string="Tool_bs";
     public static String getIMEI(Context context) {
         if(context==null){
-            return  SharedPreferencesUtils.getParam(context,string,"").toString();
+            return  "12345678";
         }
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_marginRight="@dimen/dip_10.0"
+        android:layout_marginLeft="@dimen/dip_20.0"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_70.0">
+
+        <TextView
+            android:id="@+id/items_new_intelligent_light"
+            android:layout_width="@dimen/dip_120.0"
+            android:layout_height="wrap_content"
+            android:textColor="@color/c_f0f0f0"
+            android:textSize="@dimen/dip_15.0"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:ellipsize="end"
+            />
+
+        <LinearLayout
+
+            android:gravity="center"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:gravity="right"
+                android:id="@+id/items_new_intelligent_right"
+                android:layout_width="@dimen/dip_120.0"
+                android:layout_height="wrap_content"
+                android:textColor="@color/c_f0f0f0"
+                android:textSize="@dimen/dip_15.0"
+                android:layout_centerVertical="true"
+                android:singleLine="true"
+                android:ellipsize="end"
+                />
+            <ImageView
+                android:layout_width="@dimen/dip_30.0"
+                android:layout_height="@dimen/dip_30.0"
+                android:background="@drawable/gengduo"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/items_new_intelligent_xian"
+            android:layout_marginLeft="@dimen/dip_10.0"
+            android:layout_marginRight="@dimen/dip_10.0"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#f0f0f0"
+            />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

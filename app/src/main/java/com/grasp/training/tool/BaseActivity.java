@@ -4,6 +4,7 @@ package com.grasp.training.tool;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +50,18 @@ public abstract class BaseActivity extends Activity {
 	    }
 
 
+//	@Override
+//	public void onConfigurationChanged(Configuration newConfig) {
+//		// TODO Auto-generated method stub
+//		super.onConfigurationChanged(newConfig);
+//		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//			setContentView(setLayoutId());
+////			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+////			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+//			setContentView(setLayoutId());
+//		}
+//	}
 
 	public  abstract int setLayoutId();   //获得布局
 	    public  abstract void initData() ;//初始化数据

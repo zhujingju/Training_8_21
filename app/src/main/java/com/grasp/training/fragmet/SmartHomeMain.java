@@ -39,6 +39,7 @@ import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.activity.EquipmentActivity;
 import com.grasp.training.activity.LightActivity;
+import com.grasp.training.activity.RoomActivity;
 import com.grasp.training.activity.SearchActivity;
 import com.grasp.training.activity.SockeActivity;
 import com.grasp.training.activity.SwitchActivity;
@@ -89,6 +90,12 @@ public class SmartHomeMain extends BaseMqttFragment {
     TextView smartTvPm;
     @BindView(R.id.smart_home_MyGridView)
     MyGridView gridView;
+
+    @BindView(R.id.smart_home_sx_lin)
+    LinearLayout smartSxLin;
+    @BindView(R.id.smart_home_sx_tv)
+    TextView smartSxTv;
+
     Unbinder unbinder1;
     private String myTopic = MqttService.myTopicDevice;
     private Context context;
@@ -121,6 +128,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
             } else {
 //                setGps();
+                Log.e("tianqi", "isGpsEnabled？？？");
             }
 
             LocationUtils.register(context, 60 * 1000, 1000, new LocationUtils.OnLocationChangeListener() {
@@ -157,7 +165,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                 @Override
                 public void onLocationChanged(Location location) {
-
+                    Log.e("tianqi", "onLocationChanged");
 
                 }
 
@@ -255,11 +263,62 @@ public class SmartHomeMain extends BaseMqttFragment {
         unbinder.unbind();
     }
 
-    @OnClick(R.id.smart_hone_main_add)
-    public void onViewClicked() {
-        add(new ArrayList<String>());
+    @OnClick({R.id.smart_hone_main_add,R.id.smart_hame_sx,R.id.smart_home_sx_lin})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.smart_hone_main_add:
+                add(new ArrayList<String>());
+                break;
+            case R.id.smart_hame_sx:
+                RoomActivity.startActivity(context,null,fj);
+                break;
+            case R.id.smart_home_sx_lin:
+                fj="";
+                list=oldlist;
+                adapter.setList(list);
+                adapter.notifyDataSetChanged();
+                gridView.onRefreshComplete();
+                smartSxLin.setVisibility(View.GONE);
+                smartSxTv.setText(fj);
+                break;
+        }
+
+
     }
 
+
+
+    private String fj="";
+    private List<Goods> oldlist;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if(resultCode==((Activity)context).RESULT_OK){
+
+                    zt_rel=true;
+                    fj=data.getStringExtra("name");
+                    ArrayList<Goods> mlist=new ArrayList<>();
+                    for(Goods g:oldlist){
+//                        Log.e("qqq","-------- fj="+fj+"  room="+g.getRoom());
+                        String room=g.getRoom();
+                        if(fj.equals(room)){
+
+                            mlist.add(g);
+                        }
+                    }
+                    list=mlist;
+                    adapter.setList(list);
+                    adapter.notifyDataSetChanged();
+                    gridView.onRefreshComplete();
+                    smartSxLin.setVisibility(View.VISIBLE);
+                    smartSxTv.setText(fj);
+                }
+                break;
+        }
+
+    }
 
     public void push_read() {  //获取设备列表
 //        Log.e("qqq","消息 push_read");
@@ -278,9 +337,15 @@ public class SmartHomeMain extends BaseMqttFragment {
     }
 
 
+    private boolean zt_rel;
     @Override
     public void onStart() {
         super.onStart();
+        Log.e("qqq","-------- fj= onStart zt_rel="+zt_rel);
+        if(zt_rel){
+            zt_rel=false;
+            return;
+        }
         setEquipmentData();
         if (!city.equals("")) {
             new Thread(tq).start();
@@ -383,8 +448,11 @@ public class SmartHomeMain extends BaseMqttFragment {
     boolean sx_zt = true;
 
     public void dataListview() {  //获取list数据
-
+        if(gridView==null){
+            return;
+        }
         if (!sx_zt) {
+
             gridView.onRefreshComplete();
             return;
         }
@@ -428,6 +496,20 @@ public class SmartHomeMain extends BaseMqttFragment {
                     break;
 
                 case 1000:
+                    if(!fj.equals("")){
+                        ArrayList<Goods> mlist=new ArrayList<>();
+                        for(Goods g:oldlist){
+//                        Log.e("qqq","-------- fj="+fj+"  room="+g.getRoom());
+                            String room=g.getRoom();
+                            if(fj.equals(room)){
+
+                                mlist.add(g);
+                            }
+                        }
+                        list=mlist;
+                    }
+
+
                     adapter.setList(list);
                     adapter.notifyDataSetChanged();
                     gridView.onRefreshComplete();
@@ -502,7 +584,6 @@ public class SmartHomeMain extends BaseMqttFragment {
                     publish_String(js);  //主题
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -601,6 +682,11 @@ public class SmartHomeMain extends BaseMqttFragment {
                     } else {
                         too.dy.setText("状态：关闭");
                     }
+                    if (camera.getType().equals("kettle")){
+                        too.dy.setVisibility(View.INVISIBLE);
+                    }else{
+                        too.dy.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 if (camera.isJh_zt()) {
@@ -619,6 +705,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                 } else {
                     ImageLoader.getInstance().displayImage(camera.getIm_url(), too.im, MyApplication.options);
                 }
+
 
             }
 
@@ -746,6 +833,7 @@ public class SmartHomeMain extends BaseMqttFragment {
             Goods goods = new Goods();
             goods.setAdd_zt(true);
             list.add(goods);
+            oldlist=list;
             handler.sendEmptyMessageDelayed(1000, 0);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -950,7 +1038,6 @@ public class SmartHomeMain extends BaseMqttFragment {
             return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
             return "";
         }
 
@@ -1169,7 +1256,6 @@ public class SmartHomeMain extends BaseMqttFragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Log.e("tianqi", e.getMessage());
                     }
                     break;
             }

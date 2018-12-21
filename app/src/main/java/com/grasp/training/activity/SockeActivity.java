@@ -36,7 +36,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     private String myTopicding = "iotbroad/iot/socket_ack/" + sid;
     private String myTopic = "iotbroad/iot/socket/" + sid;
     private Context context;
-    private Button state, ds, djs;
+    private Button state, ds, djs,zdgb;
     private LinearLayout dsLayout;
     private ImageView ds_del;
     private TextView ds_tv,mc_tv,tv_sys;
@@ -47,6 +47,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     private TextView tv_gl;
     private double w=0;
     private int power=0;
+    private boolean stop_flag;
 
     public static void starstSockeActivity(Context context, String sid,String dname) {
         Intent in = new Intent(context, SockeActivity.class);
@@ -86,6 +87,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
         tv_ip=(TextView) findViewById(R.id.socke_ip);
         im_sx = (ImageView) findViewById(R.id.socke_xh);
         tv_gl=(TextView) findViewById(R.id.socke_gl);
+        zdgb = (Button) findViewById(R.id.search_zdgb);
     }
 
     @Override
@@ -105,6 +107,7 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
         mc_tv.setOnClickListener(this);
         tv_sys.setOnClickListener(this);
         im_sx.setOnClickListener(this);
+        zdgb.setOnClickListener(this);
     }
 
     @Override
@@ -163,6 +166,13 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                             String hard = jsonObject.optString("hard_ver", "");
                             if (!hard.equals("")) {
                                 hard_ver = hard;
+                            }
+
+                            int i_stop_flag = jsonObject.optInt("stop_flag", 0);
+                            if(i_stop_flag==1){
+                                stop_flag=true;
+                            }else{
+                                stop_flag=false;
                             }
 
                             me = new Message();
@@ -281,7 +291,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -302,7 +311,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -322,7 +330,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -365,6 +372,12 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                         search_zt = false;
                     }
                     setStateView(search_zt);
+                    if(stop_flag){
+                        zdgb.setTextColor(getResources().getColor(R.color.c_1eac94));
+                    }else{
+                        zdgb.setTextColor(getResources().getColor(R.color.c_000000));
+                    }
+
 //                    tv_sys.setText("版本号："+sys_ver);
                     break;
 
@@ -540,6 +553,14 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.search_zdgb:
+                if(stop_flag){
+                    push_stop_flag(0);
+                }else{
+                    push_stop_flag(1);
+                }
+
+                break;
             case R.id.socke_xh://循环
                 CycleActivity.strateCycleActivity(context,sid,"socket");
 
@@ -711,7 +732,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -738,7 +758,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String(js);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -791,7 +810,6 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String3(js, myTopicding_too);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();
@@ -846,7 +864,27 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
                     publish_String3(js, myTopicding_too);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "JSONException", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+
+    }
+
+    public void push_stop_flag(final int stop) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "wifi_socket_stop");
+                    jsonObject.put("stop_flag", stop);
+                    jsonObject.put("sid", sid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();

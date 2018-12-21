@@ -53,6 +53,11 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
     LinearLayout head;
     @BindView(R.id.smart_device_MyGridView)
     MyGridView gridView;
+
+    @BindView(R.id.smart_device_sx_lin)
+    LinearLayout sx_lin;
+    @BindView(R.id.smart_device_sx_tv)
+    TextView sx_tv;
     private Context context;
     private List<Goods> list;
     private List<Goods> oldlist;
@@ -188,7 +193,7 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
 //                    dataStatus.setIf_add(true);
                     dataStatus.setElse_left("设备-"+g.getName());
                     dataStatus.setElse_num(1);
-                    dataStatus.setElse_num1_name(g.getSid());
+                    dataStatus.setElse_num1_sid(g.getSid());
                     dataStatus.setElse_num1_type(g.getType());
                     dataStatus.setElse_num1_name(g.getName());
 
@@ -211,7 +216,7 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
 
     }
 
-    @OnClick({R.id.smart_device_fh, R.id.smart_device_save})
+    @OnClick({R.id.smart_device_fh, R.id.smart_device_save,R.id.smart_device_sx_lin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.smart_device_fh:
@@ -219,6 +224,14 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
                 break;
             case R.id.smart_device_save:
                 RoomActivity.startActivity(context,null,fj);
+                break;
+            case R.id.smart_device_sx_lin:
+                list=oldlist;
+                adapter.setList(list);
+                handler.sendEmptyMessageDelayed(1000,0);
+                sx_lin.setVisibility(View.GONE);
+                sx_tv.setText("");
+                fj="";
                 break;
         }
     }
@@ -233,7 +246,7 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
                     fj=data.getStringExtra("name");
                     ArrayList<Goods> mlist=new ArrayList<>();
                     for(Goods g:oldlist){
-                        Log.e("qqq","-------- fj="+fj+"  room="+g.getRoom());
+//                        Log.e("qqq","-------- fj="+fj+"  room="+g.getRoom());
                         String room=g.getRoom();
                         if(fj.equals(room)){
 
@@ -243,6 +256,8 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
                     list=mlist;
                     adapter.setList(list);
                     handler.sendEmptyMessageDelayed(1000,0);
+                    sx_lin.setVisibility(View.VISIBLE);
+                    sx_tv.setText(fj);
                 }
                 break;
         }
@@ -366,6 +381,19 @@ public class SmartDeviceActivity extends BaseMqttActivity {  //设备列表
                 list.add(goods);
             }
             oldlist=list;
+
+            if(!fj.equals("")){
+                ArrayList<Goods> mlist=new ArrayList<>();
+                for(Goods g:oldlist){
+//                        Log.e("qqq","-------- fj="+fj+"  room="+g.getRoom());
+                    String room=g.getRoom();
+                    if(fj.equals(room)){
+
+                        mlist.add(g);
+                    }
+                }
+                list=mlist;
+            }
             handler.sendEmptyMessageDelayed(1000, 0);
         } catch (JSONException e) {
             e.printStackTrace();

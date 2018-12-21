@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+
+        android:background="@color/app_color"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dip_50.0">
+
+        <TextView
+            android:textColor="@color/white"
+            android:textSize="@dimen/dip_18.0"
+            android:text="我的"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+
+            <RelativeLayout
+                android:id="@+id/personal_layout"
+                android:background="@drawable/layout1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_140.0">
+                <ImageView
+                    android:layout_marginLeft="@dimen/dip_41.0"
+                    android:layout_gravity="center"
+                    android:id="@+id/personal_tx"
+                    android:layout_width="@dimen/dip_69.0"
+                    android:layout_height="@dimen/dip_69.0"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/personalcenter_tabbar_portrait_selected" />
+
+                <LinearLayout
+
+                    android:layout_marginLeft="@dimen/dip_135.0"
+                    android:layout_centerVertical="true"
+                    android:layout_width="@dimen/dip_150.0"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:id="@+id/personal_tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="zjj"
+                        android:textSize="@dimen/dip_21.0"
+                        android:textColor="@color/c_000000"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        />
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/personal_tv_sb"
+                        android:layout_marginTop="@dimen/dip_5.0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dip_15.0"
+                        android:textColor="@color/white2"
+                        />
+                </LinearLayout>
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="@dimen/dip_30.0"
+                    android:layout_height="@dimen/dip_30.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/per_xgsj"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_000000"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/personal_10"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_20.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_4.0"
+                    android:layout_marginRight="@dimen/dip_4.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/app_color"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/per_xgmm"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_000000"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/pre_xgmm"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_20.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_4.0"
+                    android:layout_marginRight="@dimen/dip_4.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/app_color"
+                    />
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:id="@+id/per_gx"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_000000"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/personal_9"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_20.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_8.0"
+                    android:layout_height="@dimen/dip_8.0"
+                    android:id="@+id/per_sys_im"
+                    android:background="@drawable/yuan_hong"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_120.0"
+                    />
+
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_4.0"
+                    android:layout_marginRight="@dimen/dip_4.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/app_color"
+                    />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/per_fk"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_000000"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/pre_fk"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_20.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_4.0"
+                    android:layout_marginRight="@dimen/dip_4.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/app_color"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/per_tui"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_50.0">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_000000"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dip_30.0"
+                    android:text="@string/pre_tc"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/dip_20.0"
+                    android:layout_height="@dimen/dip_20.0"
+                    android:background="@drawable/icon_jinrua"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dip_10.0"
+                    />
+
+                <TextView
+                    android:layout_marginLeft="@dimen/dip_4.0"
+                    android:layout_marginRight="@dimen/dip_4.0"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip_0.5"
+                    android:background="@color/app_color"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

@@ -144,7 +144,7 @@ public class CarriedOutActivity extends BaseActivity {  //结果条件页
                 SmartDeviceActivity.startActivity(getContext(),dataStatus,car_num);
                 break;
             case R.id.carried_out_layout2:
-                dataStatus.setElse_right("");
+                dataStatus.setElse_right(" ");
                 dataStatus.setElse_left(getStr(R.string.carride_out5));
                 dataStatus.setElse_num(2);
                 myActivityManage.removeAll();

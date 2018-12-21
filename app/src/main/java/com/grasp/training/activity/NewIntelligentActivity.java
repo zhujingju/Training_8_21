@@ -3,12 +3,15 @@ package com.grasp.training.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liangmutian.mypicker.TimePickerDialog;
+import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.service.MqttService;
 import com.grasp.training.swipemenulistview.SwipeMenu;
@@ -33,7 +37,13 @@ import com.grasp.training.swipemenulistview.SwipeMenuListView;
 import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.DataStatus;
 import com.grasp.training.tool.Goods;
+import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
 import com.grasp.training.tool.myActivityManage;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,22 +78,25 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     RelativeLayout newIntelligentTimeLayout;
     @BindView(R.id.new_intelligent_time_layout_im)
     ImageView newIntelligentTimeim;
+    @BindView(R.id.new_intelligent_im_set)
+    ImageView newIntelligentImSet;
 
-
-    private String myTopicding = MqttService.myTopicDevice;
-    private String myTopic = MqttService.myTopicDevice;
+    private String myTopicding = MqttService.myTopicLogic;
+    private String myTopic = MqttService.myTopicLogic;
 
     private DataStatus dataStatus;
     private boolean zt;
     private Context context;
 
-    private boolean zx_zt,next_zt;
+    private boolean zx_zt, next_zt;
     private List<Goods> list1, list2;
     private myListViewAdapter adapter1, adapter2;
     private int posi1 = 0, posi2 = 0;
     private String json;
+    private String zn_name;
+    private int loid = 0;
 
-    public static void startActivity(Context context, DataStatus dataStatus, String  json) {
+    public static void startActivity(Context context, DataStatus dataStatus, String json) {
         Intent in = new Intent(context, NewIntelligentActivity.class);
         in.putExtra("NewIntelligentActivity", dataStatus);
         in.putExtra("NewIntelligentActivity2", json);
@@ -154,26 +167,31 @@ public class NewIntelligentActivity extends BaseMqttActivity {
             newIntelligentTimeim.setBackgroundResource(R.drawable.gengduo);
             zx_zt = false;
         }
-        if(json==null||json.equals("")){
-            zt=false;
-        }else{
-            zt=true;
+        if (json == null || json.equals("")) {
+            zt = false;
+        } else {
+            zt = true;
         }
 
         if (zt) {
-            name.setText("修改智能");
+//            name.setText(json);
+            newIntelligentImSet.setVisibility(View.GONE);
         } else {
             name.setText("新建智能");
+            newIntelligentImSet.setVisibility(View.GONE);
         }
-        if(dataStatus.getElse_num()==1||dataStatus.getElse_num()==2){
-            next_zt=true;
-        }else{
-            next_zt=false;
+        if (dataStatus.getElse_num() == 1 || dataStatus.getElse_num() == 2) {
+            next_zt = true;
+        } else {
+            next_zt = false;
         }
         newIntelligentSave.setEnabled(next_zt);
         initListview2();
         initListview1();
-        initJson(json);
+        if (zt) {
+            initJson(json);
+        }
+
     }
 
     @Override
@@ -197,36 +215,96 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     }
 
     @Override
-    public void MyMessageArrived(String message) {
+    public void MyMessageArrived(final String message) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.getString("cmd");
+                    String uname = jsonObject.optString("uname", "");  //
+                    if (!uname.equals(MainActivity.NameUser)) {
+                        return;
+                    }
+                    String clientid = jsonObject.optString("clientid", "");
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                        Log.e("qqq", "home clientid=" + clientid);
+                        return;
+                    }
+                    Message m;
+                    String err;
+                    switch (cmd) {
+                        case "logicadd_ok":
+//                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+                            handler.sendEmptyMessageDelayed(1000, 500);
+                            break;
 
+                        case "logicadd_failed":
+//                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+                            err = jsonObject.optString("err", "");  //
+                            m = new Message();
+                            m.what = 1001;
+                            m.obj = err;
+                            handler.sendMessageDelayed(m, 500);
+                            break;
+                        case "updatelogic_ok":
+//                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+                            handler.sendEmptyMessageDelayed(2000, 500);
+                            break;
+
+                        case "updatelogic_failed":
+//                            Log.e("qqq", "home messs=" + "querydevicebyuser_ok");
+                            err = jsonObject.optString("err", "");  //
+                            m = new Message();
+                            m.what = 2001;
+                            m.obj = err;
+                            handler.sendMessageDelayed(m, 500);
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
-    @OnClick({R.id.new_intelligent_fh, R.id.new_intelligent_save, R.id.new_intelligent_condition_add, R.id.new_intelligent_carried_out_add, R.id.new_intelligent_time_layout})
+    @OnClick({R.id.new_intelligent_name, R.id.new_intelligent_fh, R.id.new_intelligent_save, R.id.new_intelligent_condition_add, R.id.new_intelligent_carried_out_add, R.id.new_intelligent_time_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.new_intelligent_name:
+                if (zt) { //set
+                    setNameZnG();
+                }
+                break;
             case R.id.new_intelligent_fh:
                 cannel();
                 break;
             case R.id.new_intelligent_save:
                 if (zt) { //set
-
+                    if (loid != -1) {
+                        push_set();
+                        showPro2();
+                    } else {
+                        Toast.makeText(context, "数据出错", Toast.LENGTH_LONG).show();
+                    }
                 } else {  //new
                     setNameZn();
                 }
                 break;
             case R.id.new_intelligent_condition_add:
-                if(list1.size()>=5){
-                    Toast.makeText(context,"条件数量不能大于5",Toast.LENGTH_LONG).show();
+                if (list1.size() >= 5) {
+                    Toast.makeText(context, "条件数量不能大于5", Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (list1.size() == 1) {
                     add();
 
                 } else {
-                    if(list1.size() == 0){
+                    if (list1.size() == 0) {
                         ConditionActivity.startActivity(getContext(), 0, false);
-                    }else{
+                    } else {
                         ConditionActivity.startActivity(getContext(), 0, true);
                     }
 
@@ -235,18 +313,18 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 break;
             case R.id.new_intelligent_carried_out_add:
 //                CarriedOutActivity.startCarriedOutActivity(getContext(),null,0,0,0,0);
-                if(list2.size()>10){
-                    Toast.makeText(context,"执行数量不能大于10",Toast.LENGTH_LONG).show();
+                if (list2.size() > 10) {
+                    Toast.makeText(context, "执行数量不能大于10", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if(list2.size()>0){
-                    if(list2.get(list2.size()-1).getDataStatus().getElse_num()==3){
-                        CarriedOutActivity.startCarriedOutActivity(context,new DataStatus(),0,0,1,0);
-                    }else{
-                        CarriedOutActivity.startCarriedOutActivity(context,new DataStatus(),0,0,0,0);
+                if (list2.size() > 0) {
+                    if (list2.get(list2.size() - 1).getDataStatus().getElse_num() == 3) {
+                        CarriedOutActivity.startCarriedOutActivity(context, new DataStatus(), 0, 0, 1, 0);
+                    } else {
+                        CarriedOutActivity.startCarriedOutActivity(context, new DataStatus(), 0, 0, 0, 0);
                     }
-                }else{
-                    CarriedOutActivity.startCarriedOutActivity(context,new DataStatus(),0,0,0,0);
+                } else {
+                    CarriedOutActivity.startCarriedOutActivity(context, new DataStatus(), 0, 0, 0, 0);
                 }
 
                 break;
@@ -254,14 +332,161 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 if (zx_zt) {
                     return;
                 }
-                NewIntelligentTimeActivity.startActivity(context,week,time1,time2);
+                NewIntelligentTimeActivity.startActivity(context, week, time1, time2);
                 break;
         }
     }
 
-    private void initJson(String json){
+    private void initJson(final String json) {
+        Log.e("qqq","json="+json);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    loid = jsonObject.optInt("loid", -1);
+                    zn_name = jsonObject.optString("loname", "");
+                    week = jsonObject.optString("week", "1234567");
+                    time1 = jsonObject.optString("timestart", "10:00");
+                    time2 = jsonObject.optString("timeend", "10:00");
+                    pretype = jsonObject.optString("pretype", "|");
+                    JSONArray jsonArray1 = jsonObject.optJSONArray("lopres");
+                    list1 = new ArrayList<>();
+                    if (jsonArray1 != null) {
+                        for (int i = 0; i < jsonArray1.length(); i++) {
+                            JSONObject js = jsonArray1.getJSONObject(i);
+//                            int lpid = js.optInt("lpid", -1);//顺序
+//                            int loid = js.optInt("loid", -1);  //
+                            int pretype = js.optInt("pretype", -1);
+                            String displayleft = js.optString("displayleft");
+                            String displayright = js.optString("displayright");
+                            Goods g = new Goods();
+                            g.setLight(displayleft);
+                            g.setRight(displayright);
+                            g.setNum(pretype);
+                            if (pretype == 1) {
+                                DataStatus dataStatus = new DataStatus();
+                                dataStatus.setIf_left(displayleft);
+                                dataStatus.setIf_right(displayright);
+                                dataStatus.setIf_num(pretype);
+                                dataStatus.setIf_add(false);
+                                g.setDataStatus(dataStatus);
+                            } else if (pretype == 2) {
+                                DataStatus dataStatus = new DataStatus();
+                                dataStatus.setIf_left(displayleft);
+                                dataStatus.setIf_right(displayright);
+                                dataStatus.setIf_num(pretype);
+                                dataStatus.setIf_add(true);
+                                String week = js.optString("week");
+                                String time = js.optString("time");
+                                dataStatus.setNum2_week(week);
+                                dataStatus.setNum2_time(time);
+                                g.setDataStatus(dataStatus);
+                            } else if (pretype == 3) {
+                                DataStatus dataStatus = new DataStatus();
+                                dataStatus.setIf_left(displayleft);
+                                dataStatus.setIf_right(displayright);
+                                dataStatus.setIf_num(pretype);
+                                dataStatus.setIf_add(true);
+                                int weathertype = js.optInt("weathertype", 0);
+                                int wtype = js.optInt("wtype", 0);
+                                String wvalue = js.optString("wvalue");
+                                dataStatus.setNum3_num_var(Integer.valueOf(wvalue));
+                                dataStatus.setNum3_num(wtype);
+                                dataStatus.setNum3_type(weathertype);
+                                g.setDataStatus(dataStatus);
+                            } else if (pretype == 4) {
+                                DataStatus dataStatus = new DataStatus();
+                                dataStatus.setIf_left(displayleft);
+                                dataStatus.setIf_right(displayright);
+                                dataStatus.setIf_num(pretype);
+                                dataStatus.setIf_add(true);
+                                String dname = js.optString("dname"); //改
+                                String sid = js.optString("sid");
+                                String type = js.optString("type");
+                                int conid = js.optInt("conid", -1);
+                                dataStatus.setNum4_name(dname);
+                                dataStatus.setNum4_type(type);
+                                dataStatus.setNum4_sid(sid);
+                                dataStatus.setNum4_num(conid);
 
+                                g.setDataStatus(dataStatus);
+                            }
+                            list1.add(g);
+                        }
+
+                        JSONArray jsonArray2 = jsonObject.optJSONArray("locarrs");
+                        list2 = new ArrayList<>();
+                        if (jsonArray2 != null) {
+                            for (int i = 0; i < jsonArray2.length(); i++) {
+                                JSONObject js = jsonArray2.getJSONObject(i);
+                                int carrtype = js.optInt("carrtype", -1);  //
+                                String displayleft = js.optString("displayleft");
+                                String displayright = js.optString("displayright");
+                                Goods g = new Goods();
+                                g.setNum(carrtype);
+                                g.setLight(displayleft);
+                                g.setRight(displayright);
+                                Log.e("qqq","carrtype="+carrtype);
+                                if (carrtype == 1) {
+                                    DataStatus dataStatus = new DataStatus();
+                                    dataStatus.setElse_left(displayleft);
+                                    dataStatus.setElse_right(displayright);
+                                    dataStatus.setElse_num(carrtype);
+                                    String dname = js.optString("dname"); //改
+                                    String sid = js.optString("sid");
+                                    String type = js.optString("type");
+//                                    int carrid = js.optInt("carrtype", -1);
+                                    dataStatus.setElse_num(carrtype);
+                                    dataStatus.setElse_num1_type(type);
+                                    dataStatus.setElse_num1_sid(sid);
+                                    dataStatus.setElse_num1_name(dname);
+                                    g.setDataStatus(dataStatus);
+                                }else if (carrtype == 2) {
+                                    DataStatus dataStatus = new DataStatus();
+                                    dataStatus.setElse_left(displayleft);
+                                    dataStatus.setElse_right(displayright);
+                                    dataStatus.setElse_num(carrtype);
+                                    g.setDataStatus(dataStatus);
+                                }else if (carrtype == 3) {
+                                    DataStatus dataStatus = new DataStatus();
+                                    dataStatus.setElse_left(displayleft);
+                                    dataStatus.setElse_right(displayright);
+                                    dataStatus.setElse_num(carrtype);
+                                    String delaytime = js.optString("delaytime");
+                                    String delaytimess[]=delaytime.split(":");
+                                    if(delaytimess.length==3){
+                                        int time=Integer.valueOf(delaytimess[0])*60*60+Integer.valueOf(delaytimess[1])*60+Integer.valueOf(delaytimess[2]);
+                                        dataStatus.setElse_num3_time(time);
+                                    }else{
+                                        dataStatus.setElse_num3_time(0);
+                                    }
+
+                                    g.setDataStatus(dataStatus);
+                                }
+
+                                list2.add(g);
+                            }
+                        }
+
+                    }
+
+
+                    handler.sendEmptyMessageDelayed(6777, 0);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+//        zn_name=
+//        name.setText(zn_name);
+//        pretype = "|";
+//        newIntelligentIf.setText("☰ 如果满足任意条件");
     }
+
+    private String pretype = "|";
 
     private void add() {
 
@@ -277,7 +502,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 } else {
                     ConditionActivity.startActivity(getContext(), 0, true);
                 }
-
+                pretype = "|";
                 newIntelligentIf.setText("☰ 如果满足任意条件");
             }
         });
@@ -288,6 +513,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         newIntelligentIf.setText("☰ 如果满足全部条件");
+                        pretype = "&";
                         if (list1.size() > 1) {
                             ConditionActivity.startActivity(getContext(), 0, false);
                         } else {
@@ -311,29 +537,28 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                                     long arg3) {
                 // TODO Auto-generated method stub
                 arg2--;
-                DataStatus dataStatus=list1.get(arg2).getDataStatus();
+                DataStatus dataStatus = list1.get(arg2).getDataStatus();
                 list_num1 = arg2;
                 int num = list1.get(arg2).getNum();
                 if (num == 1) {
                     if (list1.size() == 1) {
                         ConditionActivity.startActivity(getContext(), num, false);
                     } else {
-                        if(list1.size() == 0){
+                        if (list1.size() == 0) {
                             ConditionActivity.startActivity(getContext(), num, false);
-                        }else{
+                        } else {
                             ConditionActivity.startActivity(getContext(), num, true);
                         }
 
                     }
-                } else if (num == 2){
+                } else if (num == 2) {
 
-                    ConditionTimingActivity.stastActivity(getContext(),dataStatus.getNum2_week(),dataStatus.getNum2_time(),num);
-                }else if (num == 3){
-                    SetOutdoorWeatherActivity.stateActivity(getContext(),dataStatus.getNum3_num(),num);
-                }else if (num == 4){
-                    DeviceStatusActivity.startActivity(getContext(),false,dataStatus,num);
+                    ConditionTimingActivity.stastActivity(getContext(), dataStatus.getNum2_week(), dataStatus.getNum2_time(), num);
+                } else if (num == 3) {
+                    SetOutdoorWeatherActivity.stateActivity(getContext(), dataStatus.getNum3_num(), num);
+                } else if (num == 4) {
+                    DeviceStatusActivity.startActivity(getContext(), false, dataStatus, num);
                 }
-
 
 
             }
@@ -457,7 +682,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
 
     public void dataListview1() {  //获取list数据
         list1 = new ArrayList<>();
-        if(!zt){
+        if (!zt) {
             int num = dataStatus.getIf_num();
             String light = dataStatus.getIf_left();
             String right = dataStatus.getIf_right();
@@ -513,18 +738,18 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 // TODO Auto-generated method stub
                 arg2 -= 1;
                 list_num2 = arg2;
-                int num=list2.get(arg2).getDataStatus().getElse_num();
-                if(num==1){
-                    DeviceStatusActivity.startActivity(getContext(),true,list2.get(arg2).getDataStatus(),num);
-                }else  if(num==2){
+                int num = list2.get(arg2).getDataStatus().getElse_num();
+                if (num == 1) {
+                    DeviceStatusActivity.startActivity(getContext(), true, list2.get(arg2).getDataStatus(), num);
+                } else if (num == 2) {
 
-                    CarriedOutActivity.startCarriedOutActivity(getContext(),new DataStatus(),0,1,0,2);
-                }else  if(num==3){//延时
-                    int time=list2.get(arg2).getDataStatus().getElse_num3_time();
-                    int h=time/60/60;
-                    int m=(time%3600)/60;
-                    int s=(time%3600)%60;
-                    showTimePick(h,m,s,arg2);
+                    CarriedOutActivity.startCarriedOutActivity(getContext(), new DataStatus(), 0, 1, 0, 2);
+                } else if (num == 3) {//延时
+                    int time = list2.get(arg2).getDataStatus().getElse_num3_time();
+                    int h = time / 60 / 60;
+                    int m = (time % 3600) / 60;
+                    int s = (time % 3600) % 60;
+                    showTimePick(h, m, s, arg2);
                 }
             }
         });
@@ -614,7 +839,6 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     }
 
 
-
     private TimePickerDialog.Builder builder = null;
     private Dialog timeDialog;
 
@@ -633,11 +857,11 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                     int m = Integer.valueOf(times[1]);
                     int s = Integer.valueOf(times[2]);
                     int long_l = h * 60 * 60 + m * 60 + s;
-                    Goods goods=list2.get(post);
-                    goods.setRight(long_l+"s");
+                    Goods goods = list2.get(post);
+                    goods.setRight(long_l + "s");
                     goods.getDataStatus().setElse_num3_time(long_l);
-                    goods.getDataStatus().setElse_right(long_l+"s");
-                    list2.set(post,goods);
+                    goods.getDataStatus().setElse_right(long_l + "s");
+                    list2.set(post, goods);
                     adapter2.setList(list2);
                     adapter2.notifyDataSetChanged();
                     setListViewHeightBasedOnChildren(listview2);
@@ -667,15 +891,15 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 adapter2.setList(list2);
                 adapter2.notifyDataSetChanged();
                 setListViewHeightBasedOnChildren(listview2);
-                for(Goods goods:list2){
-                    DataStatus dataStatus=goods.getDataStatus();
-                    if(dataStatus.getElse_num()==1||dataStatus.getElse_num()==2){
-                        next_zt=true;
+                for (Goods goods : list2) {
+                    DataStatus dataStatus = goods.getDataStatus();
+                    if (dataStatus.getElse_num() == 1 || dataStatus.getElse_num() == 2) {
+                        next_zt = true;
                         newIntelligentSave.setEnabled(next_zt);
-                       return;
+                        return;
                     }
                 }
-                next_zt=false;
+                next_zt = false;
                 newIntelligentSave.setEnabled(next_zt);
             }
         });
@@ -688,7 +912,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     public void dataListview2() {  //获取list数据
 
         list2 = new ArrayList<>();
-        if(!zt){
+        if (!zt) {
             int num = dataStatus.getElse_num();
             String light = dataStatus.getElse_left();
             String right = dataStatus.getElse_right();
@@ -790,8 +1014,8 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     }
 
     class Goods {
-        private String light, right;
-        private int num;
+        private String light = "", right = "";
+        private int num = 0;
         private DataStatus dataStatus;
 
         public DataStatus getDataStatus() {
@@ -871,15 +1095,15 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 adapter2.setList(list2);
                 adapter2.notifyDataSetChanged();
                 setListViewHeightBasedOnChildren(listview2);
-                for(Goods g:list2){
-                    DataStatus data=g.getDataStatus();
-                    if(data.getElse_num()==1||data.getElse_num()==2){
-                        next_zt=true;
+                for (Goods g : list2) {
+                    DataStatus data = g.getDataStatus();
+                    if (data.getElse_num() == 1 || data.getElse_num() == 2) {
+                        next_zt = true;
                         newIntelligentSave.setEnabled(next_zt);
                         return;
                     }
                 }
-                next_zt=false;
+                next_zt = false;
                 newIntelligentSave.setEnabled(next_zt);
 
             } else if (tiao_num > 0) { //set
@@ -893,15 +1117,15 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 adapter2.setList(list2);
                 adapter2.notifyDataSetChanged();
                 setListViewHeightBasedOnChildren(listview2);
-                for(Goods g:list2){
-                    DataStatus data=g.getDataStatus();
-                    if(data.getElse_num()==1||data.getElse_num()==2){
-                        next_zt=true;
+                for (Goods g : list2) {
+                    DataStatus data = g.getDataStatus();
+                    if (data.getElse_num() == 1 || data.getElse_num() == 2) {
+                        next_zt = true;
                         newIntelligentSave.setEnabled(next_zt);
                         return;
                     }
                 }
-                next_zt=false;
+                next_zt = false;
                 newIntelligentSave.setEnabled(next_zt);
             }
 
@@ -947,35 +1171,57 @@ public class NewIntelligentActivity extends BaseMqttActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e("qqq", "onNewIntent onDestroy");
 
+    private String week = "1234567", time1 = "00:00", time2 = "00:00";
 
-    }
-
-    private String week="1234567",time1="00:00",time2="00:00";
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
-                if(resultCode==RESULT_OK){
-                    week=data.getStringExtra("week");
-                    time1=data.getStringExtra("time1");
-                    time2=data.getStringExtra("time2");
-                    if(week.equals("1234567")&&time1.equals(time2)){
+                if (resultCode == RESULT_OK) {
+                    week = data.getStringExtra("week");
+                    time1 = data.getStringExtra("time1");
+                    time2 = data.getStringExtra("time2");
+                    if (week.equals("1234567") && time1.equals(time2)) {
                         newIntelligentTimeLayoutTv2.setText("每天");
-                    }else if(week.equals("0000000")){
+                    } else if (week.equals("0000000")) {
                         newIntelligentTimeLayoutTv2.setText("永不");
-                    }else{
-                        newIntelligentTimeLayoutTv2.setText(time1+"-"+time2);
+                    } else {
+                        newIntelligentTimeLayoutTv2.setText(time1 + "-" + time2);
                     }
 
                 }
                 break;
         }
+
+    }
+
+
+    public void setNameZnG() {
+        final EditText et = new EditText(this);
+        et.setText("");
+        new AlertDialog.Builder(this).setTitle("修改智能名称")
+                .setView(et)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String input = et.getText().toString();
+                        if (input.equals("")) {
+                            Toast.makeText(getApplicationContext(), "名称不能为空！" + input, Toast.LENGTH_LONG).show();
+                            setNameZnG();
+                        } else {
+                            if (input.length() > 10) { //
+                                Toast.makeText(getApplicationContext(), "名称不能过长！" + input, Toast.LENGTH_LONG).show();
+                                setNameZnG();
+                                return;
+                            } else {
+                                zn_name = input;
+                                name.setText(zn_name);
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null).show();
 
     }
 
@@ -991,12 +1237,12 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                             Toast.makeText(getApplicationContext(), "名称不能为空！" + input, Toast.LENGTH_LONG).show();
                             setNameZn();
                         } else {
-                            if (input.length()>10){ //
+                            if (input.length() > 10) { //
                                 Toast.makeText(getApplicationContext(), "名称不能过长！" + input, Toast.LENGTH_LONG).show();
                                 setNameZn();
                                 return;
-                            }else{
-
+                            } else {
+                                push_save(input);
                             }
                         }
                     }
@@ -1004,4 +1250,372 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                 .setNegativeButton("取消", null).show();
 
     }
+
+    private ProgressDialog dialog;
+
+    public void showPro1() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("保存中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+
+    public void showPro2() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("修改中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+
+
+    public void push_save(final String name) { //保存数据
+        showPro1();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "logicadd");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("loname", name);
+                    jsonObject.put("week", week);
+                    jsonObject.put("timestart", time1);
+                    jsonObject.put("timeend", time2);
+                    jsonObject.put("pretype", pretype);
+                    JSONArray lopres = new JSONArray();
+                    if (list1 != null && list1.size() > 0) {
+                        for (Goods g : list1) {
+                            JSONObject lopresJsonObject = new JSONObject();
+                            int num = g.getNum();
+                            if (num <= 0 || num > 4) {
+                                handler.sendEmptyMessageDelayed(1002, 0);
+                                return;
+                            }
+                            lopresJsonObject.put("pretype", num);
+                            lopresJsonObject.put("displayleft", g.getLight());
+                            lopresJsonObject.put("displayright", g.getRight());
+                            DataStatus dataStatus = g.getDataStatus();
+                            if (num == 2) {
+                                lopresJsonObject.put("week", dataStatus.getNum2_week());
+                                lopresJsonObject.put("time", dataStatus.getNum2_time());
+                            } else if (num == 3) {
+                                lopresJsonObject.put("weathertype", dataStatus.getNum3_type());
+                                lopresJsonObject.put("wtype", dataStatus.getNum3_num());
+                                lopresJsonObject.put("wvalue", dataStatus.getNum3_num_var() + "");
+                                String city = (String) SharedPreferencesUtils.getParam(context, "city_main", "北京");
+                                lopresJsonObject.put("location", city);
+
+                            } else if (num == 4) {
+                                lopresJsonObject.put("sid", dataStatus.getNum4_sid());
+                                lopresJsonObject.put("conid", dataStatus.getNum4_num());
+                                lopresJsonObject.put("type", dataStatus.getNum4_type());
+                                lopresJsonObject.put("dname", dataStatus.getNum4_name());
+                            }
+                            lopres.put(lopresJsonObject);
+                        }
+                    }
+                    jsonObject.put("lopres", lopres);
+
+
+                    JSONArray locarrs = new JSONArray();
+                    int carrorder = 0;
+                    if (list2 != null && list2.size() > 0) {
+                        for (Goods g : list2) {
+                            JSONObject lopresJsonObject = new JSONObject();
+                            int num = g.getNum();
+                            if (num <= 0 || num > 3) {
+                                handler.sendEmptyMessageDelayed(1002, 0);
+                                return;
+                            }
+                            lopresJsonObject.put("carrorder", carrorder);  //执行顺序
+                            lopresJsonObject.put("carrtype", num);
+                            lopresJsonObject.put("displayleft", g.getLight());
+                            lopresJsonObject.put("displayright", g.getRight());
+                            DataStatus dataStatus = g.getDataStatus();
+                            if (num == 1) {
+                                lopresJsonObject.put("sid", dataStatus.getElse_num1_sid());
+                                lopresJsonObject.put("carrid", dataStatus.getElse_num1_num());
+                                lopresJsonObject.put("dname", dataStatus.getElse_num1_name());
+                                lopresJsonObject.put("type", dataStatus.getElse_num1_type());
+                            } else if (num == 2) {
+                            } else if (num == 3) {
+
+                                int time = dataStatus.getElse_num3_time();
+                                int h = time / 60 / 60;
+                                int m = (time % 3600) / 60;
+                                int s = (time % 3600) % 60;
+
+                                String s_h = "";
+                                String s_m = "";
+                                String s_s = "";
+                                if (h < 10) {
+                                    s_h = "0" + h;
+                                } else {
+                                    s_h = "" + h;
+                                }
+
+                                if (m < 10) {
+                                    s_m = "0" + m;
+                                } else {
+                                    s_m = "" + m;
+                                }
+                                if (s < 10) {
+                                    s_s = "0" + s;
+                                } else {
+                                    s_s = "" + s;
+                                }
+                                lopresJsonObject.put("delaytime", s_h + ":" + s_m + ":" + s_s);
+
+                            }
+                            locarrs.put(lopresJsonObject);
+                            carrorder++;
+                        }
+                    }
+                    jsonObject.put("locarrs", locarrs);
+
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+
+
+    public void push_set() { //保存数据
+        showPro1();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "updatelogic");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("loid", loid);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("loname",zn_name );
+                    jsonObject.put("week", week);
+                    jsonObject.put("timestart", time1);
+                    jsonObject.put("timeend", time2);
+                    jsonObject.put("pretype", pretype);
+                    JSONArray lopres = new JSONArray();
+                    if (list1 != null && list1.size() > 0) {
+                        for (Goods g : list1) {
+                            JSONObject lopresJsonObject = new JSONObject();
+                            int num = g.getNum();
+                            if (num <= 0 || num > 4) {
+                                handler.sendEmptyMessageDelayed(1002, 0);
+                                return;
+                            }
+                            lopresJsonObject.put("pretype", num);
+                            lopresJsonObject.put("displayleft", g.getLight());
+                            lopresJsonObject.put("displayright", g.getRight());
+                            DataStatus dataStatus = g.getDataStatus();
+                            if (num == 2) {
+                                lopresJsonObject.put("week", dataStatus.getNum2_week());
+                                lopresJsonObject.put("time", dataStatus.getNum2_time());
+                            } else if (num == 3) {
+                                lopresJsonObject.put("weathertype", dataStatus.getNum3_type());
+                                lopresJsonObject.put("wtype", dataStatus.getNum3_num());
+                                lopresJsonObject.put("wvalue", dataStatus.getNum3_num_var() + "");
+                                String city = (String) SharedPreferencesUtils.getParam(context, "city_main", "北京");
+                                lopresJsonObject.put("location", city);
+
+                            } else if (num == 4) {
+                                lopresJsonObject.put("sid", dataStatus.getNum4_sid());
+                                lopresJsonObject.put("conid", dataStatus.getNum4_num());
+                                lopresJsonObject.put("type", dataStatus.getNum4_type());
+                                lopresJsonObject.put("dname", dataStatus.getNum4_name());
+                            }
+                            lopres.put(lopresJsonObject);
+                        }
+                    }
+                    jsonObject.put("lopres", lopres);
+
+
+                    JSONArray locarrs = new JSONArray();
+                    int carrorder = 0;
+                    if (list2 != null && list2.size() > 0) {
+                        for (Goods g : list2) {
+                            JSONObject lopresJsonObject = new JSONObject();
+                            int num = g.getNum();
+                            if (num <= 0 || num > 3) {
+                                handler.sendEmptyMessageDelayed(1002, 0);
+                                return;
+                            }
+                            lopresJsonObject.put("carrorder", carrorder);  //执行顺序
+                            lopresJsonObject.put("carrtype", num);
+                            lopresJsonObject.put("displayleft", g.getLight());
+                            lopresJsonObject.put("displayright", g.getRight());
+                            DataStatus dataStatus = g.getDataStatus();
+                            if (num == 1) {
+                                lopresJsonObject.put("sid", dataStatus.getElse_num1_sid());
+                                lopresJsonObject.put("carrid", dataStatus.getElse_num1_num());
+                                lopresJsonObject.put("dname", dataStatus.getElse_num1_name());
+                                lopresJsonObject.put("type", dataStatus.getElse_num1_type());
+                            } else if (num == 2) {
+                            } else if (num == 3) {
+
+                                int time = dataStatus.getElse_num3_time();
+                                int h = time / 60 / 60;
+                                int m = (time % 3600) / 60;
+                                int s = (time % 3600) % 60;
+
+                                String s_h = "";
+                                String s_m = "";
+                                String s_s = "";
+                                if (h < 10) {
+                                    s_h = "0" + h;
+                                } else {
+                                    s_h = "" + h;
+                                }
+
+                                if (m < 10) {
+                                    s_m = "0" + m;
+                                } else {
+                                    s_m = "" + m;
+                                }
+                                if (s < 10) {
+                                    s_s = "0" + s;
+                                } else {
+                                    s_s = "" + s;
+                                }
+                                lopresJsonObject.put("delaytime", s_h + ":" + s_m + ":" + s_s);
+
+                            }
+                            locarrs.put(lopresJsonObject);
+                            carrorder++;
+                        }
+                    }
+                    jsonObject.put("locarrs", locarrs);
+
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "保存成功", Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+                case 1001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "保存失败，"+msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    break;
+                case 1002:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "数据异常，无法保存", Toast.LENGTH_LONG).show();
+                    break;
+
+
+                case 2000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "保存成功", Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+                case 2001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "保存失败，"+msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    break;
+
+                case 6777:
+                    name.setText(zn_name);
+                    if (list1.size() > 1) {
+                        if (pretype.equals("|")) {
+                            newIntelligentIf.setText("☰ 如果满足任意条件");
+                        } else {
+                            newIntelligentIf.setText("☰ 如果满足全部条件");
+                        }
+                    }
+                    if (list1.size() == 1) {
+                        if (list1.get(0).getNum() == 1) {
+                            newIntelligentConditionAdd.setVisibility(View.GONE);
+                            newIntelligentTimeLayoutTv.setTextColor(getResources().getColor(R.color.white2));
+                            newIntelligentTimeLayoutTv2.setTextColor(getResources().getColor(R.color.white2));
+                            newIntelligentTimeim.setBackgroundResource(R.drawable.zhu_btn_jr);
+                            zx_zt = true;
+                        } else {
+                            newIntelligentConditionAdd.setVisibility(View.VISIBLE);
+                            newIntelligentTimeLayoutTv.setTextColor(getResources().getColor(R.color.white));
+                            newIntelligentTimeLayoutTv2.setTextColor(getResources().getColor(R.color.white));
+                            newIntelligentTimeim.setBackgroundResource(R.drawable.gengduo);
+                            zx_zt = false;
+                        }
+
+                    }
+                    if (week.equals("1234567") && time1.equals(time2)) {
+                        newIntelligentTimeLayoutTv2.setText("每天");
+                    } else if (week.equals("0000000")) {
+                        newIntelligentTimeLayoutTv2.setText("永不");
+                    } else {
+                        newIntelligentTimeLayoutTv2.setText(time1 + "-" + time2);
+                    }
+                    adapter1.setList(list1);
+                    listview1.onRefreshComplete();
+                    adapter1.notifyDataSetChanged();
+                    setListViewHeightBasedOnChildren(listview1);
+
+                    adapter2.setList(list2);
+                    listview2.onRefreshComplete();
+                    adapter2.notifyDataSetChanged();
+                    setListViewHeightBasedOnChildren(listview2);
+
+                    for (Goods g : list2) {
+                        DataStatus data = g.getDataStatus();
+                        if (data.getElse_num() == 1 || data.getElse_num() == 2) {
+                            next_zt = true;
+                            newIntelligentSave.setEnabled(next_zt);
+                            return;
+                        }
+                    }
+                    next_zt = false;
+                    newIntelligentSave.setEnabled(next_zt);
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("qqq", "onNewIntent onDestroy");
+        handler.removeMessages(1000);
+        handler.removeMessages(1001);
+        handler.removeMessages(1002);
+        handler.removeMessages(6777);
+    }
+
 }

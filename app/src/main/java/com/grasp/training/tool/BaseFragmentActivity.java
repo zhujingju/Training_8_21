@@ -3,6 +3,7 @@ package com.grasp.training.tool;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,12 +39,12 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         // 优化输入法模式  
         int inputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
         getWindow().setSoftInputMode(inputMode);  
-        if (null != savedInstanceState) {  
-            //activity由系统加载的时候savedInstanceState不为空  
-        	startActivity(new Intent(this, MainActivity.class));
-            finish();
-            return;
-        }  
+//        if (null != savedInstanceState) {
+//            //activity由系统加载的时候savedInstanceState不为空
+//        	startActivity(new Intent(this, MainActivity.class));
+//            finish();
+//            return;
+//        }
         setContentView(setLayoutId());
 
         setContext(this);
@@ -52,8 +53,39 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         initObject();
         initListener() ;
         init();
+
     }
 
+
+
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        // TODO Auto-generated method stub
+//        super.onConfigurationChanged(newConfig);
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            setContentView(setLayoutId());
+//
+//            setContext(this);
+//            initData();
+//            initView();
+//            initObject();
+//            initListener() ;
+//            init();
+//
+////			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+////			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+//            setContentView(setLayoutId());
+//
+//            setContext(this);
+//            initData();
+//            initView();
+//            initObject();
+//            initListener() ;
+//            init();
+//        }
+//    }
 
     public  abstract int setLayoutId();   //获得布局
     public  abstract void initData() ;//初始化数据

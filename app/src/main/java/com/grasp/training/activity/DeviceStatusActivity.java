@@ -125,10 +125,12 @@ public class DeviceStatusActivity extends BaseActivity {
                 if(num!=-1){
                     if (if_else) {//跳到新建页
                         dataStatus.setElse_right(list.get(arg2).getName());
+                        dataStatus.setElse_num1_num(list.get(arg2).getId());
                         myActivityManage.removeAll();
                         NewIntelligentActivity.startActivity(getContext(), dataStatus, true,num);
                     }else{
                         dataStatus.setIf_right(list.get(arg2).getName());
+                        dataStatus.setNum4_num(list.get(arg2).getId());
                         myActivityManage.removeAll();
                         NewIntelligentActivity.startActivity(getContext(), dataStatus, false,num);
                     }
@@ -137,10 +139,12 @@ public class DeviceStatusActivity extends BaseActivity {
                 }
                 if (if_else) {//跳到新建页
                     dataStatus.setElse_right(list.get(arg2).getName());
+                    dataStatus.setElse_num1_num(list.get(arg2).getId());
                     myActivityManage.removeAll();
                     NewIntelligentActivity.startActivity(getContext(), dataStatus, "");
                 } else {  //跳到else页
                     dataStatus.setIf_right(list.get(arg2).getName());
+                    dataStatus.setNum4_num(list.get(arg2).getId());
                     myActivityManage.removeAll();
                     CarriedOutActivity.startCarriedOutActivity(getContext(), dataStatus, 0,0,0);
                 }

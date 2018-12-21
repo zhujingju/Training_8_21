@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+
+    >
+    <RelativeLayout
+
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/dip_5.0"
+        android:layout_marginRight="@dimen/dip_5.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_marginLeft="@dimen/dip_5.0"
+            android:id="@+id/kettle_in_notification_im1"
+            android:layout_width="@dimen/dip_32.0"
+            android:layout_height="@dimen/dip_32.0" />
+
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="开关"
+            android:layout_marginLeft="@dimen/dip_60.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/kettle_in_notification_im2"
+            android:layout_width="@dimen/dip_30.0"
+            android:layout_height="@dimen/dip_30.0" />
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="再沸"
+            android:layout_marginLeft="@dimen/dip_100.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/kettle_in_notification_im3"
+            android:layout_width="@dimen/dip_30.0"
+            android:layout_height="@dimen/dip_30.0" />
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="壶+"
+            android:layout_marginLeft="@dimen/dip_140.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/kettle_in_notification_im4"
+            android:layout_width="@dimen/dip_30.0"
+            android:layout_height="@dimen/dip_30.0" />
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="锅+"
+            android:layout_marginLeft="@dimen/dip_180.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/kettle_in_notification_im5"
+            android:layout_width="@dimen/dip_30.0"
+            android:layout_height="@dimen/dip_30.0" />
+
+        <Button
+            android:textSize="@dimen/dip_12.0"
+            android:textColor="@color/c_000000"
+            android:text="清洁"
+            android:layout_marginLeft="@dimen/dip_220.0"
+            android:background="@drawable/yuan"
+            android:id="@+id/kettle_in_notification_im6"
+            android:layout_width="@dimen/dip_30.0"
+            android:layout_height="@dimen/dip_30.0" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

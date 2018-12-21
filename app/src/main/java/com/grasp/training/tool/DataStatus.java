@@ -17,7 +17,7 @@ public class DataStatus implements Serializable {
     private String num4_name="";  //条件 智能设备的昵称
     private String num4_sid="";  //条件 智能设备的sid
     private String num4_type="";  //条件 智能设备的type
-    private String num4_num="";  //条件 智能设备的条件类型
+    private int num4_num;  //条件 智能设备的条件类型
 
     private String else_left="";  //结果 左边的显示
     private String else_right=""; //结果 右边的显示
@@ -26,9 +26,10 @@ public class DataStatus implements Serializable {
     private String else_num1_name="";  //结果 智能设备的昵称
     private String else_num1_sid="";  //结果 智能设备的sid
     private String else_num1_type="";  //结果 智能设备的type
-    private String else_num1_num="";  //结果 智能设备的条件类型
+    private int else_num1_num;  //结果 智能设备的条件类型
 
     private int else_num3_time=0;  //结果 延迟的时间
+
 
     public String getElse_left() {
         return else_left;
@@ -78,11 +79,19 @@ public class DataStatus implements Serializable {
         this.else_num1_type = else_num1_type;
     }
 
-    public String getElse_num1_num() {
+    public int getNum4_num() {
+        return num4_num;
+    }
+
+    public void setNum4_num(int num4_num) {
+        this.num4_num = num4_num;
+    }
+
+    public int getElse_num1_num() {
         return else_num1_num;
     }
 
-    public void setElse_num1_num(String else_num1_num) {
+    public void setElse_num1_num(int else_num1_num) {
         this.else_num1_num = else_num1_num;
     }
 
@@ -190,11 +199,5 @@ public class DataStatus implements Serializable {
         this.num4_type = num4_type;
     }
 
-    public String getNum4_num() {
-        return num4_num;
-    }
 
-    public void setNum4_num(String num4_num) {
-        this.num4_num = num4_num;
-    }
 }

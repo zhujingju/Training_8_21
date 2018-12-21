@@ -2,6 +2,7 @@ package com.grasp.training.fragmet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,14 +20,25 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.activity.ConditionActivity;
+import com.grasp.training.activity.NewIntelligentActivity;
+import com.grasp.training.service.MqttService;
 import com.grasp.training.swipemenulistview.SwipeMenu;
 import com.grasp.training.swipemenulistview.SwipeMenuCreator;
 import com.grasp.training.swipemenulistview.SwipeMenuItem;
 import com.grasp.training.swipemenulistview.SwipeMenuListView;
 import com.grasp.training.tool.BaseMqttFragment;
+import com.grasp.training.tool.DataStatus;
+import com.grasp.training.tool.SharedPreferencesUtils;
+import com.grasp.training.tool.Tool;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +55,16 @@ public class Scenario extends BaseMqttFragment {
     SwipeMenuListView listview;
     Unbinder unbinder;
 
-    private List<Goods> list ;
+    private List<Goods> list;
     private myListViewAdapter adapter;
-    private int posi=0;
+    private int posi = 0;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        dataListview();
+    }
+
     @Override
     public int getInflate() {
         return R.layout.scenario;
@@ -59,24 +78,196 @@ public class Scenario extends BaseMqttFragment {
 
     @Override
     public String getMyTopic() {
-        return null;
+        return MqttService.myTopicLogic;
     }
 
     @Override
     public String getMyTopicDing() {
-        return null;
+        return MqttService.myTopicLogic;
     }
 
     @Override
-    public void MyMessageArrived(String message) {
+    public void MyMessageArrived(final String message) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    String cmd = jsonObject.getString("cmd");
+                    String uname = jsonObject.optString("uname", "");  //
+                    if (!uname.equals(MainActivity.NameUser)) {
+                        return;
+                    }
+                    String clientid = jsonObject.optString("clientid", "");
+                    if (!clientid.equals(Tool.getIMEI(getContext()))) {
+                        Log.e("qqq", "home clientid=" + clientid);
+                        return;
+                    }
+                    Message m;
+                    String err;
+                    switch (cmd) {
+                        case "querylogic_ok":
+                            SharedPreferencesUtils.setParam(context,"Scenario",message);
+                            initData(message);
+                            break;
+                        case "querylogic_failed":
+                            err = jsonObject.optString("err", "");
+                            m = new Message();
+                            m.obj = err;
+                            m.what = 1001;
+                            handler.sendMessageDelayed(m, 500);
+                            break;
+
+                        case "deletelogic_ok":
+                            handler.sendEmptyMessageDelayed(2000,500);
+                            break;
+
+                        case "deletelogic_failed":
+                            err = jsonObject.optString("err", "");
+                            m = new Message();
+                            m.obj = err;
+                            m.what = 2001;
+                            handler.sendMessageDelayed(m, 500);
+                            break;
+
+                        case "carryoutlogic_ok":
+                            handler.sendEmptyMessageDelayed(3000,500);
+                            break;
+
+                        case "carryoutlogic_failed":
+                            err = jsonObject.optString("err", "");
+                            m = new Message();
+                            m.obj = err;
+                            m.what = 3001;
+                            handler.sendMessageDelayed(m, 500);
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    private void initData(String s) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            JSONArray jsonArray = jsonObject.optJSONArray("logics");
+            list = new ArrayList<>();
+            if (jsonArray != null) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    String loname = jsonObject1.optString("loname", "");
+                    int loid = jsonObject1.optInt("loid", -1);
+                    JSONArray jsonArray1=jsonObject1.optJSONArray("lopres");
+
+                    boolean l_zt=false;
+                    if(jsonArray1!=null&&jsonArray1.length()==1){
+                        JSONObject jso=jsonArray1.getJSONObject(0);
+                        int pretype=jso.optInt("pretype",-1);
+                        if(pretype==1){
+                            l_zt=true;
+                        }
+                    }
+
+                    Goods g = new Goods();
+                    g.setName(loname);
+                    g.setId(loid);
+                    g.setJson(jsonObject1.toString());
+                    g.setZt(l_zt);
+
+                    list.add(g);
+                }
+                adapter.setList(list);
+                handler.sendEmptyMessageDelayed(1000, 500);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
+    private ProgressDialog dialog;
+
+    public void showPro1() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("删除中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+    public void showPro3() {
+
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("发送中...");
+        dialog.setCancelable(true);
+
+        dialog.show();
+    }
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1000:
+                    adapter.notifyDataSetChanged();
+                    listview.onRefreshComplete();
+                    break;
+                case 1001:
+                    Toast.makeText(context, "获取失败，" + msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    break;
+
+                case 2000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "删除成功", Toast.LENGTH_LONG).show();
+                    list.remove(posi);
+                    adapter.setList(list);
+                    adapter.notifyDataSetChanged();
+                    listview.onRefreshComplete();
+                    break;
+
+                case 2001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "删除失败，" + msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    break;
+
+                case 3000:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "发送成功", Toast.LENGTH_LONG).show();
+                    break;
+
+                case 3001:
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    Toast.makeText(context, "发送失败，" + msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onDestroyView() {
+        handler.removeMessages(1000);
+        handler.removeMessages(1001);
+        handler.removeMessages(2000);
+        handler.removeMessages(2001);
         super.onDestroyView();
         unbinder.unbind();
+
     }
 
     @OnClick(R.id.scenario_add)
@@ -87,8 +278,11 @@ public class Scenario extends BaseMqttFragment {
 
     private void initListview() {
         listview.setCacheColorHint(0);
-        adapter=new myListViewAdapter(context, list);
-        dataListview();
+        adapter = new myListViewAdapter(context, list);
+        String sl=(String)SharedPreferencesUtils.getParam(context,"Scenario","");
+        if(!sl.equals("")){
+            initData(sl);
+        }
         listview.setAdapter(adapter);
         listview.setonRefreshListener(new SwipeMenuListView.OnRefreshListener() { //刷新
 
@@ -100,21 +294,19 @@ public class Scenario extends BaseMqttFragment {
         });
 
 
-
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long arg3) {
                 // TODO Auto-generated method stub
-
+                arg2--;
+                NewIntelligentActivity.startActivity(context, new DataStatus(), list.get(arg2).getJson());
             }
         });
 
 
-
         SwipeMenuCreator creator = new SwipeMenuCreator() {
-
 
 
             @Override
@@ -157,7 +349,6 @@ public class Scenario extends BaseMqttFragment {
         listview.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
 
 
-
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 Goods item = list.get(position);
@@ -172,7 +363,7 @@ public class Scenario extends BaseMqttFragment {
 //					list.remove(position);
 //					adapter.notifyDataSetChanged();
 
-                        posi=position;
+                        posi = position;
 
                         del();
 
@@ -197,16 +388,18 @@ public class Scenario extends BaseMqttFragment {
             }
         });
     }
+
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 getResources().getDisplayMetrics());
     }
-    private void del(){   //删除
+
+    private void del() {   //删除
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 context).setTitle(getString(R.string.shuru2) + "“"
                 + list.get(posi).getName() + "”");
-        builder.setPositiveButton(getString(R.string.alert_dialog_ok),new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
@@ -219,68 +412,74 @@ public class Scenario extends BaseMqttFragment {
                 getString(R.string.alert_dialog_cancel), null);
         builder.show();
     }
-    private void delData() { // del
 
+    private void delData() { // del
+        showPro1();
+        push_del();
     }
 
 
     public void dataListview() {  //获取list数据
-        list=new ArrayList<>();
-        Goods goods=new Goods();
-        goods.setName("起床场景");
-        goods.setZt(true);
-        Goods goods2=new Goods();
-        goods2.setName("离家场景");
-        Goods goods3=new Goods();
-        goods3.setName("回家场景");
+        push_read();
 
-        Goods goods4=new Goods();
-        goods4.setName("用餐场景");
+    }
 
-        Goods goods5=new Goods();
-        goods5.setName("会客场景");
+    public void push_read() {  //获取状态
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        Goods goods6=new Goods();
-        goods6.setName("睡眠场景");
-        list.add(goods);
-        list.add(goods2);
-        list.add(goods3);
-        list.add(goods4);
-        list.add(goods5);
-        list.add(goods6);
-        adapter.setList(list);
-        ha.sendEmptyMessageDelayed(100,500);
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "querylogic");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }
 
-    Handler ha=new Handler() {
-        String xx;
+    public void push_del() {  //删除
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        @Override
-        public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 100:
-
-                    adapter.notifyDataSetChanged();
-                    listview.onRefreshComplete();
-                    break;
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "deletelogic");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("loid", list.get(posi).getId());
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-    };
+        }).start();
+
+
+    }
+
 
     class myListViewAdapter extends BaseAdapter {
 
         LayoutInflater inflater = null;
         private Context context;
-        private List<Goods> list=null;
+        private List<Goods> list = null;
 
-        public myListViewAdapter(Context context,List<Goods> list) {
-            this.context=context;
-            this.list=list;
-            inflater = ((Activity)(context)).getLayoutInflater();
+        public myListViewAdapter(Context context, List<Goods> list) {
+            this.context = context;
+            this.list = list;
+            inflater = ((Activity) (context)).getLayoutInflater();
         }
 
 
@@ -289,16 +488,14 @@ public class Scenario extends BaseMqttFragment {
         }
 
 
-
         public void setList(List<Goods> list) {
             this.list = list;
         }
 
 
-
         @Override
         public int getCount() {
-            if(list!=null){
+            if (list != null) {
                 return list.size();
             }
             return 0;
@@ -306,7 +503,7 @@ public class Scenario extends BaseMqttFragment {
 
         @Override
         public Goods getItem(int arg0) {
-            if(list!=null){
+            if (list != null) {
                 return list.get(arg0);
             }
             return null;
@@ -318,36 +515,35 @@ public class Scenario extends BaseMqttFragment {
         }
 
         @Override
-        public View getView( int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
-            View view=convertView;
-            Goods camera= getItem(position);
+            View view = convertView;
+            Goods camera = getItem(position);
             ListViewTool too;
-            onClick onClick=null;
-            if(convertView==null){
+            onClick onClick = null;
+            if (convertView == null) {
                 view = inflater.inflate(R.layout.items_scenario, parent, false);
-                too=new ListViewTool();
+                too = new ListViewTool();
 //
-                too.name=(TextView) view.findViewById(R.id.items_scenario_tv);
-                too.zx=(TextView) view.findViewById(R.id.items_scenario_tv2);
+                too.name = (TextView) view.findViewById(R.id.items_scenario_tv);
+                too.zx = (TextView) view.findViewById(R.id.items_scenario_tv2);
 
 
                 view.setTag(too);
-            }
-            else {
+            } else {
                 too = (ListViewTool) view.getTag();
             }
-            if(camera == null) return null;
+            if (camera == null) return null;
             // too.del.setOnClickListener(click);
 
             //  too.up.setTag(position);
-            onClick=new onClick();
+            onClick = new onClick();
             too.zx.setTag(position);
             too.zx.setOnClickListener(onClick);
             too.name.setText(camera.getName());
-            if(camera.isZt()){
+            if (camera.isZt()) {
                 too.zx.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 too.zx.setVisibility(View.GONE);
             }
 
@@ -356,18 +552,20 @@ public class Scenario extends BaseMqttFragment {
 
         class ListViewTool {
 
-            public TextView name, zx ;
+            public TextView name, zx;
         }
 
-        class onClick implements View.OnClickListener{
+        class onClick implements View.OnClickListener {
 
 
             @Override
             public void onClick(View v) {
                 int position;
                 position = (Integer) v.getTag();
-                Log.e("qqq","执行="+list.get(position).getName());
-
+//                Log.e("qqq", "执行=" + list.get(position).getName());
+//                Toast.makeText(context,"发送成功",Toast.LENGTH_LONG).show();
+                push_song(list.get(position).getId());
+                showPro3();
             }
         }
     }
@@ -376,6 +574,24 @@ public class Scenario extends BaseMqttFragment {
     class Goods {
         private String name;
         private boolean zt;
+        private int id;
+        private String json;
+
+        public String getJson() {
+            return json;
+        }
+
+        public void setJson(String json) {
+            this.json = json;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
 
         public boolean isZt() {
             return zt;
@@ -392,5 +608,29 @@ public class Scenario extends BaseMqttFragment {
         public void setName(String name) {
             this.name = name;
         }
+    }
+
+
+    public void push_song(final int loid) {  //
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "carryoutlogic");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("loid",loid);
+                    String js = jsonObject.toString();
+                    publish_String(js);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
     }
 }
