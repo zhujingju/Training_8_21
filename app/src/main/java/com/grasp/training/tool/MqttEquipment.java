@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.grasp.training.service.MqttService;
@@ -87,6 +88,11 @@ public abstract class MqttEquipment {
 
     }
 
+    public void initV(){
+        doRegisterReceiver();
+
+//        onStart();
+    }
     public String getSid() {
         return sid;
     }
@@ -123,11 +129,20 @@ public abstract class MqttEquipment {
     /**
      * 注册广播接收者
      */
+    public boolean mReceiverTag = false; //广播接受者标识位
     private void doRegisterReceiver() {
-        mReceiver = new ContentReceiver();
-        IntentFilter filter = new IntentFilter(
-                "com.grasp.training.service.content");
-        context.registerReceiver(mReceiver, filter);
+        if (!mReceiverTag&&context!=null) {
+        Log.e("qqq","doRegisterReceiver ");
+
+            mReceiver = new ContentReceiver();
+            IntentFilter filter = new IntentFilter(
+                    "com.grasp.training.service.content");
+            LocalBroadcastManager.getInstance(context).registerReceiver(mReceiver, filter);
+//            context.registerReceiver(mReceiver, filter);
+            mReceiverTag = true;//设置广播标识位为true
+        }
+
+
     }
 
 
@@ -170,13 +185,34 @@ public abstract class MqttEquipment {
         ha.removeMessages(3000);
         myHander.removeMessages(1);
         myHander.removeMessages(2);
-        if (mReceiver != null) {
+        Log.e("qqq","doRegisterReceiver  ond");
+        if (mReceiver != null&&mReceiverTag) {
             Log.e("qqq","onde mReceiver");
-           context.unregisterReceiver(mReceiver);
+            try {
+                mReceiverTag = false;//设置广播标识位为false
+//                context.unregisterReceiver(mReceiver);
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(mReceiver);
+            } catch (IllegalArgumentException e) {
+                if (e.getMessage().contains("Receiver not registered")) {
+                    // Ignore this exception. This is exactly what is desired
+                } else {
+                    // unexpected, re-throw
+                    throw e;
+                }
+            }
         }
         if(networkChangeReceiver!=null){
+            try {
+                context.unregisterReceiver(networkChangeReceiver);
+            } catch (IllegalArgumentException e) {
+                if (e.getMessage().contains("Receiver not registered")) {
+                    // Ignore this exception. This is exactly what is desired
+                } else {
+                    // unexpected, re-throw
+                    throw e;
+                }
+            }
 
-            context.unregisterReceiver(networkChangeReceiver);
         }
 //        canlce();
     }

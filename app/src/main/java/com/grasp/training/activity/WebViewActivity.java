@@ -74,6 +74,13 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_name", dname);
+    }
+
+    @Override
     public String getMyTopic() {
         return myTopic;
     }
@@ -101,6 +108,10 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
         sid = getIntent().getStringExtra(WebViewActivity1);
         type = getIntent().getStringExtra(WebViewActivity2);
         dname = getIntent().getStringExtra(WebViewActivity3);
+        if (getSavedInstanceState() != null) {
+//
+            dname = getSavedInstanceState().getString("get_name", ":");
+        }
         url = getIntent().getStringExtra(WebViewActivity4);
         myTopicding = "iotbroad/iot/" + type + "_ack/" + sid;
         myTopic = "iotbroad/iot/" + type + "/" + sid;

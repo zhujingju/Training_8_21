@@ -109,8 +109,34 @@ public class MainActivity extends BaseMqttFragmentActivity {
     @BindView(R.id.viewpager)
     MyViewPager viewPager;
 
-
+    Robot robot ;
+    Personal personal ;
+    Scenario scenario;
+    SmartHomeMain smartHomeMain;
     private List<Fragment> fragments;// Tab页面列表
+
+
+
+
+    	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+//		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+////			setContentView(setLayoutId());
+//			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+////			setContentView(setLayoutId());
+//		}
+            setContentView(setLayoutId());
+            setContext(this);
+            initData();
+            initView();
+            initListener() ;
+            init2();
+	}
 
     @Override
     public int setLayoutId() {
@@ -123,6 +149,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         myActivityManage.removeA(this);
         activity = this;
         MqttService.appZt=true;
+        handler.removeMessages(1000);
     }
 
     @Override
@@ -142,8 +169,8 @@ public class MainActivity extends BaseMqttFragmentActivity {
             inData();
         }
 
-        ImageLoader.getInstance().clearDiskCache();
-        ImageLoader.getInstance().clearMemoryCache();
+//        ImageLoader.getInstance().clearDiskCache();
+//        ImageLoader.getInstance().clearMemoryCache();
 
 
     }
@@ -159,10 +186,8 @@ public class MainActivity extends BaseMqttFragmentActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 
-    SmartHomeMain smartHomeMain;
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
     @Override
     public void init() {
 //        mainSbTv.setLetterSpacing(0.2f);
@@ -171,21 +196,46 @@ public class MainActivity extends BaseMqttFragmentActivity {
 //        initFragment2(new SmartHome());
         NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
         fragments = new ArrayList<Fragment>();
-//        SmartHome smartHome = new SmartHome();
-//        SmartHome smartHome2 = new SmartHome();
-        Robot robot = new Robot();
-        Personal personal = new Personal();
-
+        robot = new Robot();
+        personal = new Personal();
+        scenario=new Scenario();
         smartHomeMain=new SmartHomeMain();
         fragments.add(smartHomeMain);
-        fragments.add(new Scenario());
+        fragments.add(scenario);
         fragments.add(robot);
         fragments.add(personal);
 
+        myPagerAdapter=new myPagerAdapter(getSupportFragmentManager(), fragments);
+        viewPager.setAdapter(myPagerAdapter);
+        myPagerAdapter.setFragments(fragments);
+        viewPager.setCurrentItem(post);
+        setLin(post);
 
-        viewPager.setAdapter(new myPagerAdapter(getSupportFragmentManager(), fragments));
-        viewPager.setCurrentItem(0);
-        setLin(0);
+
+    }
+    myPagerAdapter myPagerAdapter;
+    public void init2() {
+//        mainSbTv.setLetterSpacing(0.2f);
+//        mainYkTv.setLetterSpacing(0.2f);
+//        mainDhTv.setLetterSpacing(0.2f);
+//        initFragment2(new SmartHome());
+        NameUser = SharedPreferencesUtils.getParam(getContext(), MyApplication.NAME_USER, "").toString();
+
+//        fragments = new ArrayList<Fragment>();
+//        robot = new Robot();
+//        personal = new Personal();
+//        scenario=new Scenario();
+//        smartHomeMain=new SmartHomeMain();
+//        fragments.add(smartHomeMain);
+//        fragments.add(scenario);
+//        fragments.add(robot);
+//        fragments.add(personal);
+
+        myPagerAdapter=new myPagerAdapter(getSupportFragmentManager(), fragments);
+        viewPager.setAdapter(myPagerAdapter);
+        myPagerAdapter.setFragments(fragments);
+        viewPager.setCurrentItem(post);
+        setLin(post);
 
 
     }
@@ -369,7 +419,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         }
     }
 
-
+    private int post=0;
     /**
      * 定义适配器
      */
@@ -406,6 +456,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
             super.setPrimaryItem(container, position, object);
             fragmentsList.get(position);
             setLin(position);
+            post=position;
         }
 
         @Override
@@ -415,7 +466,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
         }
 
         //使用此方法刷新数据 每次都要NEW一个新的List，不然没有刷新效果 转至http://blog.sina.com.cn/s/blog_783ede03010173b4.html
-        public void setFragments(ArrayList<Fragment> fragments) {
+        public void setFragments(List<Fragment> fragments) {
             if (fragments != null) {
                 FragmentTransaction ft = fm.beginTransaction();
                 for (Fragment f : fragments) {
@@ -503,10 +554,7 @@ public class MainActivity extends BaseMqttFragmentActivity {
     }
 
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
+
 
 
     private ClientCore clientCore;

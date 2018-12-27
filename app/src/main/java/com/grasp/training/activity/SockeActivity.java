@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -57,16 +59,60 @@ public class SockeActivity extends BaseTcpMqttActpvity implements View.OnClickLi
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_name", dname);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+//		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+////			setContentView(setLayoutId());
+//			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+////			setContentView(setLayoutId());
+//		}
+        setContentView(setLayoutId());
+        setContext(this);
+        initData();
+        initView();
+        initObject();
+        initListener() ;
+        init();
+    }
+
+    @Override
     public int setLayoutId() {
         return R.layout.socke_activity;
+
     }
 
     @Override
     public void initData() {
         context = getContext();
+        handler.removeMessages(1666);
+        handler.removeMessages(1667);
+        handler.removeMessages(1000);
+        handler.removeMessages(2000);
+        handler.removeMessages(2001);
+        handler.removeMessages(3000);
+        handler.removeMessages(4000);
+        handler.removeMessages(5000);
+        handler.removeMessages(6000);
+        handler.removeMessages(233);
+        handler.removeMessages(2222);
         sid = getIntent().getStringExtra(socket);
         dname= getIntent().getStringExtra(socket2);
-        myTopicding = "iotbroad/iot/socket_ack/" + sid;
+
+        if (getSavedInstanceState() != null) {
+//
+            dname = getSavedInstanceState().getString("get_name", ":");
+        }
+            myTopicding = "iotbroad/iot/socket_ack/" + sid;
         myTopic = "iotbroad/iot/socket/" + sid;
 
 //        handler.sendEmptyMessageDelayed(2222,1000);

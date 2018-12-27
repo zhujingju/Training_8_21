@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.liangmutian.mypicker.TimePickerDialog3;
 import com.grasp.training.R;
@@ -53,6 +54,15 @@ public class NewIntelligentTimeActivity extends BaseActivity {
         in.putExtra("NewIntelligentTimeActivity3", time2);
         ((Activity)context).startActivityForResult(in,1);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_week", week);
+        outState.putString("get_time1", time1);
+        outState.putString("get_time2", time2);
+    }
     @Override
     public int setLayoutId() {
         return R.layout.new_intelligent_time_activity;
@@ -66,6 +76,20 @@ public class NewIntelligentTimeActivity extends BaseActivity {
         week=in.getStringExtra("NewIntelligentTimeActivity");
         time1=in.getStringExtra("NewIntelligentTimeActivity2");
         time2=in.getStringExtra("NewIntelligentTimeActivity3");
+
+        if (getSavedInstanceState() != null) {
+//
+            week = getSavedInstanceState().getString("get_week", ":");
+            time1 = getSavedInstanceState().getString("get_time1", "");
+            time2 = getSavedInstanceState().getString("get_time2", "");
+            if (week.equals("")) {
+                Toast.makeText(getContext(), "页面被系统回收", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+//            Log.e("qqq", "json=" + js);
+        }
+
         String s1[]=time1.split(":");
         if(s1.length==2){
             on_h=Integer.valueOf(s1[0]);

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -64,7 +65,8 @@ public abstract class BaseMqttFragment extends Fragment {
         mReceiver=new ContentReceiver();
         IntentFilter filter = new IntentFilter(
                 "com.grasp.training.service.content");
-        context.registerReceiver(mReceiver, filter);
+//        context.registerReceiver(mReceiver, filter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(mReceiver, filter);
     }
 
 
@@ -84,8 +86,10 @@ public abstract class BaseMqttFragment extends Fragment {
     public class ContentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("message");
-            MyMessageArrived(message);
+            new Thread(() -> {
+                String message = intent.getStringExtra("message");
+                MyMessageArrived(message);
+            }).start();
         }
     }
 
@@ -113,7 +117,8 @@ public abstract class BaseMqttFragment extends Fragment {
         }
 
         if (mReceiver!=null) {
-            context.unregisterReceiver(mReceiver);
+//            context.unregisterReceiver(mReceiver);
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(mReceiver);
         }
     }
 

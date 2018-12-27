@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -73,6 +74,32 @@ public class SwitchActivity extends BaseTcpMqttActpvity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_name", dname);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+//		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+////			setContentView(setLayoutId());
+//			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+////			setContentView(setLayoutId());
+//		}
+        setContentView(setLayoutId());
+        setContext(this);
+        initData();
+        initView();
+        initObject();
+        initListener() ;
+        init();
+    }
+    @Override
     public String getMyTopic() {
         return myTopic;
     }
@@ -97,9 +124,22 @@ public class SwitchActivity extends BaseTcpMqttActpvity {
     public void initData() {
         ButterKnife.bind(this);
         context = getContext();
+        handler.removeMessages(1000);
+        handler.removeMessages(2000);
+        handler.removeMessages(2001);
+        handler.removeMessages(3000);
+        handler.removeMessages(4000);
+        handler.removeMessages(5000);
+        handler.removeMessages(6000);
+        handler.removeMessages(233);
         sid = getIntent().getStringExtra(SwitchActivity1);
         type = getIntent().getStringExtra(SwitchActivity2);
         dname = getIntent().getStringExtra(SwitchActivity3);
+
+        if (getSavedInstanceState() != null) {
+//
+            dname = getSavedInstanceState().getString("get_name", ":");
+        }
         myTopicding = "iotbroad/iot/" + type + "_ack/" + sid;
         myTopic = "iotbroad/iot/" + type + "/" + sid;
         if (sid == null || type == null) {

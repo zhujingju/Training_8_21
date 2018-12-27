@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.grasp.training">
 
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_OWNER_DATA" />
@@ -32,6 +30,21 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+    <uses-permission android:name="android.permission.MASTER_CLEAR" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!--<uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />-->
+    <!--&lt;!&ndash;<uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />&ndash;&gt;-->
+    <!--<uses-permission android:name="android.permission.GET_TASKS" />-->
+    <!--<uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />-->
+    <!--<uses-permission android:name="android.permission.FORCE_STOP_PACKAGES"></uses-permission>-->
+    <!--<uses-permission android:name="android.permission.UPDATE_DEVICE_STATS"></uses-permission>-->
+
 
     <application
         android:name=".tool.MyApplication"
@@ -44,7 +57,7 @@
         tools:replace="android:icon, android:theme">
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
@@ -58,161 +71,161 @@
 
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.LoginActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.ControlActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.RegisteredActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".Umeye_sdk.AcSearchDevice"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.Robote_add_activity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.AddTimingActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.TimingActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SearchActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SockeActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.EquipmentActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.ChangePasswordActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SetPersonalActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SwitchActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.EquipmentUpdataActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.WebViewActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.LightActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
         android:name=".activity.FeedbackActivity"
         android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.RetrievePasswordActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.SetPhoneActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.VerifyPhoneActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.CycleActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
         android:name=".activity.ConditionActivity"
         android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.CarriedOutActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.NewIntelligentActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan">
 
         </activity>
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.ConditionTimingActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.OutdoorWeatherActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.SetOutdoorWeatherActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.RoomActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".activity.SmartDeviceActivity"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
             android:name=".activity.DeviceStatusActivity"
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
             android:name=".activity.NewIntelligentTimeActivity"
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".activity.ScanActivity"
             android:launchMode="singleTask"
-            android:configChanges="orientation"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
 
         <service android:name=".service.MqttService"></service>

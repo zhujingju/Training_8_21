@@ -1,13 +1,17 @@
 package com.grasp.training.tool;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Build;
 import android.util.Log;
 
 import java.lang.reflect.Constructor;
@@ -31,11 +35,19 @@ public class WifiAdmin {
     private List<WifiConfiguration> mWifiConfiguration;
     private WifiLock mWifiLock;
     private DhcpInfo dhcpInfo;
-
+    private Context context;
 
     public WifiAdmin(Context context) {
+
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
+//            mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+//            mWifiInfo = mWifiManager.getConnectionInfo();
+//        } else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1) {
+//
+//        }
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         mWifiInfo = mWifiManager.getConnectionInfo();
+        this.context=context;
     }
 
     public boolean openWifi() {//打开wifi
@@ -99,6 +111,27 @@ public class WifiAdmin {
         } else {
         }
 
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
+//
+//
+//
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//                return mWifiInfo.getSSID();
+//            } else {
+//                return mWifiInfo.getSSID().replace("\"", "");
+//            }
+//        } else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1){
+//
+//            ConnectivityManager connManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+//            assert connManager != null;
+//            NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+//            if (networkInfo.isConnected()) {
+//                if (networkInfo.getExtraInfo()!=null){
+//                    return networkInfo.getExtraInfo().replace("\"","");
+//                }
+//            }
+//        }
+
     }
 
     public List<ScanResult> getWifiList() {
@@ -146,15 +179,14 @@ public class WifiAdmin {
 
     public boolean addNetwork(WifiConfiguration wcg) { // 添加一个网络配置并连接
 //        int wcgID = mWifiManager.addNetwork(wcg);
-//        mWifiManager.disableNetwork(wcgID);
+////        mWifiManager.disableNetwork(wcgID);
 //        boolean b = mWifiManager.enableNetwork(wcgID, true);
-//        Log.e("qqq","wcgID="+wcgID);
-//	        System.out.println("addNetwork--" + wcgID);
-//	        System.out.println("enableNetwork--" + b);
-//	        System.out.println("addNetwork2 " + wcg);
-
+//        Log.e("addNetwork","wcgID="+wcgID);
+//	        System.out.println("addNetwork addNetwork--" + wcgID);
+//	        System.out.println("addNetwork enableNetwork--" + b);
+//	        System.out.println("addNetwork addNetwork2 " + wcg);
+//        Log.e("wcg","wcg="+wcg);
         boolean b=false;
-
         try {
             b=setStaticIpConfiguration(mWifiManager, wcg,
                     InetAddress.getByName("192.168.5.5"), 24,
@@ -236,27 +268,44 @@ public class WifiAdmin {
     //然后是一个实际应用方法，只验证过没有密码的情况：
 
     public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
+        Log.e("qqq","SSID="+SSID+" Password="+Password+" Type"+Type);
         WifiConfiguration config = new WifiConfiguration();
         config.allowedAuthAlgorithms.clear();
         config.allowedGroupCiphers.clear();
         config.allowedKeyManagement.clear();
         config.allowedPairwiseCiphers.clear();
         config.allowedProtocols.clear();
+//        config.priority = 40;
         config.SSID = "\"" + SSID + "\"";
-
-
+        Log.e("netId","config.BSSID" +" "+ config.BSSID);
+//        Log.e("networkId","config.networkId" +" "+ config.networkId);
         WifiConfiguration tempConfig = this.IsExsits(config.SSID);
         if (tempConfig != null) {
 //	              mWifiManager.removeNetwork(tempConfig.networkId);
+            Log.e("netId","tempConfig!=" +null);
+//            mWifiManager.removeNetwork(tempConfig.networkId);
             return tempConfig;
         }
-
+        Log.e("netId","Type=" +" "+ Type);
         if (Type == AUTH_NOPASS) //WIFICIPHER_NOPASS
         {
             config.hiddenSSID = true;
             config.wepKeys[0] = "\"" + ""+ "\"";
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
             config.wepTxKeyIndex = 0;
+
+
+//            config.preSharedKey = null;
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.allowedAuthAlgorithms.clear();
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
         }
         if (Type == AUTH_WEP) //WIFICIPHER_WEP
         {
@@ -352,10 +401,16 @@ public class WifiAdmin {
 
         System.out.println("ttttttttttt" + "成功");
 
+//        manager.disconnect();
         int netId = manager.addNetwork(config);
+//        int netId = config.networkId;
+        Log.e("netId","netId="+netId+"");
+//
         manager.disableNetwork(netId);
+
+
         boolean  flag  = manager.enableNetwork(netId, true);
-        Log.e("netId",netId+"");
+
         Log.e("flag",flag+"");
 
         return flag;
@@ -442,6 +497,44 @@ public class WifiAdmin {
         Class clz = Class.forName(className);
         Constructor constructor = clz.getConstructor(parameterClasses);
         return constructor.newInstance(parameterValues);
+    }
+
+
+
+    //## 获取SSID 的方法如下
+
+    /**
+     * 获取SSID
+     * @param activity 上下文
+     * @return  WIFI 的SSID
+     */
+    public String getWIFISSID(Activity activity) {
+        String ssid="unknown id";
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
+
+            WifiManager mWifiManager = (WifiManager) activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+            assert mWifiManager != null;
+            WifiInfo info = mWifiManager.getConnectionInfo();
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                return info.getSSID();
+            } else {
+                return info.getSSID().replace("\"", "");
+            }
+        } else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1){
+
+            ConnectivityManager connManager = (ConnectivityManager) activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            assert connManager != null;
+            NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+            if (networkInfo.isConnected()) {
+                if (networkInfo.getExtraInfo()!=null){
+                    return networkInfo.getExtraInfo().replace("\"","");
+                }
+            }
+        }
+        return ssid;
     }
 
 }

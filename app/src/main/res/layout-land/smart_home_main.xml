@@ -52,7 +52,7 @@
                 android:layout_marginTop="@dimen/dip_5.0"
                 android:layout_marginLeft="@dimen/dip_10.0"
                 android:layout_marginRight="@dimen/dip_10.0"
-                android:layout_width="@dimen/dip_60.0"
+                android:layout_width="@dimen/dip_80.0"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"

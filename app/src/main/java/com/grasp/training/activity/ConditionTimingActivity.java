@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.liangmutian.mypicker.TimePickerDialog3;
 import com.grasp.training.R;
@@ -59,6 +60,13 @@ public class ConditionTimingActivity extends BaseActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_week", week);
+        outState.putString("get_time", time);
+    }
+    @Override
     public int setLayoutId() {
         return R.layout.condition_timing_activity;
     }
@@ -71,6 +79,15 @@ public class ConditionTimingActivity extends BaseActivity {
         num=getIntent().getIntExtra("ConditionTimingActivity2",-1);
         context=this;
         takePhotoPopWin = new WeekPopwinDialog(context);
+
+
+        if (getSavedInstanceState() != null) {
+//
+            week = getSavedInstanceState().getString("get_week", "");
+            time = getSavedInstanceState().getString("get_time", "");
+//            Log.e("qqq", "json=" + js);
+        }
+
         if(week!=null){
             setWeekView(week);
         }

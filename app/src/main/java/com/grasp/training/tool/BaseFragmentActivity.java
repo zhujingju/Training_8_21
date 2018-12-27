@@ -25,14 +25,15 @@ import java.util.List;
 
 
 public abstract class BaseFragmentActivity extends FragmentActivity {
-
+    private Bundle savedInstanceState;
 	private Context context;
 	  Resources res; // 通用资源缩写
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);// 不显示标题
 //        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        super.onCreate(savedInstanceState);  
+        super.onCreate(savedInstanceState);
+        this.savedInstanceState=savedInstanceState;
         myActivityManage.addActivity(this);
         res = getResources(); // 通用资源缩写  
         
@@ -58,7 +59,9 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 
 
 
-
+    public Bundle getSavedInstanceState() {
+        return savedInstanceState;
+    }
 //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
 //        // TODO Auto-generated method stub

@@ -18,6 +18,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -123,7 +124,7 @@ public class MqttService extends Service {
         Intent intent = new Intent();
         intent.setAction("com.grasp.training.service.content");
         intent.putExtra("message", message);
-        sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 
@@ -159,6 +160,8 @@ public class MqttService extends Service {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        sendContentBroadcast(message);
+
                         try {
                             JSONObject jsonObject = new JSONObject(message);
                             String cmd = jsonObject.getString("cmd");
@@ -175,6 +178,7 @@ public class MqttService extends Service {
                                     if (sid_ip == null) {
                                         return;
                                     }
+                                    ping_zt=false;
                                     String f_ip = jsonObject.optString("ip", "");
                                     String f_sid = jsonObject.optString("sid", "");
                                     Log.e("qqq", "wifi_equipment_ping_ack " + f_ip + "  " + f_sid);
@@ -272,7 +276,7 @@ public class MqttService extends Service {
                     }
                 }).start();
 
-                sendContentBroadcast(message);
+
             }
 
             @Override

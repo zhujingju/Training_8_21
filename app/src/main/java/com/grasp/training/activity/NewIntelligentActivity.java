@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +97,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     private String json;
     private String zn_name;
     private int loid = 0;
+
 
     public static void startActivity(Context context, DataStatus dataStatus, String json) {
         Intent in = new Intent(context, NewIntelligentActivity.class);
@@ -149,11 +152,6 @@ public class NewIntelligentActivity extends BaseMqttActivity {
         context = getContext();
 
 
-        if (tiao_num != -1) {
-            Toast.makeText(context, "页面被系统回收", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
         if (dataStatus.getIf_num() == 1) {
             newIntelligentConditionAdd.setVisibility(View.GONE);
             newIntelligentTimeLayoutTv.setTextColor(getResources().getColor(R.color.white2));
@@ -186,11 +184,32 @@ public class NewIntelligentActivity extends BaseMqttActivity {
             next_zt = false;
         }
         newIntelligentSave.setEnabled(next_zt);
+        if (list1 != null) {
+            Log.e("qqq", "list.s" + list1.size());
+        }
         initListview2();
         initListview1();
-        if (zt) {
-            initJson(json);
+
+
+        if (getSavedInstanceState() != null) {
+//
+            String js = getSavedInstanceState().getString("get_s", "");
+//            Log.e("qqq", "json=" + js);
+            if (js.equals("")) {
+                Toast.makeText(context, "页面被系统回收", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }else{
+                initJson(js);
+                zt=getSavedInstanceState().getBoolean("get_zt", false);
+            }
+        } else {
+
+            if (zt) {
+                initJson(json);
+            }
         }
+
 
     }
 
@@ -338,7 +357,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     }
 
     private void initJson(final String json) {
-        Log.e("qqq","json="+json);
+        Log.e("qqq", "json=" + json);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -427,7 +446,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                                 g.setNum(carrtype);
                                 g.setLight(displayleft);
                                 g.setRight(displayright);
-                                Log.e("qqq","carrtype="+carrtype);
+                                Log.e("qqq", "carrtype=" + carrtype);
                                 if (carrtype == 1) {
                                     DataStatus dataStatus = new DataStatus();
                                     dataStatus.setElse_left(displayleft);
@@ -442,23 +461,23 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                                     dataStatus.setElse_num1_sid(sid);
                                     dataStatus.setElse_num1_name(dname);
                                     g.setDataStatus(dataStatus);
-                                }else if (carrtype == 2) {
+                                } else if (carrtype == 2) {
                                     DataStatus dataStatus = new DataStatus();
                                     dataStatus.setElse_left(displayleft);
                                     dataStatus.setElse_right(displayright);
                                     dataStatus.setElse_num(carrtype);
                                     g.setDataStatus(dataStatus);
-                                }else if (carrtype == 3) {
+                                } else if (carrtype == 3) {
                                     DataStatus dataStatus = new DataStatus();
                                     dataStatus.setElse_left(displayleft);
                                     dataStatus.setElse_right(displayright);
                                     dataStatus.setElse_num(carrtype);
                                     String delaytime = js.optString("delaytime");
-                                    String delaytimess[]=delaytime.split(":");
-                                    if(delaytimess.length==3){
-                                        int time=Integer.valueOf(delaytimess[0])*60*60+Integer.valueOf(delaytimess[1])*60+Integer.valueOf(delaytimess[2]);
+                                    String delaytimess[] = delaytime.split(":");
+                                    if (delaytimess.length == 3) {
+                                        int time = Integer.valueOf(delaytimess[0]) * 60 * 60 + Integer.valueOf(delaytimess[1]) * 60 + Integer.valueOf(delaytimess[2]);
                                         dataStatus.setElse_num3_time(time);
-                                    }else{
+                                    } else {
                                         dataStatus.setElse_num3_time(0);
                                     }
 
@@ -1013,7 +1032,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
         }
     }
 
-    class Goods {
+    class Goods implements Serializable {
         private String light = "", right = "";
         private int num = 0;
         private DataStatus dataStatus;
@@ -1391,7 +1410,6 @@ public class NewIntelligentActivity extends BaseMqttActivity {
     }
 
 
-
     public void push_set() { //保存数据
         showPro1();
         new Thread(new Runnable() {
@@ -1405,7 +1423,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                     jsonObject.put("uname", MainActivity.NameUser);
                     jsonObject.put("loid", loid);
                     jsonObject.put("clientid", Tool.getIMEI(getContext()));
-                    jsonObject.put("loname",zn_name );
+                    jsonObject.put("loname", zn_name);
                     jsonObject.put("week", week);
                     jsonObject.put("timestart", time1);
                     jsonObject.put("timeend", time2);
@@ -1527,7 +1545,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                     if (dialog != null) {
                         dialog.dismiss();
                     }
-                    Toast.makeText(context, "保存失败，"+msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "保存失败，" + msg.obj.toString(), Toast.LENGTH_LONG).show();
                     break;
                 case 1002:
                     if (dialog != null) {
@@ -1548,7 +1566,7 @@ public class NewIntelligentActivity extends BaseMqttActivity {
                     if (dialog != null) {
                         dialog.dismiss();
                     }
-                    Toast.makeText(context, "保存失败，"+msg.obj.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "保存失败，" + msg.obj.toString(), Toast.LENGTH_LONG).show();
                     break;
 
                 case 6777:
@@ -1618,4 +1636,127 @@ public class NewIntelligentActivity extends BaseMqttActivity {
         handler.removeMessages(6777);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_s", get_s());
+        outState.putBoolean("get_zt",zt);
+    }
+
+
+    public String get_s() { //保存数据
+        String str = "";
+        try {
+
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "updatelogic");
+            jsonObject.put("uname", MainActivity.NameUser);
+            jsonObject.put("loid", loid);
+            jsonObject.put("clientid", Tool.getIMEI(getContext()));
+            jsonObject.put("loname", zn_name);
+            jsonObject.put("week", week);
+            jsonObject.put("timestart", time1);
+            jsonObject.put("timeend", time2);
+            jsonObject.put("pretype", pretype);
+            JSONArray lopres = new JSONArray();
+            if (list1 != null && list1.size() > 0) {
+                for (Goods g : list1) {
+                    JSONObject lopresJsonObject = new JSONObject();
+                    int num = g.getNum();
+
+                    if (num <= 0 || num > 4) {
+                        handler.sendEmptyMessageDelayed(1002, 0);
+                        return str;
+                    }
+                    lopresJsonObject.put("pretype", num);
+                    lopresJsonObject.put("displayleft", g.getLight());
+                    lopresJsonObject.put("displayright", g.getRight());
+                    DataStatus dataStatus = g.getDataStatus();
+                    if (num == 2) {
+                        lopresJsonObject.put("week", dataStatus.getNum2_week());
+                        lopresJsonObject.put("time", dataStatus.getNum2_time());
+                    } else if (num == 3) {
+                        lopresJsonObject.put("weathertype", dataStatus.getNum3_type());
+                        lopresJsonObject.put("wtype", dataStatus.getNum3_num());
+                        lopresJsonObject.put("wvalue", dataStatus.getNum3_num_var() + "");
+                        String city = (String) SharedPreferencesUtils.getParam(context, "city_main", "北京");
+                        lopresJsonObject.put("location", city);
+
+                    } else if (num == 4) {
+                        lopresJsonObject.put("sid", dataStatus.getNum4_sid());
+                        lopresJsonObject.put("conid", dataStatus.getNum4_num());
+                        lopresJsonObject.put("type", dataStatus.getNum4_type());
+                        lopresJsonObject.put("dname", dataStatus.getNum4_name());
+                    }
+                    lopres.put(lopresJsonObject);
+                }
+            }
+            jsonObject.put("lopres", lopres);
+
+
+            JSONArray locarrs = new JSONArray();
+            int carrorder = 0;
+            if (list2 != null && list2.size() > 0) {
+                for (Goods g : list2) {
+                    JSONObject lopresJsonObject = new JSONObject();
+                    int num = g.getNum();
+                    if (num <= 0 || num > 3) {
+                        handler.sendEmptyMessageDelayed(1002, 0);
+                        return str;
+                    }
+                    lopresJsonObject.put("carrorder", carrorder);  //执行顺序
+                    lopresJsonObject.put("carrtype", num);
+                    lopresJsonObject.put("displayleft", g.getLight());
+                    lopresJsonObject.put("displayright", g.getRight());
+                    DataStatus dataStatus = g.getDataStatus();
+                    if (num == 1) {
+                        lopresJsonObject.put("sid", dataStatus.getElse_num1_sid());
+                        lopresJsonObject.put("carrid", dataStatus.getElse_num1_num());
+                        lopresJsonObject.put("dname", dataStatus.getElse_num1_name());
+                        lopresJsonObject.put("type", dataStatus.getElse_num1_type());
+                    } else if (num == 2) {
+                    } else if (num == 3) {
+
+                        int time = dataStatus.getElse_num3_time();
+                        int h = time / 60 / 60;
+                        int m = (time % 3600) / 60;
+                        int s = (time % 3600) % 60;
+
+                        String s_h = "";
+                        String s_m = "";
+                        String s_s = "";
+                        if (h < 10) {
+                            s_h = "0" + h;
+                        } else {
+                            s_h = "" + h;
+                        }
+
+                        if (m < 10) {
+                            s_m = "0" + m;
+                        } else {
+                            s_m = "" + m;
+                        }
+                        if (s < 10) {
+                            s_s = "0" + s;
+                        } else {
+                            s_s = "" + s;
+                        }
+                        lopresJsonObject.put("delaytime", s_h + ":" + s_m + ":" + s_s);
+
+                    }
+                    locarrs.put(lopresJsonObject);
+                    carrorder++;
+                }
+            }
+            jsonObject.put("locarrs", locarrs);
+
+            str = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return str;
+    }
 }

@@ -22,6 +22,7 @@ public abstract class BaseActivity extends Activity {
 
 	  private Context context;
 	  protected Resources res; // 通用资源缩写
+		private Bundle savedInstanceState;
 	  
 	    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
 		@Override
@@ -29,6 +30,7 @@ public abstract class BaseActivity extends Activity {
 	        requestWindowFeature(Window.FEATURE_NO_TITLE);// 不显示标题
 //			this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	        super.onCreate(savedInstanceState);
+			this.savedInstanceState=savedInstanceState;
 	        myActivityManage.addActivity(this);
 	        res = getResources(); // 通用资源缩写  
 	        
@@ -49,8 +51,12 @@ public abstract class BaseActivity extends Activity {
 	        init();
 	    }
 
+	public Bundle getSavedInstanceState() {
+		return savedInstanceState;
+	}
 
-//	@Override
+
+	//	@Override
 //	public void onConfigurationChanged(Configuration newConfig) {
 //		// TODO Auto-generated method stub
 //		super.onConfigurationChanged(newConfig);

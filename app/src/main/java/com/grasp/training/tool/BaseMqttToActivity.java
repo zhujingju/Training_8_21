@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -70,7 +71,8 @@ public abstract class BaseMqttToActivity extends BaseActivity {
         mReceiver = new ContentReceiver();
         IntentFilter filter = new IntentFilter(
                 "com.grasp.training.service.content");
-        registerReceiver(mReceiver, filter);
+//        registerReceiver(mReceiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filter);
     }
 
 
@@ -79,8 +81,11 @@ public abstract class BaseMqttToActivity extends BaseActivity {
     public class ContentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("message");
-            MyMessageArrived(message);
+            new Thread(() -> {
+                String message = intent.getStringExtra("message");
+                MyMessageArrived(message);
+            }).start();
+
         }
     }
 
@@ -109,7 +114,8 @@ public abstract class BaseMqttToActivity extends BaseActivity {
         myHander.removeMessages(1);
         myHander.removeMessages(2);
         if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
+//            unregisterReceiver(mReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         }
         if(networkChangeReceiver!=null){
             unregisterReceiver(networkChangeReceiver);

@@ -114,6 +114,18 @@ public class SmartHomeMain extends BaseMqttFragment {
     @Override
     public void init(View rootView) {
         unbinder = ButterKnife.bind(this, rootView);
+//        Log.e("qqq","doRegisterReceiver  init");
+//        if(MqttEquipmentMap!=null){
+//            Log.e("size","MqttEquipmentMap.s="+MqttEquipmentMap.size());
+//            for (HashMap.Entry<String, MqttEquipment> entry : MqttEquipmentMap.entrySet()) {
+//                MqttEquipment e = entry.getValue();
+//                if(!e.mReceiverTag){
+//                    e.initV();
+//                }
+//
+//            }
+//        }
+        MqttEquipmentMap=null;
         context = getActivity();
         city = (String) SharedPreferencesUtils.getParam(context, "city_main", "");
         head = (LinearLayout) rootView.findViewById(R.id.head);
@@ -247,6 +259,7 @@ public class SmartHomeMain extends BaseMqttFragment {
     @Override
     public void onDestroyView() {
         LocationUtils.unregister();
+//        Log.e("qqq","doRegisterReceiver  onDestroyView");
         Map_del();
         tqHander.removeMessages(1000);
         handler.removeMessages(1000);
@@ -1096,7 +1109,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 //                        oldMqttEquipmentMap = new HashMap<>();
 //                    }
                     oldMap = newMap;
-                    Log.e("qqq", "oldMap.size()=" + oldMap.size() + " newMap.size()= " + newMap.size());
+                    Log.e("qqq", "man oldMap.size()=" + oldMap.size() + " newMap.size()= " + newMap.size());
                     oldState = newState;
                     oldswitchState = switchState;
                     for (int i = 0; i < list.size(); i++) {
@@ -1145,6 +1158,9 @@ public class SmartHomeMain extends BaseMqttFragment {
                                 MqttEquipmentList.add(entry.getKey());
                             }
                             for (String s : MqttEquipmentList) {
+                                if(MqttEquipmentMap==null){
+                                    return;
+                                }
                                 if (MqttEquipmentMap.get(s) != null) {
                                     MqttEquipment e = MqttEquipmentMap.get(s);
                                     String myTopicding = "iotbroad/iot/" + e.getType() + "_ack/" + e.getSid();
@@ -1176,7 +1192,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                     }).start();
 
 
-                    equimentHandler.sendEmptyMessageDelayed(2000, 1000 * MqttEquipmentMap.size() + 2000);
+                    equimentHandler.sendEmptyMessageDelayed(2000, 500 * MqttEquipmentMap.size() + 2000);
                     break;
             }
         }
@@ -1238,6 +1254,9 @@ public class SmartHomeMain extends BaseMqttFragment {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            if(smartTvWd==null){
+                return;
+            }
             switch (msg.what) {
                 case 1000:
                     try {

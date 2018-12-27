@@ -2,6 +2,7 @@ package com.grasp.training.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -72,6 +73,32 @@ public class LoginActivity extends BaseMqttActivity {
     private boolean dl=false;
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        outState.putString("get_name", userEditText.getText().toString());
+        outState.putString("get_pw", pwdEditText.getText().toString());
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+//		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+////			setContentView(setLayoutId());
+//			Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//			Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+////			setContentView(setLayoutId());
+//		}
+        setContentView(setLayoutId());
+        setContext(this);
+        initData();
+        initView();
+        initObject();
+        initListener() ;
+        init();
+    }
+    @Override
     public int setLayoutId() {
         return R.layout.login_activity;
     }
@@ -79,6 +106,10 @@ public class LoginActivity extends BaseMqttActivity {
     @Override
     public void initData() {
         ButterKnife.bind(this);
+        ha.removeMessages(1001);
+        ha.removeMessages(1000);
+        ha.removeMessages(1002);
+        ha.removeMessages(1003);
     }
 
     @Override
@@ -91,6 +122,15 @@ public class LoginActivity extends BaseMqttActivity {
 //        pwdEditText.setText((String) SharedPreferencesUtils.getParam(getContext(),c_pw,""));
         checkBox.setChecked((Boolean) SharedPreferencesUtils.getParam(getContext(),c_zt,false));
         initPlay();
+        if (getSavedInstanceState() != null) {
+//
+            String name = getSavedInstanceState().getString("get_name", ":");
+            String pw = getSavedInstanceState().getString("get_pw", ":");
+            if(!name.equals("")){
+                userEditText.setText(name);
+                pwdEditText.setText(pw);
+            }
+        }
     }
 
     @Override

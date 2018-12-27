@@ -18,6 +18,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Mqtt服务
+ *
  * @author zhangshun
  */
 public class EasyMqttService {
@@ -128,6 +129,7 @@ public class EasyMqttService {
 
     /**
      * 发布消息
+     *
      * @param msg
      * @param topic
      * @param qos
@@ -139,18 +141,18 @@ public class EasyMqttService {
             client.publish(topic, msg.getBytes(), 1, retained, context, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.e("qqq","发布消息 onSuccess");
+                    Log.e("qqq", "发布消息 onSuccess");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.e("qqq","发布消息 onFailure="+exception.getMessage());
+                    Log.e("qqq", "发布消息 onFailure=" + exception.getMessage());
                 }
             });
 //            Log.e("qqq","发布消息"+client.isConnected()+"  "+ topic+" client="+client);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("qqq","发布消息"+e.getMessage());
+            Log.e("qqq", "发布消息" + e.getMessage());
         }
     }
 
@@ -175,10 +177,10 @@ public class EasyMqttService {
 
         SSLSocketFactory socketFactory = null;
         try {
-            socketFactory = SslUtil.getSSLSocketFactory(context,"123456");
+            socketFactory = SslUtil.getSSLSocketFactory(context, "123456");
         } catch (MqttSecurityException e) {
             e.printStackTrace();
-            Log.e("qqq","e="+e.getMessage().toString());
+            Log.e("qqq", "e=" + e.getMessage().toString());
         }
         if (socketFactory != null) {
             conOpt.setSocketFactory(socketFactory);
@@ -193,7 +195,7 @@ public class EasyMqttService {
         try {
             client.close();
         } catch (Exception e) {
-            Log.e(TAG,e.toString());
+            Log.e(TAG, e.toString());
         }
     }
 
@@ -204,7 +206,7 @@ public class EasyMqttService {
         this.starMQTTCallBack = starMQTTCallBack;
         if (canDoConnect && !client.isConnected()) {
             try {
-                client.connect(conOpt,null, iMqttActionListener);
+                client.connect(conOpt, null, iMqttActionListener);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -224,7 +226,7 @@ public class EasyMqttService {
             client.subscribe(topics, new int[]{0});
 
         } catch (Exception e) {
-            Log.e(TAG,e.toString());
+            Log.e(TAG, e.toString());
         }
     }
 
@@ -234,35 +236,35 @@ public class EasyMqttService {
         try {
             client.unsubscribe(topics);
         } catch (Exception e) {
-            Log.e(TAG,e.toString());
+            Log.e(TAG, e.toString());
         }
     }
 
     /**
      * 断开连接
      */
-    public void disconnect(){
+    public void disconnect() {
         try {
             client.disconnect();
         } catch (Exception e) {
-            Log.e(TAG,e.toString());
+            Log.e(TAG, e.toString());
         }
     }
 
     /**
      * 判断连接是否断开
      */
-    public boolean isConnected(){
+    public boolean isConnected() {
         try {
             return client.isConnected();
         } catch (Exception e) {
-            Log.e(TAG,e.toString());
+            Log.e(TAG, e.toString());
         }
         return false;
     }
 
     /**
-     *  MQTT是否连接成功
+     * MQTT是否连接成功
      */
     private IMqttActionListener iMqttActionListener = new IMqttActionListener() {
 

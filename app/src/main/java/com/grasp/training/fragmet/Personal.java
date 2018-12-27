@@ -90,7 +90,7 @@ import static com.grasp.training.tool.MyApplication.imageLoader;
 public class Personal extends BaseMqttFragment {
     @BindView(R.id.personal_tx)
     ImageView personalTx;
-    Unbinder unbinder;
+
     @BindView(R.id.personal_tv_name)
     TextView personalTvName;
     @BindView(R.id.personal_tv_sb)
@@ -99,10 +99,13 @@ public class Personal extends BaseMqttFragment {
     RelativeLayout personalTvLayout1;
     @BindView(R.id.per_sys_im)
     ImageView per_sys_im;
+
+    @BindView(R.id.per_fk_tex)
+    TextView bbh;
     private Context context;
     private boolean dian_zt = false;
     private String nc;
-
+    Unbinder unbinder;
 
     @Override
     public int getInflate() {
@@ -126,6 +129,7 @@ public class Personal extends BaseMqttFragment {
         } else {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.personalcenter_tabbar_portrait_selected, personalTx, MyApplication.options2);
         }
+        bbh.setText("V"+getAppVersion("com.grasp.training"));
     }
 
     private String myTopic = MqttService.myTopicUser;

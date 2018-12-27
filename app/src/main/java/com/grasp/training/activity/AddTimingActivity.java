@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -58,6 +59,26 @@ public class AddTimingActivity extends BaseMqttActivity {
 
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //这里将我们临时输入的一些数据存储起来
+        String ontime = "";
+        String offtime = "";
+        if (addTimingTv3.getText().equals("")) {
+            ontime = "close";
+        } else {
+            ontime = addTimingTv3.getText().toString();
+        }
+
+        if (addTimingTv4.getText().equals("")) {
+            offtime = "close";
+        } else {
+            offtime = addTimingTv4.getText().toString();
+        }
+
+        outState.putString("get_week", get_save(ontime, offtime, week, timer));
+    }
+    @Override
     public int setLayoutId() {
         return R.layout.add_timing_activity;
     }
@@ -70,6 +91,9 @@ public class AddTimingActivity extends BaseMqttActivity {
         data_s = data.getStringExtra("Timing_s") + "";
         sid = data.getStringExtra("Timing_sid") + "";
         type= data.getStringExtra("Timing_type") + "";
+        if (getSavedInstanceState() != null) {
+            data_s = getSavedInstanceState().getString("get_week", "");
+        }
         if (data_s.equals("")) {
 
         } else { //获取已有数据
@@ -618,5 +642,27 @@ public class AddTimingActivity extends BaseMqttActivity {
             s_m = "" + m;
         }
         addTimingTv4.setText(s_h + ":" + s_m);
+    }
+
+
+
+    public String get_save(String ontime, String offtime, String week, int timer) {
+        String str="";
+        try {
+            //发送请求所有数据消息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "wifi_"+type+"_timing");
+            jsonObject.put("day", week);
+            jsonObject.put("sid", sid);
+            jsonObject.put("timer_state", "on");
+            jsonObject.put("ontime", ontime);
+            jsonObject.put("offtime", offtime);
+            jsonObject.put("timer", timer);
+            str = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return str;
     }
 }

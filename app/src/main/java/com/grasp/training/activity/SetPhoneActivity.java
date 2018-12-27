@@ -2,12 +2,14 @@ package com.grasp.training.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,6 +49,12 @@ public class SetPhoneActivity extends BaseMqttActivity {
     private Context context;
     EditText phoneEditText;
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e("onConfigurationChanged","onConfigurationChanged");
+    }
+
+    @Override
     public int setLayoutId() {
         return R.layout.set_phone_activity;
     }
@@ -55,7 +63,7 @@ public class SetPhoneActivity extends BaseMqttActivity {
     public void initData() {
         ButterKnife.bind(this);
         context = getContext();
-
+        Log.e("onConfigurationChanged","initData");
     }
 
     @Override

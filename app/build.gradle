@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.grasp.training"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 6
-        versionName "app-smarthome-6"
+        versionCode 7
+        versionName "app-smarthome-7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "release"
         ndk {
@@ -84,6 +84,8 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+
 }
 
 dependencies {
@@ -111,4 +113,5 @@ dependencies {
     implementation 'cn.simonlee.xcodescanner:zbar:1.1.10'
     implementation 'cn.simonlee.widget:swipeback:1.0.13'
     implementation 'ru.alexbykov:nopermission:1.1.2'
+
 }
