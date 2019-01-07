@@ -50,7 +50,7 @@
                             android:textSize="@dimen/dip_20.0"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Username" />
+                            android:hint="用户名" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -69,7 +69,7 @@
                             android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Password"
+                            android:hint="密码"
                             android:inputType="textPassword" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -93,7 +93,7 @@
                             android:textSize="@dimen/dip_20.0"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Phone" />
+                            android:hint="手机号" />
                     </android.support.design.widget.TextInputLayout>
 
                     <LinearLayout

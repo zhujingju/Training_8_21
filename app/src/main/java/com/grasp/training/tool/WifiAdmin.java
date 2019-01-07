@@ -4,13 +4,11 @@ package com.grasp.training.tool;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
 import android.os.Build;
 import android.util.Log;
 
@@ -18,326 +16,228 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class WifiAdmin {
 
-    public static final int AUTH_NOPASS = 3;
-    public static final int AUTH_WEP = 1;
-    public static final int AUTH_WPA = 2;
-    private static final String TAG = "[WifiAdmin]";
+    // 定义一个WifiManager对象
     private WifiManager mWifiManager;
+    // 定义一个WifiInfo对象
     private WifiInfo mWifiInfo;
-    private List<ScanResult> mWifiList = null;
-    private List<WifiConfiguration> mWifiConfiguration;
-    private WifiLock mWifiLock;
-    private DhcpInfo dhcpInfo;
-    private Context context;
+    // 扫描出的网络连接列表
+    private List<ScanResult> mScanWifiList;
+    // 网络连接列表
+    private List<WifiConfiguration> mWifiConfigurations;
 
-    public WifiAdmin(Context context) {
+    private WifiManager.WifiLock mWifiLock;
 
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
-//            mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-//            mWifiInfo = mWifiManager.getConnectionInfo();
-//        } else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1) {
-//
-//        }
-        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    public WifiAdmin(Context mContext) {
+        //取得WifiManager对象
+        mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        //取得WifiInfo对象
         mWifiInfo = mWifiManager.getConnectionInfo();
-        this.context=context;
-    }
 
-    public boolean openWifi() {//打开wifi
-        if (!mWifiManager.isWifiEnabled()) {
-            mWifiManager.setWifiEnabled(true);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return mWifiManager.isWifiEnabled();
     }
-
-    public void closeWifi() {
+    /**
+     * Function:关闭wifi<br>
+     * @return<br>
+     */
+    public boolean closeWifi() {
         if (mWifiManager.isWifiEnabled()) {
-            mWifiManager.setWifiEnabled(false);
+            return mWifiManager.setWifiEnabled(false);
         }
+        return false;
     }
 
+    /**
+     * Gets the Wi-Fi enabled state.检查当前wifi状态
+     */
     public int checkState() {
         return mWifiManager.getWifiState();
     }
 
-    public void acquireWifiLock() {//锁定wifiLock
+    // 锁定wifiLock
+    public void acquireWifiLock() {
         mWifiLock.acquire();
     }
 
-    public void releaseWifiLock() {//解锁wifiLock
+    // 解锁wifiLock
+    public void releaseWifiLock() {
+        // 判断是否锁定
         if (mWifiLock.isHeld()) {
             mWifiLock.acquire();
         }
     }
 
-    public void creatWifiLock() {
-        mWifiLock = mWifiManager.createWifiLock("Test");
+    // 创建一个wifiLock
+    public void createWifiLock() {
+        mWifiLock = mWifiManager.createWifiLock("test");
     }
 
+    // 得到配置好的网络
     public List<WifiConfiguration> getConfiguration() {
-        return mWifiConfiguration;
+        return mWifiConfigurations;
     }
 
-    public void connectConfiguration(int index) {//指定配置好的网络进行连接
-        if (index > mWifiConfiguration.size()) {
+    // 指定配置好的网络进行连接
+    public void connetionConfiguration(int index) {
+        if (index > mWifiConfigurations.size()) {
             return;
         }
-        mWifiManager.enableNetwork(mWifiConfiguration.get(index).networkId, true);
+        // 连接配置好指定ID的网络
+        mWifiManager.enableNetwork(mWifiConfigurations.get(index).networkId,
+                true);
     }
 
-    public void startScan() {//wifi扫描
-        boolean scan = mWifiManager.startScan();
-        Log.i(TAG, "startScan result:" + scan);
-        mWifiList = mWifiManager.getScanResults();
-        mWifiConfiguration = mWifiManager.getConfiguredNetworks();
-
-        if (mWifiList != null) {
-            for (int i = 0; i < mWifiList.size(); i++) {
-                ScanResult result = mWifiList.get(i);
-            }
-        } else {
-        }
-
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O||Build.VERSION.SDK_INT==Build.VERSION_CODES.P) {
-//
-//
-//
-//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-//                return mWifiInfo.getSSID();
-//            } else {
-//                return mWifiInfo.getSSID().replace("\"", "");
-//            }
-//        } else if (Build.VERSION.SDK_INT==Build.VERSION_CODES.O_MR1){
-//
-//            ConnectivityManager connManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-//            assert connManager != null;
-//            NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
-//            if (networkInfo.isConnected()) {
-//                if (networkInfo.getExtraInfo()!=null){
-//                    return networkInfo.getExtraInfo().replace("\"","");
-//                }
-//            }
-//        }
+    public void startScan() {
+        // 开启wifi
+        openWifi();
+        // 开始扫描
+        mWifiManager.startScan();
+        // 得到扫描结果
+        mScanWifiList = mWifiManager.getScanResults();
+        // 得到配置好的网络连接
+        mWifiConfigurations = mWifiManager.getConfiguredNetworks();
 
     }
 
+    // 得到网络列表
     public List<ScanResult> getWifiList() {
-        return mWifiList;
+        return mScanWifiList;
     }
 
-    public StringBuilder lookUpScan() {// 查看扫描结果
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < mWifiList.size(); i++) {
-            stringBuilder.append("Index_" + new Integer(i + 1).toString() + ":");
-            stringBuilder.append((mWifiList.get(i)).toString());
-            stringBuilder.append("/n");
+    // 查看扫描结果
+    public StringBuffer lookUpScan() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < mScanWifiList.size(); i++) {
+            sb.append("Index_" + new Integer(i + 1).toString() + ":");
+            // 将ScanResult信息转换成一个字符串包
+            // 其中把包括：BSSID、SSID、capabilities、frequency、level
+            sb.append((mScanWifiList.get(i)).toString()).append("\n");
         }
-        return stringBuilder;
+        return sb;
     }
 
     public String getMacAddress() {
         return (mWifiInfo == null) ? "NULL" : mWifiInfo.getMacAddress();
     }
 
-    public String getSSid() {
-        return (mWifiInfo == null) ? "NULL" : mWifiInfo.getSSID();
-    }
-
+    /**
+     * Return the basic service set identifier (BSSID) of the current access
+     * point. The BSSID may be {@code null} if there is no network currently
+     * connected.
+     *
+     * @return the BSSID, in the form of a six-byte MAC address:
+     *         {@code XX:XX:XX:XX:XX:XX}
+     */
     public String getBSSID() {
         return (mWifiInfo == null) ? "NULL" : mWifiInfo.getBSSID();
     }
 
-    public DhcpInfo getDhcpInfo() {
-        return dhcpInfo = mWifiManager.getDhcpInfo();
-    }
-
-    public int getIPAddress() {
+    public int getIpAddress() {
         return (mWifiInfo == null) ? 0 : mWifiInfo.getIpAddress();
     }
 
-    public int getNetworkId() {
+    /**
+     * the network ID, or -1 if there is no currently connected network
+     */
+    public int getNetWordId() {
         return (mWifiInfo == null) ? 0 : mWifiInfo.getNetworkId();
     }
 
-    public WifiInfo getWifiInfo() {
-        mWifiInfo = mWifiManager.getConnectionInfo();
-        return mWifiInfo;
-    }
-
-    public boolean addNetwork(WifiConfiguration wcg) { // 添加一个网络配置并连接
-//        int wcgID = mWifiManager.addNetwork(wcg);
-////        mWifiManager.disableNetwork(wcgID);
-//        boolean b = mWifiManager.enableNetwork(wcgID, true);
-//        Log.e("addNetwork","wcgID="+wcgID);
-//	        System.out.println("addNetwork addNetwork--" + wcgID);
-//	        System.out.println("addNetwork enableNetwork--" + b);
-//	        System.out.println("addNetwork addNetwork2 " + wcg);
-//        Log.e("wcg","wcg="+wcg);
-        boolean b=false;
-        try {
-            b=setStaticIpConfiguration(mWifiManager, wcg,
-                    InetAddress.getByName("192.168.5.5"), 24,
-                    null,
-                    InetAddress.getAllByName("8.8.8.8"));
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return b;
-    }
-
-
-
-
-
-
     /**
-     * 连接wifi 参数：wifi的ssid及wifi的密码
+     * Function: 得到wifiInfo的所有信息
      */
-    public boolean connectWifiTest(final String ssid, final String pwd) {
-        boolean isSuccess = false;
-        boolean flag = false;
-        mWifiManager.disconnect();
-        boolean addSucess = addNetwork(CreateWifiInfo(ssid, pwd, 3));
-        if (addSucess) {
-            while (!flag && !isSuccess) {
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                String currSSID = getCurrentWifiInfo().getSSID();
-                if (currSSID != null)
-                    currSSID = currSSID.replace("\"", "");
-                int currIp = getCurrentWifiInfo().getIpAddress();
-                if (currSSID != null && currSSID.equals(ssid) && currIp != 0) {
-                    isSuccess = true;
-                } else {
-                    flag = true;
-                }
-            }
-        }
-        return isSuccess;
+    public String getWifiInfo() {
+        return (mWifiInfo == null) ? "NULL" : mWifiInfo.toString();
     }
 
-    /**
-     * 获取当前手机所连接的wifi信息
-     */
-    public WifiInfo getCurrentWifiInfo() {
-        return mWifiManager.getConnectionInfo();
+    // 添加一个网络并连接
+    public void addNetWork(WifiConfiguration configuration) {
+        int wcgId = mWifiManager.addNetwork(configuration);
+        mWifiManager.enableNetwork(wcgId, true);
     }
 
-    public void disconnectWifi(int netId) {
+    // 断开指定ID的网络
+    public void disConnectionWifi(int netId) {
         mWifiManager.disableNetwork(netId);
         mWifiManager.disconnect();
     }
-    //然后是一个实际应用方法，只验证过没有密码的情况：
 
-    public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
-        Log.e("qqq","SSID="+SSID+" Password="+Password+" Type"+Type);
-        WifiConfiguration config = new WifiConfiguration();
-        config.allowedAuthAlgorithms.clear();
-        config.allowedGroupCiphers.clear();
-        config.allowedKeyManagement.clear();
-        config.allowedPairwiseCiphers.clear();
-        config.allowedProtocols.clear();
-//        config.priority = 40;
-        config.SSID = "\"" + SSID + "\"";
-        Log.e("netId","config.BSSID" +" "+ config.BSSID);
-//        Log.e("networkId","config.networkId" +" "+ config.networkId);
-        WifiConfiguration tempConfig = this.IsExsits(config.SSID);
-        if (tempConfig != null) {
-//	              mWifiManager.removeNetwork(tempConfig.networkId);
-            Log.e("netId","tempConfig!=" +null);
-//            mWifiManager.removeNetwork(tempConfig.networkId);
-            return tempConfig;
+    /**
+     * Function: 打开wifi功能<br>
+     * @return true:打开成功；false:打开失败<br>
+     */
+    public boolean openWifi() {
+        boolean bRet = true;
+        if (!mWifiManager.isWifiEnabled()) {
+            bRet = mWifiManager.setWifiEnabled(true);
         }
-        Log.e("netId","Type=" +" "+ Type);
-        if (Type == AUTH_NOPASS) //WIFICIPHER_NOPASS
-        {
-            config.hiddenSSID = true;
-            config.wepKeys[0] = "\"" + ""+ "\"";
-            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            config.wepTxKeyIndex = 0;
-
-
-//            config.preSharedKey = null;
-            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            config.allowedAuthAlgorithms.clear();
-            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-        }
-        if (Type == AUTH_WEP) //WIFICIPHER_WEP
-        {
-            config.hiddenSSID = true;
-            config.wepKeys[0] = "\"" + Password + "\"";
-            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            config.wepTxKeyIndex = 0;
-        }
-        if (Type == AUTH_WPA) //WIFICIPHER_WPA
-        {
-            config.preSharedKey = "\"" + Password + "\"";
-            config.hiddenSSID = true;
-            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-//config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-            config.status = WifiConfiguration.Status.ENABLED;
-        }
-        return config;
+        return bRet;
     }
 
+    /**
+     * 给外部提供一个借口，连接无线网络
+     *
+     * @param SSID
+     * @param Password
+     * @param Type
+     * @return <br>
+     * @return true:连接成功；false:连接失败<br>
+     *
+     */
+    public boolean connect(String SSID, String Password, WifiConnectUtils.WifiCipherType Type) {
+        Log.e("WifiListActivity", "Wifi：" + SSID+" "+Password+" "+Type);
+        if (!this.openWifi()) {
+            return false;
+        }
+        // 状态变成WIFI_STATE_ENABLED的时候才能执行下面的语句
+        while (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLING) {
+            try {
+                // 为了避免程序一直while循环，让它睡个100毫秒在检测……
+                Thread.currentThread();
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+            }
+        }
+        if (SSID == null || Password == null || SSID.equals("")) {
+            Log.e(this.getClass().getName(),
+                    "addNetwork() ## nullpointer error!");
+            return false;
+        }
+        WifiConfiguration wifiConfig = createWifiInfo(SSID, Password, Type);
+        // wifi的配置信息
+        if (wifiConfig == null) {
+            return false;
+        }
+        // 查看以前是否也配置过这个网络
+        WifiConfiguration tempConfig = this.isExsits(SSID);
+        if (tempConfig != null) {
 
-    private WifiConfiguration IsExsits(String SSID) { // 查看以前是否已经配置过该SSID
-        List<WifiConfiguration> existingConfigs = mWifiManager.getConfiguredNetworks();
+            mWifiManager.removeNetwork(tempConfig.networkId);
+        }
+        // 添加一个新的网络描述为一组配置的网络。
+        int netID = mWifiManager.addNetwork(wifiConfig);
+        Log.e("WifiListActivity", "wifi的netID为：" + netID);
+        // 断开连接
+//        mWifiManager.disconnect();
+        // 重新连接
+        Log.e("WifiListActivity", "Wifi的重新连接netID为：" + netID);
+        // 设置为true,使其他的连接断开
+        boolean mConnectConfig = mWifiManager.enableNetwork(netID, true);
+        mWifiManager.reconnect();
+        return mConnectConfig;
+    }
+
+    // 查看以前是否也配置过这个网络
+    private WifiConfiguration isExsits(String SSID) {
+        List<WifiConfiguration> existingConfigs = mWifiManager
+                .getConfiguredNetworks();
         for (WifiConfiguration existingConfig : existingConfigs) {
             if (existingConfig.SSID.equals("\"" + SSID + "\"")) {
                 return existingConfig;
@@ -346,28 +246,292 @@ public class WifiAdmin {
         return null;
     }
 
-
-    public int GetCurrentNetwordId() {
-        WifiInfo info = mWifiManager.getConnectionInfo();
-        if (info != null) {
-            return info.getNetworkId();
+    private WifiConfiguration createWifiInfo(String SSID, String Password,
+                                             WifiConnectUtils.WifiCipherType Type) {
+        WifiConfiguration config = new WifiConfiguration();
+        config.allowedAuthAlgorithms.clear();
+        config.allowedGroupCiphers.clear();
+        config.allowedKeyManagement.clear();
+        config.allowedPairwiseCiphers.clear();
+        config.allowedProtocols.clear();
+        config.SSID = "\"" + SSID + "\"";
+        if (Type == WifiConnectUtils.WifiCipherType.WIFICIPHER_NOPASS) {
+            config.wepKeys[0] = "";
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.wepTxKeyIndex = 0;
         }
-        return 0;
+        if (Type == WifiConnectUtils.WifiCipherType.WIFICIPHER_WEP) {
+            config.preSharedKey = "\"" + Password + "\"";
+            config.hiddenSSID = true;
+            config.allowedAuthAlgorithms
+                    .set(WifiConfiguration.AuthAlgorithm.SHARED);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            config.allowedGroupCiphers
+                    .set(WifiConfiguration.GroupCipher.WEP104);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.wepTxKeyIndex = 0;
+        }
+        if (Type == WifiConnectUtils.WifiCipherType.WIFICIPHER_WPA) {
+            // 修改之后配置
+            config.preSharedKey = "\"" + Password + "\"";
+            config.hiddenSSID = true;
+            config.allowedAuthAlgorithms
+                    .set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+            config.allowedPairwiseCiphers
+                    .set(WifiConfiguration.PairwiseCipher.TKIP);
+            // config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            config.allowedPairwiseCiphers
+                    .set(WifiConfiguration.PairwiseCipher.CCMP);
+
+        } else {
+            return null;
+        }
+        return config;
     }
 
-    public void EnableNetwork(int networkId) {
-        if (networkId != 0) {
-            mWifiManager.enableNetwork(networkId, true);
+    /**
+     * Function:判断扫描结果是否连接上<br>
+     * @param result
+     * @return<br>
+     */
+    public boolean isConnect(ScanResult result) {
+        if (result == null) {
+            return false;
+        }
+
+        mWifiInfo = mWifiManager.getConnectionInfo();
+        String g2 = "\"" + result.SSID + "\"";
+        if (mWifiInfo.getSSID() != null && mWifiInfo.getSSID().endsWith(g2)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Function: 将int类型的IP转换成字符串形式的IP<br>
+     * @param ip
+     * @return<br>
+     */
+    public String ipIntToString(int ip) {
+        try {
+            byte[] bytes = new byte[4];
+            bytes[0] = (byte) (0xff & ip);
+            bytes[1] = (byte) ((0xff00 & ip) >> 8);
+            bytes[2] = (byte) ((0xff0000 & ip) >> 16);
+            bytes[3] = (byte) ((0xff000000 & ip) >> 24);
+            return Inet4Address.getByAddress(bytes).getHostAddress();
+        } catch (Exception e) {
+            return "";
         }
     }
 
+    public int getConnNetId() {
+        // result.SSID;
+        mWifiInfo = mWifiManager.getConnectionInfo();
+        return mWifiInfo.getNetworkId();
+    }
+
+    /**
+     * Function:信号强度转换为字符串
+     *
+     * @author Xiho
+     * @param level
+     */
+    public static String singlLevToStr(int level) {
+
+        String resuString = "无信号";
+
+        if (Math.abs(level) > 100) {
+        } else if (Math.abs(level) > 80) {
+            resuString = "弱";
+        } else if (Math.abs(level) > 70) {
+            resuString = "强";
+        } else if (Math.abs(level) > 60) {
+            resuString = "强";
+        } else if (Math.abs(level) > 50) {
+            resuString = "较强";
+        } else {
+            resuString = "极强";
+        }
+        return resuString;
+    }
+
+    /**
+     * 添加到网络
+     *
+     * @author Xiho
+     * @param wcg
+     */
+
+    public boolean addNetwork(WifiConfiguration wcg) { // 添加一个网络配置并连接
+        if (wcg == null) {
+            return false;
+        }
+//        int wcgID = mWifiManager.addNetwork(wcg);
+//        Log.e("qqq,","wcgID="+wcgID);
+//        boolean b = mWifiManager.enableNetwork(wcgID, true);
+//        mWifiManager.saveConfiguration();
+//        System.out.println(b);
+        boolean b=false;
+        if(b){
+            int wcgID = mWifiManager.addNetwork(wcg);
+            Log.e("addNetwork","wcgID="+wcgID);
+//        mWifiManager.disableNetwork(wcgID);
+            b = mWifiManager.enableNetwork(wcgID, true);
+            mWifiManager.saveConfiguration();
+
+//	        System.out.println("addNetwork addNetwork--" + wcgID);
+//	        System.out.println("addNetwork enableNetwork--" + b);
+//	        System.out.println("addNetwork addNetwork2 " + wcg);
+//        Log.e("wcg","wcg="+wcg);
+        }else{
+            try {
+                b=setStaticIpConfiguration(mWifiManager, wcg,
+                        InetAddress.getByName("192.168.5.5"), 24,
+                        null,
+                        InetAddress.getAllByName("8.8.8.8"));
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+
+
+        return b;
+    }
+
+    public boolean connectSpecificAP(ScanResult scan) {
+        Log.e("qqq","scan="+scan);
+        List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
+        boolean networkInSupplicant = false;
+        boolean connectResult = false;
+        // 重新连接指定AP
+//        mWifiManager.disconnect();
+        for (WifiConfiguration w : list) {
+            // 将指定AP 名字转化
+            // String str = convertToQuotedString(info.ssid);
+            if (w.SSID != null ) {
+//
+                if(w.SSID.equals("\"" + scan.SSID + "\"")||w.SSID.equals( scan.SSID )){
+//                    connectResult = addNetwork(w);
+                    Log.e("qqq","w="+w);
+                    Log.e("qqq","w.ssid="+w.SSID+"  w.networkId="+w.networkId);
+                    connectResult = mWifiManager.enableNetwork(w.networkId, true);
+                    networkInSupplicant = true;
+                    break;
+                }
+            }
+        }
+        if (!networkInSupplicant) {
+            WifiConfiguration config = CreateWifiInfo(scan, "");
+            connectResult = addNetwork(config);
+        }
+        Log.e("addNetwork","networkInSupplicant="+networkInSupplicant);
+        Log.e("addNetwork","connectResult="+connectResult);
+        return connectResult;
+    }
+    // 然后是一个实际应用方法，只验证过没有密码的情况：
+    public WifiConfiguration CreateWifiInfo(ScanResult scan, String Password) {
+        WifiConfiguration config = new WifiConfiguration();
+        config.hiddenSSID = false;
+        config.status = WifiConfiguration.Status.ENABLED;
+
+        if (scan.capabilities.contains("WEP")) {
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.allowedAuthAlgorithms
+                    .set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedGroupCiphers
+                    .set(WifiConfiguration.GroupCipher.WEP104);
+
+            config.SSID = "\"" + scan.SSID + "\"";
+
+            config.wepTxKeyIndex = 0;
+            config.wepKeys[0] = Password;
+            // config.preSharedKey = "\"" + SHARED_KEY + "\"";
+        } else if (scan.capabilities.contains("PSK")) {
+            //
+            config.SSID = "\"" + scan.SSID + "\"";
+            config.preSharedKey = "\"" + Password + "\"";
+        } else if (scan.capabilities.contains("EAP")) {
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+            config.allowedAuthAlgorithms
+                    .set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedPairwiseCiphers
+                    .set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.SSID = "\"" + scan.SSID + "\"";
+            config.preSharedKey = "\"" + Password + "\"";
+        } else {
+            Log.e("qqq","其他"+"scan.SSID="+scan.SSID);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.SSID = "\"" + scan.SSID + "\"";
+            config.preSharedKey = null;
+            //
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
+                Log.e("qqq","sdk=Build.VERSION_CODES.P");
+//                if(isMIUI()){
+//                    Log.e("qqq","小米 android9.0+");
+//                }else{
+//                    config.wepKeys[0] = "\"" + "\"";
+//                    config.wepTxKeyIndex = 0;
+//                }
+            }else{
+                config.wepKeys[0] = "\"" + "\"";
+                config.wepTxKeyIndex = 0;
+            }
+
+        }
+//        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
+//            Log.e("qqq","sdk=Build.VERSION_CODES.P");
+//            config.SSID = scan.SSID ;
+//            if(isMIUI()){
+//                Log.e("qqq","小米 android9.0+");
+//                config.SSID = "\"" + scan.SSID + "\"";
+////                config.SSID =  scan.SSID ;
+//            }
+//        }else{
+//            config.SSID = "\"" + scan.SSID + "\"";
+//        }
+        Log.e("qqq"," config.SSID ="+ config.SSID );
+        Log.e("qqq"," config ="+ config );
+
+
+        return config;
+    }
 
 
 
     @SuppressWarnings("unchecked")
     public static boolean setStaticIpConfiguration(WifiManager manager,
-                                                WifiConfiguration config, InetAddress ipAddress, int prefixLength,
-                                                InetAddress gateway, InetAddress[] dns)
+                                                   WifiConfiguration config, InetAddress ipAddress, int prefixLength,
+                                                   InetAddress gateway, InetAddress[] dns)
             throws ClassNotFoundException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException,
             NoSuchMethodException, NoSuchFieldException, InstantiationException {
@@ -410,7 +574,7 @@ public class WifiAdmin {
 
 
         boolean  flag  = manager.enableNetwork(netId, true);
-
+        manager.saveConfiguration();
         Log.e("flag",flag+"");
 
         return flag;
@@ -460,25 +624,6 @@ public class WifiAdmin {
         method.invoke(object, parameterValues);
     }
 
-
-    public String intToIp(int ipAddress) {
-        return ((ipAddress & 0xff) + "." + (ipAddress >> 8 & 0xff) + "."
-                + (ipAddress >> 16 & 0xff) + "." + (ipAddress >> 24 & 0xff));
-
-    }
-    // 直接使用set方法调用 可能遇到需要地址转换方法如下：
-    public static String int2ip(int ip) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.valueOf((int) (ip & 0xff)));
-        sb.append('.');
-        sb.append(String.valueOf((int) ((ip >> 8) & 0xff)));
-        sb.append('.');
-        sb.append(String.valueOf((int) ((ip >> 16) & 0xff)));
-        sb.append('.');
-        sb.append(String.valueOf((int) ((ip >> 24) & 0xff)));
-        return sb.toString();
-    }
-
     private static Object newInstance(String className)
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, NoSuchMethodException,
@@ -498,8 +643,6 @@ public class WifiAdmin {
         Constructor constructor = clz.getConstructor(parameterClasses);
         return constructor.newInstance(parameterValues);
     }
-
-
 
     //## 获取SSID 的方法如下
 
@@ -536,6 +679,97 @@ public class WifiAdmin {
         }
         return ssid;
     }
+    /**
+     * 获取当前手机所连接的wifi信息
+     */
+    public WifiInfo getCurrentWifiInfo() {
+        return mWifiManager.getConnectionInfo();
+    }
+
+
+    public void EnableNetwork(int networkId) {
+        if (networkId != 0) {
+            boolean EnableNetworkzt=mWifiManager.enableNetwork(networkId, true);
+            Log.e("qqq","EnableNetwork="+EnableNetworkzt);
+        }
+    }
+
+
+    public static boolean isMIUI() {
+        String manufacturer = Build.MANUFACTURER;
+        //这个字符串可以自己定义,例如判断华为就填写huawei,魅族就填写meizu
+        if ("xiaomi".equalsIgnoreCase(manufacturer)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+
+    /**
+     * 通过反射出不同版本的connect方法来连接Wifi
+     *
+     * @author jiangping.li
+     * @param netId
+     * @return
+     * @since MT 1.0
+     *
+     */
+    private Method connectWifiByReflectMethod(int netId) {
+        Method connectMethod = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            // 反射方法： connect(int, listener) , 4.2 <= phone's android version
+            for (Method methodSub : mWifiManager.getClass()
+                    .getDeclaredMethods()) {
+                if ("connect".equalsIgnoreCase(methodSub.getName())) {
+                    Class<?>[] types = methodSub.getParameterTypes();
+                    if (types != null && types.length > 0) {
+                        if ("int".equalsIgnoreCase(types[0].getName())) {
+                            connectMethod = methodSub;
+                        }
+                    }
+                }
+            }
+            if (connectMethod != null) {
+                try {
+                    connectMethod.invoke(mWifiManager, netId, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN) {
+            // 反射方法: connect(Channel c, int networkId, ActionListener listener)
+            // 暂时不处理4.1的情况 , 4.1 == phone's android version
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            // 反射方法：connectNetwork(int networkId) ,
+            // 4.0 <= phone's android version < 4.1
+            for (Method methodSub : mWifiManager.getClass()
+                    .getDeclaredMethods()) {
+                if ("connectNetwork".equalsIgnoreCase(methodSub.getName())) {
+                    Class<?>[] types = methodSub.getParameterTypes();
+                    if (types != null && types.length > 0) {
+                        if ("int".equalsIgnoreCase(types[0].getName())) {
+                            connectMethod = methodSub;
+                        }
+                    }
+                }
+            }
+            if (connectMethod != null) {
+                try {
+                    connectMethod.invoke(mWifiManager, netId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        } else {
+            // < android 4.0
+            return null;
+        }
+        return connectMethod;
+    }
 
 }
-

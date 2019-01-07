@@ -167,10 +167,13 @@ public class Robot extends BaseMqttFragment {
                 }
                 break;
             case R.id.jqr:
-                context.startActivity(new Intent(context, ControlActivity.class));
+//                context.startActivity(new Intent(context, ControlActivity.class));
+                Toast.makeText(context,"暂不支持",Toast.LENGTH_LONG).show();
                 break;
             case R.id.robot_add:
-                context.startActivity(new Intent(context, AcSearchDevice.class));
+//                context.startActivity(new Intent(context, AcSearchDevice.class));
+
+                Toast.makeText(context,"暂不支持",Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -211,12 +214,13 @@ public class Robot extends BaseMqttFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 i = i - 1;
                 Log.e("qqq",i+"=i "+" toulist.s="+toulist.size());
+                Toast.makeText(context,"暂不支持",Toast.LENGTH_LONG).show();
                 if (i == toulist.size()) {
-                    context.startActivity(new Intent(context, AcSearchDevice.class));
+//                    context.startActivity(new Intent(context, AcSearchDevice.class));
                 } else {
-                    Intent in = new Intent(context, ControlActivity.class);
-                    in.putExtra("uid", toulist.get(i).getName());
-                    context.startActivity(in);
+//                    Intent in = new Intent(context, ControlActivity.class);
+//                    in.putExtra("uid", toulist.get(i).getName());
+//                    context.startActivity(in);
                 }
 
             }

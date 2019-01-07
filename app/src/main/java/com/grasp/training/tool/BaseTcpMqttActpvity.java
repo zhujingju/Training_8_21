@@ -82,6 +82,16 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filter);
     }
 
+    /**
+     * 发送广播
+     */
+    protected void sendContentBroadcast(String message) {
+        // TODO Auto-generated method stub
+        Intent intent = new Intent();
+        intent.setAction("com.grasp.training.service.content");
+        intent.putExtra("message", message);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 
     public abstract void MyMessageArrived(String message);
 
@@ -586,7 +596,8 @@ public abstract class BaseTcpMqttActpvity extends BaseActivity {
                     socket.receive(packet); //阻塞式，接收发送方的 packet
                     String result = new String(packet.getData(), packet.getOffset(), packet.getLength()); //packet 转换
                              Log.e(TAG, "UDP result: " + result);
-                    MyMessageArrived(result);
+//                    MyMessageArrived(result);
+                    sendContentBroadcast(result);
 //                    socket2.close(); //必须及时关闭 socket，否则会出现 error
                 } catch (Exception e) {
                     e.printStackTrace();

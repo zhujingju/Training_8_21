@@ -1,5 +1,6 @@
 package com.grasp.training.activity;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,11 +17,14 @@ import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +61,8 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
     Button webViewSz;
     @BindView(R.id.webView)
     WebView mWebView;
-
+    @BindView(R.id.web_lin)
+    LinearLayout web_lin;
     final int version = Build.VERSION.SDK_INT;
     private String sid, type, dname, url;
     private Context context;
@@ -127,6 +132,7 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
         }
 
     }
+    private boolean web_err=true;
 
     private AndroidToJs androidToJs;
     @Override
@@ -181,6 +187,7 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
         mWebView.addJavascriptInterface(androidToJs, "androidlistener");//JS通过WebView调用 Android 代码
 //        url = url.replace("3006", "3008");
         Log.i(TAG, "initView: url="+url);
+//        url="https://iot.iotbroad.com/download/switchdh_2.html";
         mWebView.loadUrl(url);//file:///android_asset/javascript.html
 
 //        mWebView.loadUrl("https://blog.csdn.net/carson_ho/article/details/64904691/");//file:///android_asset/javascript.html
@@ -210,6 +217,33 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
+            }
+
+            @TargetApi(android.os.Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                // 这个方法在6.0才出现
+                int statusCode = errorResponse.getStatusCode();
+                System.out.println("onReceivedHttpError code = " + statusCode);
+                Log.e("onReceivedHttpError","onReceivedHttpError statusCode="+statusCode);
+                if (404 == statusCode || 500 == statusCode) {
+                    web_lin.setVisibility(View.VISIBLE);
+                    mWebView.setVisibility(View.GONE);
+                    web_err=false;
+                }
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                // 断网或者网络连接超时
+                Log.e("onReceivedHttpError","onReceivedError errorCode="+errorCode);
+                if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
+                    web_lin.setVisibility(View.VISIBLE);
+                    mWebView.setVisibility(View.GONE);
+                    web_err=false;
+                }
             }
         });
 
@@ -250,9 +284,21 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
                 }
                 return super.onJsPrompt(view, url, message, defaultValue, result);
             }
+            @Override
+            public void onReceivedTitle(WebView view, String title) { //404 或者505
+                super.onReceivedTitle(view, title);
+                // android 6.0 以下通过title获取
+                Log.e("onReceivedHttpError","onReceivedTitle title="+title);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    if (title.contains("404") || title.contains("500") || title.contains("Error")) {
+                        web_lin.setVisibility(View.VISIBLE);
+                        mWebView.setVisibility(View.GONE);
+                        web_err=false;
+                    }
+                }
+            }
         });
     }
-
 
     private void initWebView() {
 
@@ -351,19 +397,8 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
                             hard_ver = hard;
                         }
                         me = new Message();
+                        me.obj=message;
                         me.what = 1000;
-                        String channel_1 = jsonObject.optString("channel_1");
-                        String channel_2 = jsonObject.optString("channel_2");
-//                        if (channel_1.equals("on")) {
-//                            search_zt1 = true;
-//                        } else {
-//                            search_zt1 = false;
-//                        }
-//                        if (channel_2.equals("on")) {
-//                            search_zt2 = true;
-//                        } else {
-//                            search_zt2 = false;
-//                        }
                         handler.sendMessage(me);
 
                     } else if (cmd.equals("updatedevicename_ok")) {
@@ -423,6 +458,57 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
 //                    switchSys.setText("版本号：" + sys_ver);
 //                    setStateView(search_zt1);
 //                    setStateView2(search_zt2);
+                    if(!web_err){
+                        Log.e("qqq","刷新");
+                        web_err=true;
+                        mWebView.reload();
+                        web_lin.setVisibility(View.GONE);
+                        mWebView.setVisibility(View.VISIBLE);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                        final JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(msg.obj.toString());
+                            JSONObject tempJson = new JSONObject();
+                            Iterator<String> keys = jsonObject.keys();
+
+                            String tempKey = "";
+                            while(keys.hasNext()){
+                                tempKey = keys.next();
+                                if (tempKey.equals("cmd")){
+                                    tempJson.put(tempKey, jsonObject.optString(tempKey, "").replace(type, "*"));
+                                }
+                                else if(!tempKey.equals("sid") && !tempKey.equals("sys_ver") && !tempKey.equals("hard_ver") && !tempKey.equals("ip")){
+
+                                    tempJson.put(tempKey, jsonObject.optString(tempKey, ""));
+                                }
+                            }
+                            final JSONObject tempJson2 = tempJson;
+                            Log.i(TAG, "run: tempJson2="+tempJson2+",tempJson2.keys().hasNext()="+tempJson2.keys().hasNext());
+                            if (tempJson2.keys().hasNext()) {
+                                mWebView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+//                            mWebView.loadUrl("javascript:androidToJSStatus("+message+")");//androidToJSStatus(jsonStr) 发message或jsonObject给JS都可以
+
+                                        mWebView.loadUrl("javascript:androidToJSStatus("+tempJson2+")");//androidToJSStatus(jsonStr)
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                     break;
 
                 case 3000:
@@ -540,4 +626,5 @@ public class WebViewActivity extends BaseTcpMqttActpvity {
                 break;
         }
     }
+
 }

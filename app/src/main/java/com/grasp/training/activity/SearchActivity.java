@@ -13,7 +13,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -26,10 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -40,11 +38,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.grasp.training.MainActivity;
 import com.grasp.training.R;
 import com.grasp.training.service.MqttService;
-import com.grasp.training.tool.BaseMqttActivity;
 import com.grasp.training.tool.BaseMqttToActivity;
 import com.grasp.training.tool.EquipmentData;
 import com.grasp.training.tool.LocationUtils;
@@ -57,15 +53,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,7 +139,7 @@ public class SearchActivity extends BaseMqttToActivity {
         getWifiSSid();
 
         wifiadmin = new WifiAdmin(context);  //wifi工具类
-        oldNetworkId = wifiadmin.GetCurrentNetwordId();
+        oldNetworkId = wifiadmin.getNetWordId();
 
         initListview();
 //        new UdpReceiveThread().start();  //启动udp接收
@@ -371,17 +361,17 @@ public class SearchActivity extends BaseMqttToActivity {
                     if (!dialog.isShowing()) {
                         showPro();
                     }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-                    handler.sendEmptyMessageDelayed(202, 0); //判断是否连上
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                Thread.sleep(2000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }).start();
+//                    handler.sendEmptyMessageDelayed(202, 0); //判断是否连上
 
                     break;
                 case 201:
@@ -436,14 +426,13 @@ public class SearchActivity extends BaseMqttToActivity {
                     if (showPro_zt1) {  //取消连接
                         return;
                     }
+                    boolean zt = wifiadmin.connectSpecificAP(myScanResult);  //连接摄像头   账号 密码 类型
 
-                    boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-
-                    Log.e("qqq", "203 zt="+zt+" ssid="+ssid+" getAuthType(myScanResult)="+getAuthType(myScanResult));
+                    Log.e("qqq", "203 zt="+zt+" ssid="+ssid+" ");
                     if(zt){
-                    handler.sendEmptyMessageDelayed(202, 5000); //判断是否连上
+                    handler.sendEmptyMessageDelayed(202, 2000); //判断是否连上
                     }else{
-                        handler.sendEmptyMessageDelayed(203,2000); //判断是否连上
+                        handler.sendEmptyMessageDelayed(203,1000); //判断是否连上
                     }
 
                     break;
@@ -552,6 +541,13 @@ public class SearchActivity extends BaseMqttToActivity {
     };
 
 
+    public void hintKeyBoard() {
+        View view = getWindow().peekDecorView();
+        if (view != null) {
+            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
     private WindowManager.LayoutParams params;
     private PopwinDialog takePhotoPopWin;
 
@@ -568,7 +564,7 @@ public class SearchActivity extends BaseMqttToActivity {
                 showPro_zt1=false;
                 l_ssid = scanResult.SSID;
                 l_pw = pw;
-
+                hintKeyBoard();
 
 
 //                if (isWifiConnect()) {
@@ -576,8 +572,9 @@ public class SearchActivity extends BaseMqttToActivity {
                     @Override
                     public void run() {
                         handler.sendEmptyMessageDelayed(200, 0);
-                        boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-                        Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
+                        handler.sendEmptyMessageDelayed(203, 0);
+//                        boolean zt = wifiadmin.connectSpecificAP(myScanResult);  //连接摄像头   账号 密码 类型
+//                        Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
                     }
                 }).start();
 
@@ -599,6 +596,7 @@ public class SearchActivity extends BaseMqttToActivity {
                 params = ((Activity) context).getWindow().getAttributes();
                 params.alpha = 1f;
                 ((Activity) context).getWindow().setAttributes(params);
+                hintKeyBoard();
 
             }
         });
@@ -618,15 +616,16 @@ public class SearchActivity extends BaseMqttToActivity {
                 showPro_zt1=false;
                 l_ssid = scanResult.SSID;
                 l_pw = pw;
+                hintKeyBoard();
 //                oldNetworkId = wifiadmin.GetCurrentNetwordId();
                 if (isWifiConnect()) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             handler.sendEmptyMessageDelayed(200, 0);
-                            boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //
-
-                            Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
+//                            boolean zt = wifiadmin.connectSpecificAP(myScanResult);  //连接摄像头   账号 密码 类型
+                            handler.sendEmptyMessageDelayed(203, 0);
+//                            Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
                         }
                     }).start();
 
@@ -648,6 +647,7 @@ public class SearchActivity extends BaseMqttToActivity {
                 params = ((Activity) context).getWindow().getAttributes();
                 params.alpha = 1f;
                 ((Activity) context).getWindow().setAttributes(params);
+                hintKeyBoard();
 
             }
         });
@@ -730,6 +730,7 @@ public class SearchActivity extends BaseMqttToActivity {
 
     public void ss() {
 //        Log.e("qqq", isWifiConnect() + "  ");
+        Log.e("qqq","ss()");
         if (!isWifiConnect()) {
             return;
         }
@@ -746,11 +747,11 @@ public class SearchActivity extends BaseMqttToActivity {
             return;
         }
         //数组初始化要注意
-        String[] listk = new String[listb.size()];
+//        String[] listk = new String[listb.size()];
         if (listb != null) {
             for (int i = 0; i < listb.size(); i++) {
                 ScanResult scanResult = listb.get(i);
-                listk[i] = scanResult.SSID;
+//                listk[i] = scanResult.SSID;
 
                 if (scanResult.SSID.length() > 5 && scanResult.SSID.substring(0, 5).equals("grasp")) {
                     String sb[] = scanResult.SSID.split("-");
@@ -1146,6 +1147,24 @@ public class SearchActivity extends BaseMqttToActivity {
 
                             Log.e("MyThread", "sid=" + sid);
 //                                SharedPreferencesUtils.setParam(context, MainActivity.socket,sid);
+                            String ssid_list=(String) SharedPreferencesUtils.getParam(context,"wifi_search","");
+                            if(ssid_list.equals("")){
+                                ssid_list=l_ssid;
+                            }else{
+                                String ss[]=ssid_list.split("☯");
+                                boolean add_zt=false;
+                                for (int i=0;i<ss.length;i++){
+                                    if(ss[i].equals(l_ssid)){
+                                        add_zt=true;
+                                        break;
+                                    }
+                                }
+                                if(!add_zt){
+                                    ssid_list=ssid_list+"☯"+l_ssid;
+                                }
+                            }
+                            SharedPreferencesUtils.setParam(context,"wifi_search",ssid_list);//保存wifi列表
+                            SharedPreferencesUtils.setParam(context,l_ssid+"zjj",l_pw);//保存wifi密码
                             handler.sendEmptyMessageDelayed(600, 0);
 //                                di_zt=true;
                         } else if (connect_sta == 2) {//密码错误
@@ -1190,6 +1209,7 @@ public class SearchActivity extends BaseMqttToActivity {
                     handler.removeMessages(200);
                     return;
                 }
+                showPro_zt1=false;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -1198,9 +1218,9 @@ public class SearchActivity extends BaseMqttToActivity {
                         for (int i = 0; i < list.size(); i++) {
                             if (list.get(i).getScanResult().SSID.equals(ssid)) {
                                 handler.sendEmptyMessageDelayed(200, 0);
-                                boolean zt = wifiadmin.addNetwork(wifiadmin.CreateWifiInfo(ssid, "", getAuthType(myScanResult)));  //连接摄像头   账号 密码 类型
-
-                                Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
+//                                boolean zt = wifiadmin.connectSpecificAP(myScanResult);  //连接摄像头   账号 密码 类型
+                                handler.sendEmptyMessageDelayed(203, 0);
+//                                Log.e("qqq", ssid + " -- " + getAuthType(myScanResult) + " " + zt);
                                 return;
                             }
                         }
@@ -1396,4 +1416,5 @@ public class SearchActivity extends BaseMqttToActivity {
                 });
         builder.show();
     }
+
 }

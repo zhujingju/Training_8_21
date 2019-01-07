@@ -1,9 +1,11 @@
 package com.grasp.training.fragmet;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
@@ -15,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +27,9 @@ import android.os.Message;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -75,6 +80,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import ha.excited.BigNews;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -117,6 +123,7 @@ public class Personal extends BaseMqttFragment {
         context = getActivity();
 
         unbinder = ButterKnife.bind(this, view);
+        oldApkPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Training/up" + getAppVersion("com.grasp.training") + "/";
 
         handler.sendEmptyMessageDelayed(2222, 0);
         per_sys_im.setVisibility(View.INVISIBLE);
@@ -129,7 +136,7 @@ public class Personal extends BaseMqttFragment {
         } else {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.personalcenter_tabbar_portrait_selected, personalTx, MyApplication.options2);
         }
-        bbh.setText("V"+getAppVersion("com.grasp.training"));
+        bbh.setText("V" + getAppVersion("com.grasp.training"));
     }
 
     private String myTopic = MqttService.myTopicUser;
@@ -221,13 +228,34 @@ public class Personal extends BaseMqttFragment {
                             int ver = jsonObject.optInt("version", 0);
                             int myVer = getAppVersion("com.grasp.training");
                             if (myVer < ver) {//更新
-                                updata_zt=true;
+                                newApkPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Training/up" + ver + "/";
+                                Log.e("qqq","newApkPath="+newApkPath);
+                                updata_zt = true;
                                 handler.sendEmptyMessageDelayed(2223, 500);
                             } else {//
                                 handler.sendEmptyMessageDelayed(2224, 500);
                             }
+                            break;
 
+                        case "querypatch_ok"://获取增量更新的版本号 apk的url 增量的url  新增内容的文本
 
+                            updata_url = jsonObject.optString("latestapkurl", "");
+                            int ver2 = jsonObject.optInt("latestversion", 0);
+                            int myVer2 = getAppVersion("com.grasp.training");
+                            patch_url = jsonObject.optString("patchurl", "");;  //增量更新的url
+                            updata_s = jsonObject.optString("content", "");;   //更新的内容
+                            if (myVer2 < ver2) {//更新
+                                newApkPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Training/up" + ver2 + "/";
+                                updata_zt = true;
+                                if (patch_url.equals("")) {
+                                    handler.sendEmptyMessageDelayed(2223, 500);
+                                } else {
+                                    handler.sendEmptyMessageDelayed(2225, 500);
+                                }
+
+                            } else {//
+                                handler.sendEmptyMessageDelayed(2224, 500);
+                            }
                             break;
                     }
                 } catch (JSONException e) {
@@ -265,7 +293,7 @@ public class Personal extends BaseMqttFragment {
                     per_sys_im.setVisibility(View.VISIBLE);
                     if (dian_zt) {
                         if (!normalDialog_zt) {
-                            upDate(updata_url);
+                            upDate(updata_url, updata_s);
                         }
                     }
                     break;
@@ -275,6 +303,23 @@ public class Personal extends BaseMqttFragment {
                     }
                     if (dian_zt) {
                         Toast.makeText(context, "当前已是最高版本！", Toast.LENGTH_LONG).show();
+                    }
+
+                    break;
+
+                case 2225:  //增量更新
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    if (patch_url.equals("")) {
+                        Toast.makeText(context, "url为空,无法更新", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    per_sys_im.setVisibility(View.VISIBLE);
+                    if (dian_zt) {
+                        if (!normalDialog_zt) {
+                            upDate2(patch_url, updata_s);
+                        }
                     }
 
                     break;
@@ -341,6 +386,7 @@ public class Personal extends BaseMqttFragment {
         handler.removeMessages(2222);
         handler.removeMessages(2223);
         handler.removeMessages(2224);
+        handler.removeMessages(2225);
         handler.removeMessages(3000);
         handler.removeMessages(3001);
         handler.removeMessages(4001);
@@ -350,13 +396,38 @@ public class Personal extends BaseMqttFragment {
         notificationHandler.removeMessages(1000);
         notificationHandler.removeMessages(2000);
         notificationHandler.removeMessages(3000);
+        notificationHandler.removeMessages(4000);
         super.onDestroyView();
         unbinder.unbind();
 
     }
 
 
-    @OnClick({R.id.per_fk,R.id.per_xgsj, R.id.per_xgmm, R.id.per_gx, R.id.personal_tx, R.id.personal_layout, R.id.per_tui})
+    /**
+     * 返回true 表示可以使用  返回false表示不可以使用
+     */
+    public boolean cameraIsCanUse() {
+        boolean isCanUse = true;
+        Camera mCamera = null;
+        try {
+            mCamera = Camera.open();
+            Camera.Parameters mParameters = mCamera.getParameters(); //针对魅族手机
+            mCamera.setParameters(mParameters);
+        } catch (Exception e) {
+            isCanUse = false;
+        }
+
+        if (mCamera != null) {
+            try {
+                mCamera.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return isCanUse;
+            }
+        }
+        return isCanUse;
+    }
+    @OnClick({R.id.per_fk, R.id.per_xgsj, R.id.per_xgmm, R.id.per_gx, R.id.personal_tx, R.id.personal_layout, R.id.per_tui})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.per_fk:
@@ -367,7 +438,12 @@ public class Personal extends BaseMqttFragment {
                 context.startActivity(new Intent(context, VerifyPhoneActivity.class));
                 break;
             case R.id.personal_tx:
-                getTp();
+                if(cameraIsCanUse()){
+                    getTp();
+                }else{
+                    Toast.makeText(context,"没有拍照权限",Toast.LENGTH_LONG).show();
+                }
+
 
                 break;
             case R.id.personal_layout:
@@ -382,6 +458,26 @@ public class Personal extends BaseMqttFragment {
                 SharedPreferencesUtils.setParam(getContext(), MyApplication.NAME_USER, "");
                 startActivity(new Intent(context, LoginActivity.class));
                 ((Activity) context).finish();
+//                boolean BigNews_zt =false;
+//                newApkPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Training/up" + 8 + "/";
+//                Log.e("BigNews_zt","oldApkPath="+oldApkPath+ apkName);
+//                Log.e("BigNews_zt","newApkPath="+newApkPath+ apkName);
+//                Log.e("BigNews_zt","patchPath="+patchPath+ patch);
+//                File dir = new File(oldApkPath + apkName);
+//                if (!dir.exists()) {
+//
+//                } else {
+//                    Log.e("BigNews_zt","oldApkPath存在");
+//                }
+//                File dir2 = new File(patchPath+ patch);
+//                if (!dir2.exists()) {
+//
+//                } else {
+//                    Log.e("BigNews_zt","patchPath存在");
+//                }
+//                BigNews_zt = BigNews.make(oldApkPath+ apkName, newApkPath + apkName, patchPath + patch);
+//                Log.e("BigNews_zt","BigNews_zt="+BigNews_zt);
+
                 break;
             case R.id.per_gx:
                 dian_zt = true;
@@ -390,7 +486,12 @@ public class Personal extends BaseMqttFragment {
                         push_val();
                         showPro2();
                     } else {
-                        upDate(updata_url);
+                        if (patch_url.equals("")) {
+                            upDate(updata_url, updata_s);
+                        } else {
+                            upDate2(patch_url, updata_s);
+                        }
+
                     }
                 } else {
                     push_val();
@@ -443,12 +544,19 @@ public class Personal extends BaseMqttFragment {
         if (resultCode == ((Activity) getContext()).RESULT_OK) {
             switch (requestCode) {
                 case CODE_CAMERA_REQUEST://拍照完成回调
-                    if (layout.fileCropUri != null) {
-                        layout.cropImageUri = Uri.fromFile(layout.fileCropUri);
-                        PhotoUtils.cropImageUri(Personal.this, layout.imageUri, layout.cropImageUri, 1, 1, output_X, output_Y, CODE_RESULT_REQUEST);
-                    } else {
+                    if(layout!=null){
+                        if (layout.fileCropUri != null) {
+                            layout.cropImageUri = Uri.fromFile(layout.fileCropUri);
+                            PhotoUtils.cropImageUri(Personal.this, layout.imageUri, layout.cropImageUri, 1, 1, output_X, output_Y, CODE_RESULT_REQUEST);
+                        } else {
+                            Toast.makeText(context, "拍照失败,本手机内存不足，请使用本地上传", Toast.LENGTH_LONG).show();
+                        }
+                    }else{
                         Toast.makeText(context, "拍照失败,本手机内存不足，请使用本地上传", Toast.LENGTH_LONG).show();
+
                     }
+
+
 
                     break;
                 case CODE_GALLERY_REQUEST://访问相册完成回调
@@ -572,10 +680,18 @@ public class Personal extends BaseMqttFragment {
 
     }
 
+
     private boolean updata_zt = false;
     private String updata_url = "";
+    private String patch_url = "";  //增量更新的url
+    private String updata_s = "";   //更新的内容
 
     public void push_val() { //检查版本更新
+        if (getOldPathZt()) {  //有就的安装包，启动增量更新
+            push_patch_patch();
+            return;
+        }
+
         final String fs = MqttService.myTopicSoftware;
         subscribe(fs);
         new Thread(new Runnable() {
@@ -619,11 +735,16 @@ public class Personal extends BaseMqttFragment {
 
     private boolean normalDialog_zt = false;
 
-    private void upDate(final String url) {
+    private void upDate(final String url, String s) {
         normalDialog_zt = true;
         AlertDialog.Builder normalDialog = new AlertDialog.Builder(context);
         normalDialog.setTitle("版本升级");
-        normalDialog.setMessage("确认有新版本！！！");
+        if (s.equals("")) {
+            normalDialog.setMessage("确认有新版本！！！");
+        } else {
+            normalDialog.setMessage(s);
+        }
+
         normalDialog.setNegativeButton("升级",
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -648,13 +769,52 @@ public class Personal extends BaseMqttFragment {
     }
 
 
-    public void Update(String url) {//更新
-        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notification=new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
-//        notification = new Notification(R.drawable.icon, "下载进度...", System.currentTimeMillis());
-        download(url, Path, apkName);
+    private void upDate2(final String url, String s) {
+        normalDialog_zt = true;
+        AlertDialog.Builder normalDialog = new AlertDialog.Builder(context);
+        normalDialog.setTitle("版本升级");
+        if (s.equals("")) {
+            normalDialog.setMessage("确认有新版本！！！");
+        } else {
+            normalDialog.setMessage(s);
+        }
+
+        normalDialog.setNegativeButton("升级",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        Update2(url);
+                        normalDialog_zt = false;
+                    }
+                });
+        normalDialog.setPositiveButton("取消",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        normalDialog_zt = false;
+                    }
+                });
+
+        // 显示
+        normalDialog.setCancelable(false);
+        normalDialog.show();
     }
 
+    public void Update(String url) {//更新
+        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
+//        notification = new Notification(R.drawable.icon, "下载进度...", System.currentTimeMillis());
+        download(url, newApkPath, apkName);
+    }
+
+    public void Update2(String url) {//增量更新
+        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notification = new Notification.Builder(context).setSmallIcon(R.drawable.icon).build();
+//        notification = new Notification(R.drawable.icon, "下载进度...", System.currentTimeMillis());
+        download2(url, patchPath, patch);
+    }
 
     /**
      * 发送通知
@@ -676,7 +836,7 @@ public class Personal extends BaseMqttFragment {
         public void handleMessage(Message msg) {
 
             super.handleMessage(msg);
-            Log.e("qqq","msg.w="+msg);
+            Log.e("qqq", "msg.w=" + msg);
             switch (msg.what) {
                 case 1000:
                     notificationHandler.removeMessages(1000);
@@ -685,7 +845,7 @@ public class Personal extends BaseMqttFragment {
                     notification.contentView = contentView;
 
                     manager.notify(0, notification);
-                    notificationHandler.sendEmptyMessageDelayed(1000,1000);
+                    notificationHandler.sendEmptyMessageDelayed(1000, 1000);
                     break;
 
                 case 2000:
@@ -697,9 +857,34 @@ public class Personal extends BaseMqttFragment {
                     notificationHandler.removeMessages(1000);
                     Toast.makeText(context, "下载成功", Toast.LENGTH_LONG).show();
                     manager.cancel(0);
-                    AutoInstall.setUrl(Path + apkName);
+                    AutoInstall.setUrl(newApkPath + apkName);
 //                    Log.e("qqq",Path + apkName);
                     AutoInstall.install(context);
+                    break;
+                case 4000:
+                    notificationHandler.removeMessages(1000);
+//                    Toast.makeText(context, "下载成功", Toast.LENGTH_LONG).show();
+                    manager.cancel(0);
+//                    AutoInstall.setUrl(oldApkPath + apkName);
+////                    Log.e("qqq",Path + apkName);
+//                    AutoInstall.install(context);
+                    File dir = new File(newApkPath);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    boolean BigNews_zt = BigNews.make(oldApkPath + apkName, newApkPath + apkName, patchPath + patch);
+                    Log.e("BigNews","BigNews_zt="+BigNews_zt);
+                    if (BigNews_zt) {
+                        Toast.makeText(context, "下载成功", Toast.LENGTH_LONG).show();
+                        AutoInstall.setUrl(newApkPath + apkName);
+//                    Log.e("qqq",Path + apkName);
+                        AutoInstall.install(context);
+                    } else {//合成失败
+                        Update(updata_url);
+                        normalDialog_zt = false;
+                    }
+
                     break;
             }
 
@@ -715,7 +900,7 @@ public class Personal extends BaseMqttFragment {
      * @param destFileName 下载文件名称
      */
 
-    String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+//    String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     String apkName = "Training.apk";
 
 
@@ -751,13 +936,13 @@ public class Personal extends BaseMqttFragment {
                     long total = response.body().contentLength();
                     fos = new FileOutputStream(file);
                     long sum = 0;
-                    progress=0;
+                    progress = 0;
                     notificationHandler.sendEmptyMessage(1000);
-                    while ((len = is.read(buf)) != -1&&progress<=100) {
+                    while ((len = is.read(buf)) != -1 && progress <= 100) {
                         fos.write(buf, 0, len);
                         sum += len;
                         progress = (int) (sum * 1.0f / total * 100);
-                        Log.e("tag", "progress="+progress);
+                        Log.e("tag", "progress=" + progress);
                         // 下载中更新进度条
                     }
                     fos.flush();
@@ -786,6 +971,70 @@ public class Personal extends BaseMqttFragment {
     }
 
 
+    public void download2(final String url, final String destFileDir, final String destFileName) {
+        Log.e("tag", url + "  " + destFileDir + "  " + destFileName);
+        client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // 下载失败监听回调
+//                ha.sendEmptyMessageDelayed(MyServer_start,1000);
+                notificationHandler.sendEmptyMessageDelayed(2000, 0);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                sendNotification();
+                InputStream is = null;
+                byte[] buf = new byte[2048];
+                int len = 0;
+                FileOutputStream fos = null;
+                // 储存下载文件的目录
+                File dir = new File(destFileDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File file = new File(dir, destFileName);
+                try {
+                    is = response.body().byteStream();
+                    long total = response.body().contentLength();
+                    fos = new FileOutputStream(file);
+                    long sum = 0;
+                    progress = 0;
+                    notificationHandler.sendEmptyMessage(1000);
+                    while ((len = is.read(buf)) != -1 && progress <= 100) {
+                        fos.write(buf, 0, len);
+                        sum += len;
+                        progress = (int) (sum * 1.0f / total * 100);
+                        Log.e("tag", "progress=" + progress);
+                        // 下载中更新进度条
+                    }
+                    fos.flush();
+                    Log.e("tag", "下载完成");
+//                    ha.sendEmptyMessageDelayed(MyServer_ok,0);
+                    notificationHandler.sendEmptyMessageDelayed(4000, 500);
+                    // 下载完成
+                } catch (Exception e) {
+                    Log.e("tag", "下载 失败");
+//                    ha.sendEmptyMessageDelayed(MyServer_start,1000);
+                    notificationHandler.sendEmptyMessageDelayed(2000, 500);
+                } finally {
+                    try {
+                        if (is != null)
+                            is.close();
+                    } catch (IOException e) {
+                    }
+                    try {
+                        if (fos != null)
+                            fos.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        });
+    }
+
     /*
      *获取程序的版本号
      */
@@ -800,5 +1049,47 @@ public class Personal extends BaseMqttFragment {
 
     }
 
+    private String oldApkPath="";
+    private String newApkPath = "";
+    private String patchPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Training/patchPath/";
+    private String patch = "patch.patch";
+
+    private boolean getOldPathZt() {  //判断老的apk是否存在
+        File dir = new File(oldApkPath + apkName);
+        if (!dir.exists()) {
+
+            return false;
+        } else {
+
+            return true;
+        }
+    }
+
+
+    public void push_patch_patch() { //检查版本增量更新
+
+        final String fs = MqttService.myTopicPatch;
+        subscribe(fs);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    //发送请求所有数据消息
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("cmd", "querypatch");
+                    jsonObject.put("uname", MainActivity.NameUser);
+                    jsonObject.put("clientid", Tool.getIMEI(getContext()));
+                    jsonObject.put("name", "app-smarthome");
+                    jsonObject.put("version", getAppVersion("com.grasp.training"));
+                    String js = jsonObject.toString();
+                    publish_String2(js, fs);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
 
 }

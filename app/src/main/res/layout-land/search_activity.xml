@@ -114,7 +114,7 @@
         android:textColor="#fff"
         android:layout_gravity="center"
         android:textSize="@dimen/dip_14.0"
-        android:text="添加失败且连搜不上设备，请长按开关键重置设备"
+        android:text="@string/ss_ts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

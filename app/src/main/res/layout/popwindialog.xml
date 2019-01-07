@@ -29,14 +29,49 @@
                 android:textSize="@dimen/dip_18.0"
                 android:layout_gravity="center"
                 />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#f00"
-                android:text="5G网络暂不支持"
-                android:textSize="@dimen/dip_12.0"
-                android:layout_gravity="right"
-                />
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dip_40.0">
+                <TextView
+                    android:id="@+id/popwindialog_spinner_list_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000"
+                    android:text="已保存网络："
+                    android:textSize="@dimen/dip_12.0"
+                    android:layout_gravity="center"
+
+                    />
+                <RelativeLayout
+                    android:id="@+id/popwindialog_spinner_list_rel"
+                    android:layout_gravity="center"
+                    android:background="#fff"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/dip_40.0">
+                    <Spinner
+                        android:spinnerMode="dialog"
+                        android:textColor="#000"
+                        android:textSize="@dimen/dip_15.0"
+                        android:id="@+id/popwindialog_spinner_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#f00"
+                    android:text="5G网络暂不支持"
+                    android:textSize="@dimen/dip_12.0"
+                    android:layout_gravity="center"
+
+                    />
+            </LinearLayout>
+
             <LinearLayout
                 android:gravity="center"
                 android:layout_marginTop="@dimen/dip_10.0"
@@ -84,7 +119,7 @@
                     />
 
                 <EditText
-                    android:layout_marginLeft="@dimen/dip_10.0"
+                    android:layout_marginLeft="@dimen/dip_5.0"
                     android:id="@+id/popwindialog_ed"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

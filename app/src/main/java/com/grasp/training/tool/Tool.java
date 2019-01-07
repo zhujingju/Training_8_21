@@ -2,36 +2,57 @@ package com.grasp.training.tool;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 public class Tool {
 
-    private  final static String string="Tool_bs";
+    private final static String string = "Tool_bs";
+
     public static String getIMEI(Context context) {
-        if(context==null){
-            return  "12345678";
+        String timeS = (String) SharedPreferencesUtils.getParam(context, string, "");
+        if (timeS.equals("")) {
+            long timeStamp = System.currentTimeMillis();
+            timeS = timeStamp + "zjj";
+            SharedPreferencesUtils.setParam(context, string, timeS + "");
         }
+
+
+        if (context == null) {
+            return timeS;
+        }
+        if (lacksPermission(context, "android.permission.READ_PHONE_STATE")) {
+            Log.e("qqq","lacksPermission=没有权限"+" timeS="+timeS);
+            return timeS;
+        }
+
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
 
         @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
-        SharedPreferencesUtils.setParam(context,string,imei+"");
+        SharedPreferencesUtils.setParam(context, string, imei + "");
         if (imei != null && !imei.equals("")) {
 
         } else {
-            String bs=SharedPreferencesUtils.getParam(context,string,"").toString();
-            if(bs.equals("")){
-                long timeStamp = System.currentTimeMillis();
-                SharedPreferencesUtils.setParam(context,string,timeStamp+"");
-                imei = timeStamp + "";
-            }else{
-                imei=bs;
-            }
+
+            imei = timeS;
         }
 
         return imei;
+    }
+
+
+    /**
+     * 判断是否缺少权限
+     */
+    private static boolean lacksPermission(Context mContexts, String permission) {
+        return ContextCompat.checkSelfPermission(mContexts, permission) ==
+                PackageManager.PERMISSION_DENIED;
     }
 
     public static String MD5(String sourceStr) {

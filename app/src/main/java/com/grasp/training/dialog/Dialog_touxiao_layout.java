@@ -61,8 +61,8 @@ public  class Dialog_touxiao_layout extends LinearLayout {
                 if (hasSdcard()) {
                     imageUri = Uri.fromFile(fileUri);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                        //通过FileProvider创建一个content类型的Uri
-                        imageUri = FileProvider.getUriForFile(c, "com.grasp.training.cartoonprovider", fileUri);
+                        //通过FileProvider创建一个content类型的Uri cartoonprovider
+                        imageUri = FileProvider.getUriForFile(c, "com.grasp.training.fileProvider", fileUri);
                     PhotoUtils.takePicture((Activity) c, imageUri, CODE_CAMERA_REQUEST);
 //                    dialogTouxiaoLayoutIn.paizhao();
                 } else {

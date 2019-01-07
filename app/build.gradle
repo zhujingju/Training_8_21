@@ -2,12 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
+    buildToolsVersion "28.0.0"
     defaultConfig {
         applicationId "com.grasp.training"
         minSdkVersion 19
-        targetSdkVersion 21
-        versionCode 7
-        versionName "app-smarthome-7"
+        targetSdkVersion 25
+        versionCode 10
+        versionName "app-smarthome-10"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "release"
         ndk {
@@ -24,9 +25,9 @@ android {
     }
 
     sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
     }
     //  release
     signingConfigs {
@@ -113,5 +114,7 @@ dependencies {
     implementation 'cn.simonlee.xcodescanner:zbar:1.1.10'
     implementation 'cn.simonlee.widget:swipeback:1.0.13'
     implementation 'ru.alexbykov:nopermission:1.1.2'
+    implementation 'com.google.android.gms:play-services-appindexing:8.1.0'
+    implementation 'com.github.ha-excited:BigNews:0.1.2'
 
 }

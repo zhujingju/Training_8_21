@@ -114,6 +114,7 @@ public class SmartHomeMain extends BaseMqttFragment {
     @Override
     public void init(View rootView) {
         unbinder = ButterKnife.bind(this, rootView);
+//        Log.e("qqq","doRegisterReceiver  onDestroyView  init");
 //        Log.e("qqq","doRegisterReceiver  init");
 //        if(MqttEquipmentMap!=null){
 //            Log.e("size","MqttEquipmentMap.s="+MqttEquipmentMap.size());
@@ -125,7 +126,7 @@ public class SmartHomeMain extends BaseMqttFragment {
 //
 //            }
 //        }
-        MqttEquipmentMap=null;
+
         context = getActivity();
         city = (String) SharedPreferencesUtils.getParam(context, "city_main", "");
         head = (LinearLayout) rootView.findViewById(R.id.head);
@@ -133,63 +134,7 @@ public class SmartHomeMain extends BaseMqttFragment {
         //获取PullToRefreshGridView里面的head布局
         head.addView(gridView.getView(), p);
         initListview();
-        Log.e("tianqi", "isLocationEnabled=" + LocationUtils.isLocationEnabled(context) + " LocationUtils.isGpsEnabled(context)=" + LocationUtils.isGpsEnabled(context));
-        if (LocationUtils.isLocationEnabled(context)) {
-
-            if (LocationUtils.isGpsEnabled(context)) {
-
-            } else {
-//                setGps();
-                Log.e("tianqi", "isGpsEnabled？？？");
-            }
-
-            LocationUtils.register(context, 60 * 1000, 1000, new LocationUtils.OnLocationChangeListener() {
-                @Override
-                public void getLastKnownLocation(Location location) {
-                    Log.e("tianqi", "getLastKnownLocation");
-                    double Latitude = location.getLatitude();  //维度
-                    double Longitude = location.getLongitude();
-                    city = LocationUtils.getLocality(context, Latitude, Longitude);
-                    SharedPreferencesUtils.setParam(context, "city_main", city);
-                    Log.e("tianqi", "Latitude=" + Latitude + " Longitude=" + Longitude + " city=" + city);
-                    if (city == null) {
-                        city = "北京";
-
-                    } else {
-                        if (city.equals("unknown")) {
-                            city = "北京";
-                        }
-                    }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(3000);
-                                LocationUtils.unregister();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-//
-                    new Thread(tq).start();
-                }
-
-                @Override
-                public void onLocationChanged(Location location) {
-                    Log.e("tianqi", "onLocationChanged");
-
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                    Log.e("tianqi", "onStatusChanged");
-                }
-            });
-
-        } else {
-            city = "北京";
-        }
+        handler.sendEmptyMessageDelayed(966,100);
 
     }
 
@@ -265,6 +210,7 @@ public class SmartHomeMain extends BaseMqttFragment {
         handler.removeMessages(1000);
         handler.removeMessages(2000);
         handler.removeMessages(123);
+        handler.removeMessages(966);
         equimentHandler.removeMessages(1000);
         equimentHandler.removeMessages(2000);
         equimentHandler.removeMessages(3000);
@@ -537,10 +483,78 @@ public class SmartHomeMain extends BaseMqttFragment {
                     Toast.makeText(context, getString(R.string.progress_pergood), Toast.LENGTH_LONG).show();
                     handler.sendEmptyMessageDelayed(123, 0);
                     break;
+                case 966:
+                    Log.e("tianqi", "isLocationEnabled=" + LocationUtils.isLocationEnabled(context) + " LocationUtils.isGpsEnabled(context)=" + LocationUtils.isGpsEnabled(context));
+                    if (LocationUtils.isLocationEnabled(context)) {
+
+                        if (LocationUtils.isGpsEnabled(context)) {
+
+                        } else {
+//                setGps();
+                            Log.e("tianqi", "isGpsEnabled？？？");
+                        }
+
+                        boolean register_zt=LocationUtils.register(context, 2000, 1, new LocationUtils.OnLocationChangeListener() {
+                            @Override
+                            public void getLastKnownLocation(Location location) {
+                                Log.e("tianqi", "getLastKnownLocation");
+                                double Latitude = location.getLatitude();  //维度
+                                double Longitude = location.getLongitude();
+                                city = LocationUtils.getLocality(context, Latitude, Longitude);
+                                SharedPreferencesUtils.setParam(context, "city_main", city);
+                                Log.e("tianqi", "Latitude=" + Latitude + " Longitude=" + Longitude + " city=" + city);
+                                if (city == null) {
+                                    city = "北京";
+
+                                } else {
+                                    if (city.equals("unknown")) {
+                                        city = "北京";
+                                    }
+                                }
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            Thread.sleep(3000);
+                                            LocationUtils.unregister();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).start();
+//
+                                new Thread(tq).start();
+                            }
+
+                            @Override
+                            public void onLocationChanged(Location location) {
+                                Log.e("tianqi", "onLocationChanged");
+
+                            }
+
+                            @Override
+                            public void onStatusChanged(String provider, int status, Bundle extras) {
+                                Log.e("tianqi", "onStatusChanged");
+                            }
+                        });
+                        if(!register_zt){
+                            dl_num++;
+                            if(dl_num<4){
+                                handler.sendEmptyMessageDelayed(966,5000);
+                            }
+
+                        }
+                    } else {
+
+                        city = "北京";
+                    }
+
+
+                    break;
             }
         }
     };
-
+int dl_num=0;
 
     private void del() {   //删除
 
@@ -1030,7 +1044,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                 e.onDestroy();
             }
         }
-
+        MqttEquipmentMap=null;
 //        if (manager != null) {
 //            manager.cancel(0);
 //        }
@@ -1066,10 +1080,10 @@ public class SmartHomeMain extends BaseMqttFragment {
                     Message message = new Message();
                     message.what = 4000;
                     message.obj = msg.obj;
-                    equimentHandler.sendMessageDelayed(message, 1000);
+                    equimentHandler.sendMessageDelayed(message, 100);
                     break;
                 case 2000:
-                    equimentHandler.sendEmptyMessageDelayed(5000, 1000);
+                    equimentHandler.sendEmptyMessageDelayed(5000, 500);
                     break;
                 case 3000:
                     Log.e("qqq", "goods " + 3000);
@@ -1269,6 +1283,7 @@ public class SmartHomeMain extends BaseMqttFragment {
                         String fengxiang = for_obj.getString("fengxiang"); //风向
                         String fengli = for_obj.getString("fengli"); //风力
                         String type = for_obj.getString("type");  //天气
+                        Log.e("tianqi","wd="+wendu);
                         smartTvWd.setText(wendu);
                         smartTvSd.setText(type);
 

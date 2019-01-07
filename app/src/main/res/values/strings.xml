@@ -202,4 +202,6 @@
     <string name="outdoor_weather12">低于指定湿度</string>
     <string name="outdoor_weather13">高于指定浓度</string>
     <string name="outdoor_weather14">低于指定浓度</string>
+    <string name="ss_ts">添加失败且连搜不上设备，请长按开关键重置设备\n如果是在连接不上设备wifi，请去系统列表里删除设备wifi的配置</string>
+
 </resources>

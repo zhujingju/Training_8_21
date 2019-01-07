@@ -58,6 +58,38 @@
                 android:id="@+id/webView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></WebView>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/web_lin"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="还没有相关的数据"
+                    android:textSize="@dimen/dip_18.0"
+                    android:textColor="@color/c_f0f0f0"
+                    android:layout_marginBottom="@dimen/dip_10.0"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="数据获取失败"
+                    android:textSize="@dimen/dip_12.0"
+                    android:textColor="@color/white"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="检查网络后再重试"
+                    android:textSize="@dimen/dip_12.0"
+                    android:textColor="@color/white"
+                    />
+            </LinearLayout>
         </RelativeLayout>
 
     </LinearLayout>

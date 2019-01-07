@@ -43,9 +43,7 @@ public class MyApplication extends Application {
     public static EasyMqttService mqttService;
     @Override
     public void onCreate() {
-        playerclient = new PlayerClient();
-        WriteLogThread writeLogThread = new WriteLogThread(playerclient);
-        writeLogThread.start();
+
         super.onCreate();
         application=this;
         mContext = this;
@@ -55,6 +53,12 @@ public class MyApplication extends Application {
     }
 
     public synchronized PlayerClient getPlayerclient() {
+        if(playerclient==null){
+            playerclient = new PlayerClient();
+        WriteLogThread writeLogThread = new WriteLogThread(playerclient);
+        writeLogThread.start();
+        }
+
         return playerclient;
     }
 

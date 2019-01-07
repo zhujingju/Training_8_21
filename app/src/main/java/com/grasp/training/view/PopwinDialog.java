@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +22,9 @@ import android.widget.TextView;
 
 
 import com.grasp.training.R;
+import com.grasp.training.tool.SharedPreferencesUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,11 +38,11 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
     private View view;
     private Button qx, ok;
     private EditText editText;
-    private Spinner spinner;
+    private Spinner spinner,spinner_list;
     private ProgressBar progressBar;
     private LinearLayout lin;
-    private RelativeLayout rel;
-    private TextView tv;
+    private RelativeLayout rel,rel_list;
+    private TextView tv,tv_list;
 
     public PopwinDialog(Context context) {
         mContext = context;
@@ -54,9 +57,33 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
         progressBar = (ProgressBar) view.findViewById(R.id.popwindialog_pro);
         rel = (RelativeLayout) view.findViewById(R.id.popwindialog_layout);
 
+        spinner_list = (Spinner) view.findViewById(R.id.popwindialog_spinner_list);
+        tv_list = (TextView) view.findViewById(R.id.popwindialog_spinner_list_tv);
+        rel_list=(RelativeLayout) view.findViewById(R.id.popwindialog_spinner_list_rel);
+
         rel.setOnClickListener(this);
         qx.setOnClickListener(this);
         ok.setOnClickListener(this);
+
+        String ssid_list=(String) SharedPreferencesUtils.getParam(context,"wifi_search","");
+        if(ssid_list.equals("")){
+            tv_list.setVisibility(View.INVISIBLE);
+            rel_list.setVisibility(View.INVISIBLE);
+        }else{
+            tv_list.setVisibility(View.VISIBLE);
+            rel_list.setVisibility(View.VISIBLE);
+            String ss[]=ssid_list.split("☯");
+            s_list=new ArrayList<>();
+            for (int i=0;i<ss.length;i++){
+                s_list.add(ss[i]);
+            }
+            initSpinner3();
+
+
+
+        }
+
+
         /* 设置弹出窗口特征 */
         // 设置视图
         this.setContentView(this.view);
@@ -74,6 +101,7 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
 //        this.setBackgroundDrawable(dw);
         // 设置弹出窗体显示时的动画
         this.setAnimationStyle(R.style.take_photo_anim);
+
 
     }
 
@@ -161,6 +189,7 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
 
     }
 
+
     MyArrayAdapter arrayAdapter;
 
     private void initSpinner2() {
@@ -174,6 +203,44 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
         spinner.setAdapter(arrayAdapter);
     }
 
+    List<String> s_list;
+    MyListAdapter myListAdapter;
+
+    private void initSpinner3() {
+        //拿到被选择项的值
+        myListAdapter = new MyListAdapter(mContext, s_list);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+//                R.layout.spinner_layout, citys);
+//        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        myListAdapter.setList(s_list);
+        spinner_list.setAdapter(myListAdapter);
+        spinner_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String ssid=s_list.get(position);
+                boolean ssid_zt=false;
+                int po=-1;
+                for(int i=0;i<spinner_list2.size();i++){
+                    ScanResult s=spinner_list2.get(i);
+                    String s_ssid=s.SSID;
+                    if(s_ssid.equals(ssid)){
+                        ssid_zt=true;
+                        po=i;
+                        break;
+                    }
+                }
+                if(ssid_zt){
+                    spinner.setSelection(po);
+                    editText.setText(SharedPreferencesUtils.getParam(mContext,ssid+"zjj","").toString());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
 
     class MyArrayAdapter extends BaseAdapter {
 
@@ -241,5 +308,65 @@ public class PopwinDialog extends PopupWindow implements View.OnClickListener {
 
     public interface popwinInterface {
         public void getPopwinInterface(ScanResult scanResult, String pw);
+    }
+
+
+
+    class MyListAdapter extends BaseAdapter {
+
+        private List<String> mList;
+        private Context mContext;
+
+        public MyListAdapter(Context pContext, List<String> pList) {
+            this.mContext = pContext;
+            this.mList = pList;
+        }
+
+        public void setList(List<String> pList) {
+            this.mList = pList;
+        }
+
+        @Override
+        public int getCount() {
+            return mList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        /**
+         * 下面是重要代码
+         */
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            tool too;
+            View view = convertView;
+            if (convertView == null) {
+                too = new tool();
+                LayoutInflater _LayoutInflater = LayoutInflater.from(mContext);
+                view = _LayoutInflater.inflate(R.layout.spinner_layout2, null);
+//                convertView=inflater.inflate(R.layout.spinner_layout2,  parent, false);
+                too.tv = (TextView) view.findViewById(R.id.sp_tv);
+                view.setTag(too);
+            } else {
+                too = (tool) view.getTag();
+            }
+            too.tv.setText(mList.get(position));
+
+            return view;
+
+        }
+
+        class tool {
+            TextView tv;
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.grasp.training.tool;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -10,6 +13,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,8 +25,8 @@ import java.util.Locale;
 public class LocationUtils {
 
     private static OnLocationChangeListener mListener;
-    private static MyLocationListener       myLocationListener;
-    private static LocationManager          mLocationManager;
+    private static MyLocationListener myLocationListener;
+    private static LocationManager mLocationManager;
 
     private LocationUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
@@ -78,14 +82,24 @@ public class LocationUtils {
         mListener = listener;
         if (!isLocationEnabled(context)) {
 //            ToastUtils.showShortToastSafe(context, "无法定位，请打开定位服务");
-            Toast.makeText(context,"无法定位，请打开定位服务",Toast.LENGTH_LONG);
+            Toast.makeText(context, "无法定位，请打开定位服务", Toast.LENGTH_LONG);
             return false;
         }
-        String provider = mLocationManager.getBestProvider(getCriteria(), true);
-        Location location = mLocationManager.getLastKnownLocation(provider);
+//        String provider = mLocationManager.getBestProvider(getCriteria(), true);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return false;
+        }
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (location != null) listener.getLastKnownLocation(location);
         if (myLocationListener == null) myLocationListener = new MyLocationListener();
-        mLocationManager.requestLocationUpdates(provider, minTime, minDistance, myLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, myLocationListener);
         return true;
     }
 

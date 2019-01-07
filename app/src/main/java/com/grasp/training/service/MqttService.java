@@ -64,7 +64,7 @@ public class MqttService extends Service {
     public static String myTopicSoftware = "iotbroad/iot/software";
     public static String myTopicRobot = "iotbroad/iot/robot";
     public static String myTopicLogic = "iotbroad/iot/logic";
-
+    public static String myTopicPatch = "iotbroad/iot/patch";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -478,7 +478,7 @@ public class MqttService extends Service {
                 //设置不清除回话session 可收到服务器之前发出的推送消息
                 .cleanSession(false)
                 //唯一标示 保证每个设备都唯一就可以 建议 imei
-                .clientId(getIMEI(this))
+                .clientId(Tool.getIMEI(this))
                 //mqtt服务器地址 格式例如：tcp://10.0.261.159:1883
 //                .serverUrl("ssl://192.168.31.60:3002")  //贤贵
 //                .serverUrl("tcp://192.168.1.3:3000")  //贤贵
@@ -492,18 +492,6 @@ public class MqttService extends Service {
                 .bulid(this.getApplicationContext());
     }
 
-    public static String getIMEI(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
-        @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
-        if (imei != null && !imei.equals("")) {
-
-        } else {
-            long timeStamp = System.currentTimeMillis();
-            imei = timeStamp + "";
-        }
-
-        return imei + "S1";
-    }
 
 
     @Override
@@ -893,7 +881,7 @@ public class MqttService extends Service {
                 e.onDestroy();
             }
         }
-
+        MqttEquipmentMap=null;
         if (manager != null) {
             manager.cancel(3);
         }

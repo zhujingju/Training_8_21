@@ -25,7 +25,6 @@
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -35,8 +34,10 @@
     <uses-permission android:name="android.permission.MASTER_CLEAR" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />
+    <!--Android8.0、9.0需要请求未知来源应用安装权限  -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
 
     <!--<uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />-->
     <!--&lt;!&ndash;<uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />&ndash;&gt;-->
@@ -109,7 +110,7 @@
         <activity
             android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SearchActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="stateHidden|adjustPan"></activity>
         <activity
             android:configChanges="screenSize|keyboardHidden|orientation"
             android:name=".activity.SockeActivity"
@@ -255,7 +256,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.grasp.training.cartoonprovider"
+            android:authorities="com.grasp.training.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
